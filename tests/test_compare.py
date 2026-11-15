@@ -55,6 +55,11 @@ def test_float_noise_is_tolerated():
     assert results_match([(0.30000000000000004,)], [(0.3,)], ordered=False)
 
 
+def test_small_but_different_floats_do_not_match():
+    assert not results_match([(1e-7,)], [(2e-7,)], ordered=False)
+    assert not results_match([(1234567.5,)], [(1234567.0,)], ordered=False)
+
+
 @pytest.mark.parametrize(
     "sql",
     [

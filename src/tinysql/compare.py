@@ -16,13 +16,14 @@ _LINE_COMMENT = re.compile(r"--[^\n]*")
 _BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 _ORDER_BY = re.compile(r"\border\s+by\b", re.IGNORECASE)
 
-FLOAT_DECIMALS = 6
+FLOAT_SIGNIFICANT_DIGITS = 12
 
 
 def _normalise_value(v):
     # 3 and 3.0 are the same answer, and float noise (0.30000000000000004) is ignored.
+    # Rounding is relative (significant digits), so tiny but different values stay different.
     if isinstance(v, float):
-        v = round(v, FLOAT_DECIMALS)
+        v = float(f"{v:.{FLOAT_SIGNIFICANT_DIGITS}g}")
         if v.is_integer():
             return int(v)
     return v
