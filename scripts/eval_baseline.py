@@ -44,11 +44,12 @@ def main():
         load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16
     )
     model = AutoModelForCausalLM.from_pretrained(
-        args.model, quantization_config=quant, torch_dtype=torch.bfloat16, device_map="cuda:0"
+        args.model, quantization_config=quant, dtype=torch.bfloat16, device_map="cuda:0"
     )
     model.eval()
 
     prompt_tokens: list[int] = []
+    hit_limit: list[bool] = []
 
     def render(messages):
         kwargs = {"tokenize": False, "add_generation_prompt": True}
@@ -66,14 +67,34 @@ def main():
         too_long = [n for n in lengths if n > args.max_prompt_tokens]
         if too_long:
             raise RuntimeError(f"prompt of {max(too_long)} tokens exceeds --max-prompt-tokens; refusing to truncate")
-        out = model.generate(**enc, max_new_tokens=args.max_new_tokens, do_sample=False, pad_token_id=tok.pad_token_id)
-        return tok.batch_decode(out[:, enc["input_ids"].shape[1]:], skip_special_tokens=True)
+        # Override each model's generation_config sampling defaults (e.g. Qwen2.5-Coder ships
+        # repetition_penalty=1.1, which penalises re-using schema names) so decoding is identical.
+        out = model.generate(
+            **enc,
+            max_new_tokens=args.max_new_tokens,
+            do_sample=False,
+            repetition_penalty=1.0,
+            temperature=None,
+            top_p=None,
+            top_k=None,
+            pad_token_id=tok.pad_token_id,
+        )
+        new = out[:, enc["input_ids"].shape[1]:]
+        stop_ids = {tok.eos_token_id, tok.pad_token_id, *(model.generation_config.eos_token_id or [])}
+        for row in new.tolist():
+            hit_limit.append(len(row) == args.max_new_tokens and not any(t in stop_ids for t in row))
+        return tok.batch_decode(new, skip_special_tokens=True)
 
     dev = load_spider_split(SPIDER / "dev.json")[: args.limit]
     torch.cuda.reset_peak_memory_stats()
     t0 = time.perf_counter()
     records, summary = evaluate(dev, SPIDER / "database", generate, batch_size=args.batch_size)
+    assert len(hit_limit) == len(records)
+    for r, cut in zip(records, hit_limit):
+        r["hit_max_new_tokens"] = cut
     summary.update(
+        decoding="greedy, repetition_penalty=1.0",
+        hit_max_new_tokens_rate=sum(hit_limit) / len(hit_limit),
         model=args.model,
         quantization="none" if args.no_4bit else "nf4-4bit",
         wall_seconds=round(time.perf_counter() - t0, 1),

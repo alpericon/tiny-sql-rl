@@ -9,7 +9,7 @@ Each task is test-first: write the failing test → implement → `uv run pytest
 |---|---|---|---|
 | T1 | Repo skeleton | `pyproject.toml`, `src/tinysql/__init__.py`, `tests/`, `.gitignore`, `README.md` | `uv run pytest` runs (0 tests) |
 | T2 | Sandboxed read-only executor | `src/tinysql/executor.py`, `tests/test_executor.py` | Tests pass: SELECT works; INSERT/UPDATE/DROP/ATTACH/PRAGMA writes rejected; multiple statements rejected; DB file unchanged after a write attempt; infinite query times out; row cap enforced |
-| T3 | Result comparison | `src/tinysql/compare.py`, `tests/test_compare.py` | Order-insensitive multiset match by default; ordered match when gold SQL has `ORDER BY`; duplicates counted; column order respected |
+| T3 | Result comparison | `src/tinysql/compare.py`, `tests/test_compare.py` | Order-insensitive multiset match by default; ordered match when gold SQL has `ORDER BY`; duplicates counted; columns may be permuted (changed week 2 after review) |
 | T4 | Reward function | `src/tinysql/reward.py`, `tests/test_reward.py` | Extracts SQL from a fenced block; returns 1.0 / 0.1 / 0.0 per SPEC §5.2; `binary=True` mode for the ablation |
 | T5 | Spider loader + leakage filter | `src/tinysql/data.py`, `data/spokenspider_exclude.json`, `tests/test_data.py` | Exclusion list built from voice-to-sql `metadata.csv` (100 unique `(db_id, question)`); filter matches by content, not index; test asserts exactly 100 removed and none of them remain |
 | T6 | Schema serializer + prompt builder | `src/tinysql/prompt.py`, `tests/test_prompt.py` | `CREATE TABLE` text from a SQLite file; prompt length reported in tokens; a test fixture DB covers foreign keys |
