@@ -1,4 +1,9 @@
-"""Execution-result comparison (Spider-style execution accuracy)."""
+"""Execution-result comparison (Spider-style execution accuracy).
+
+Known limitation, shared with the official Spider EX metric: when the gold query is
+ordered, rows that tie on the ORDER BY key must appear in the same order as gold.
+A prediction that breaks ties differently scores as a mismatch.
+"""
 
 from __future__ import annotations
 
@@ -6,13 +11,20 @@ import re
 from collections import Counter
 
 _STRING_LITERAL = re.compile(r"'(?:[^']|'')*'|\"(?:[^\"]|\"\")*\"")
+_BRACKET_OR_BACKTICK_IDENT = re.compile(r"\[[^\]]*\]|`[^`]*`")
+_LINE_COMMENT = re.compile(r"--[^\n]*")
+_BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 _ORDER_BY = re.compile(r"\border\s+by\b", re.IGNORECASE)
+
+FLOAT_DECIMALS = 6
 
 
 def _normalise_value(v):
-    # 3 and 3.0 are the same answer; bool is not special in SQLite.
-    if isinstance(v, float) and v.is_integer():
-        return int(v)
+    # 3 and 3.0 are the same answer, and float noise (0.30000000000000004) is ignored.
+    if isinstance(v, float):
+        v = round(v, FLOAT_DECIMALS)
+        if v.is_integer():
+            return int(v)
     return v
 
 
@@ -33,6 +45,9 @@ def results_match(pred: list[tuple], gold: list[tuple], ordered: bool) -> bool:
 def gold_is_ordered(gold_sql: str) -> bool:
     """True if the *outermost* query has ORDER BY, so row order is part of the answer."""
     sql = _STRING_LITERAL.sub("''", gold_sql)
+    sql = _BRACKET_OR_BACKTICK_IDENT.sub("x", sql)
+    sql = _BLOCK_COMMENT.sub(" ", sql)
+    sql = _LINE_COMMENT.sub(" ", sql)
     depth = 0
     outer = []
     for ch in sql:

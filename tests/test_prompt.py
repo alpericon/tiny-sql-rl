@@ -72,3 +72,31 @@ def test_check_fits_raises_instead_of_truncating():
     check_fits(msgs, max_tokens=200, count_tokens=len)
     with pytest.raises(PromptTooLong):
         check_fits(msgs, max_tokens=50, count_tokens=len)
+
+
+def test_user_table_resembling_internal_name_is_kept(tmp_path):
+    path = tmp_path / "x.sqlite"
+    conn = sqlite3.connect(path)
+    conn.execute("CREATE TABLE SQLiteXstats (a INTEGER)")
+    conn.commit()
+    conn.close()
+    assert "SQLiteXstats" in serialize_schema(path)
+
+
+def test_views_are_included(tmp_path):
+    path = tmp_path / "v.sqlite"
+    conn = sqlite3.connect(path)
+    conn.executescript("CREATE TABLE t (a INTEGER); CREATE VIEW big_a AS SELECT a FROM t WHERE a > 1;")
+    conn.close()
+    assert "CREATE VIEW big_a" in serialize_schema(path)
+
+
+def test_newline_in_sample_value_cannot_escape_the_comment(tmp_path):
+    path = tmp_path / "n.sqlite"
+    conn = sqlite3.connect(path)
+    conn.execute("CREATE TABLE people (name TEXT)")
+    conn.execute("INSERT INTO people VALUES (?)", ("x\nDROP TABLE people;",))
+    conn.commit()
+    conn.close()
+    lines = serialize_schema(path, sample_rows=1).splitlines()
+    assert not any(line.startswith("DROP") for line in lines)

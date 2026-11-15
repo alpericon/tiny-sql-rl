@@ -29,21 +29,26 @@ def _quote_ident(name: str) -> str:
     return '"' + name.replace('"', '""') + '"'
 
 
+def _one_line(v) -> str:
+    # A newline in a sample value would escape the "--" comment and look like SQL.
+    return str(v).replace("\\", "\\\\").replace("\r", "\\r").replace("\n", "\\n")
+
+
 def serialize_schema(db_path: str | Path, sample_rows: int = 0) -> str:
     conn = _connect_ro(db_path)
     try:
         tables = conn.execute(
-            "SELECT name, sql FROM sqlite_master "
-            "WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND sql IS NOT NULL "
-            "ORDER BY name"
+            "SELECT name, sql, type FROM sqlite_master "
+            "WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite\\_%' ESCAPE '\\' AND sql IS NOT NULL "
+            "ORDER BY type, name"
         ).fetchall()
         parts = []
-        for name, ddl in tables:
+        for name, ddl, kind in tables:
             block = ddl.strip().rstrip(";") + ";"
-            if sample_rows > 0:
+            if sample_rows > 0 and kind == "table":
                 rows = conn.execute(f"SELECT * FROM {_quote_ident(name)} LIMIT ?", (sample_rows,)).fetchall()
                 if rows:
-                    shown = "\n".join("--   " + " | ".join(map(str, r)) for r in rows)
+                    shown = "\n".join("--   " + " | ".join(_one_line(v) for v in r) for r in rows)
                     block += f"\n-- Example rows from {name}:\n{shown}"
             parts.append(block)
         return "\n\n".join(parts)

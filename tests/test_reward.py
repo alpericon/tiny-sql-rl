@@ -73,3 +73,15 @@ def test_broken_gold_raises(db):
     # A gold query that does not run is a data bug, not a model failure.
     with pytest.raises(ValueError):
         sql_reward(wrap("SELECT 1"), "SELEC broken", db)
+
+
+def test_truncated_gold_raises(db):
+    big = "WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM c LIMIT 50) SELECT x FROM c"
+    with pytest.raises(ValueError):
+        sql_reward(wrap(big), big, db, max_rows=20)
+
+
+def test_truncated_prediction_cannot_get_full_reward(db):
+    gold = "WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM c LIMIT 20) SELECT x FROM c"
+    pred = "WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM c LIMIT 50) SELECT x FROM c"
+    assert sql_reward(wrap(pred), gold, db, max_rows=20) == 0.1

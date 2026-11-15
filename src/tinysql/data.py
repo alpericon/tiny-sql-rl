@@ -2,15 +2,20 @@
 
 The 100 SpokenSpider questions used in voice-to-sql come from Spider *train*.
 They must never be trained on, otherwise the voice evaluation (RQ3, RQ4) leaks.
-Matching is by (db_id, normalised question), never by index, so a re-ordered or
-re-downloaded Spider cannot silently break the filter.
+
+An example is excluded if it matches either
+- the same (db_id, normalised question), or
+- the same (db_id, normalised gold SQL): Spider pairs paraphrased questions with
+  identical SQL, and a paraphrase would leak the answer just as well.
+Matching is by content, never by index, so a re-ordered or re-downloaded Spider
+cannot silently break the filter. This is deliberately conservative.
 """
 
 from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 Key = tuple[str, str]
@@ -23,12 +28,17 @@ class Example:
     query: str
 
 
-def _norm(question: str) -> str:
-    return re.sub(r"\s+", " ", question).strip().lower()
+@dataclass
+class Exclusions:
+    questions: set[Key] = field(default_factory=set)
+    queries: set[Key] = field(default_factory=set)
+
+    def matches(self, e: Example) -> bool:
+        return (e.db_id, _norm(e.question)) in self.questions or (e.db_id, _norm(e.query)) in self.queries
 
 
-def _key(db_id: str, question: str) -> Key:
-    return (db_id, _norm(question))
+def _norm(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip().lower()
 
 
 def load_spider_split(path: str | Path) -> list[Example]:
@@ -36,18 +46,21 @@ def load_spider_split(path: str | Path) -> list[Example]:
     return [Example(r["db_id"], r["question"], r["query"]) for r in rows]
 
 
-def load_exclusions(path: str | Path) -> set[Key]:
+def load_exclusions(path: str | Path) -> Exclusions:
     rows = json.loads(Path(path).read_text(encoding="utf-8"))
-    return {_key(r["db_id"], r["question"]) for r in rows}
+    return Exclusions(
+        questions={(r["db_id"], _norm(r["question"])) for r in rows},
+        queries={(r["db_id"], _norm(r.get("sql") or r.get("query"))) for r in rows},
+    )
 
 
-def filter_leakage(examples: list[Example], exclusions: set[Key]) -> tuple[list[Example], list[Example]]:
+def filter_leakage(examples: list[Example], exclusions: Exclusions) -> tuple[list[Example], list[Example]]:
     kept, removed = [], []
     for e in examples:
-        (removed if _key(e.db_id, e.question) in exclusions else kept).append(e)
+        (removed if exclusions.matches(e) else kept).append(e)
     return kept, removed
 
 
-def assert_no_leakage(examples: list[Example], exclusions: set[Key]) -> None:
-    leaked = [e for e in examples if _key(e.db_id, e.question) in exclusions]
+def assert_no_leakage(examples: list[Example], exclusions: Exclusions) -> None:
+    leaked = [e for e in examples if exclusions.matches(e)]
     assert not leaked, f"{len(leaked)} SpokenSpider questions found in training data, e.g. {leaked[0]}"

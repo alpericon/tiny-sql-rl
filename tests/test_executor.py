@@ -105,3 +105,31 @@ def test_missing_db_is_not_created(tmp_path):
     res = execute_readonly(path, "SELECT 1")
     assert not res.ok
     assert not path.exists()
+
+
+# --- review fixes (CRITICAL / HIGH) ---------------------------------------
+
+
+def test_huge_blob_is_rejected_quickly(db):
+    import time
+
+    t = time.monotonic()
+    res = execute_readonly(db, "SELECT zeroblob(1000000000)", timeout_s=2)
+    assert not res.ok
+    assert time.monotonic() - t < 2
+
+
+def test_many_large_rows_hit_the_result_size_cap(db):
+    sql = (
+        "WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM c LIMIT 1000) "
+        "SELECT zeroblob(500000) FROM c"
+    )
+    res = execute_readonly(db, sql, timeout_s=5)
+    assert not res.ok
+    assert res.error.startswith("rejected")
+
+
+@pytest.mark.parametrize("sql", ["SELECT 1\x00", "SELECT '\ud800'"])
+def test_unencodable_sql_is_rejected_not_raised(db, sql):
+    res = execute_readonly(db, sql)
+    assert not res.ok

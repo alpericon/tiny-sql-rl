@@ -49,3 +49,20 @@ def test_mixed_types_do_not_crash_sorting():
 )
 def test_gold_is_ordered(sql, expected):
     assert gold_is_ordered(sql) is expected
+
+
+def test_float_noise_is_tolerated():
+    assert results_match([(0.30000000000000004,)], [(0.3,)], ordered=False)
+
+
+@pytest.mark.parametrize(
+    "sql",
+    [
+        "SELECT a FROM t -- order by a",
+        "SELECT a FROM t /* order by a */",
+        "SELECT [order by] FROM t",
+        "SELECT `order by` FROM t",
+    ],
+)
+def test_order_by_in_comments_or_identifiers_is_ignored(sql):
+    assert gold_is_ordered(sql) is False

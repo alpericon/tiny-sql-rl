@@ -5,7 +5,12 @@ Layers of defence (SPEC §5.2), any one of which blocks a write:
 2. An authorizer allows only reads: SELECT, column reads, functions, recursive CTEs.
    ATTACH, PRAGMA, DDL and DML are denied.
 3. Only a single statement is accepted (Python's ``execute`` also refuses more).
-A progress handler enforces a wall-clock timeout and ``fetchmany`` caps the rows.
+
+Resource limits, so a hostile query cannot stall or kill the trainer:
+- wall-clock timeout via a progress handler,
+- ``SQLITE_LIMIT_LENGTH`` caps any single string/blob (blocks ``zeroblob(1e9)``),
+- a row cap and a total result-size cap while fetching,
+- every exception is turned into ``ok=False``; this function never raises on model input.
 """
 
 from __future__ import annotations
@@ -21,6 +26,9 @@ _ALLOWED_ACTIONS = {
     sqlite3.SQLITE_FUNCTION,
     getattr(sqlite3, "SQLITE_RECURSIVE", 33),
 }
+
+MAX_VALUE_BYTES = 1_000_000  # largest single string/blob SQLite may build
+MAX_RESULT_BYTES = 64_000_000  # approximate total size of the fetched result
 
 
 @dataclass(frozen=True)
@@ -42,12 +50,32 @@ def _strip_trailing_semicolons(sql: str) -> str:
     return sql
 
 
+def _value_size(v) -> int:
+    if isinstance(v, (str, bytes)):
+        return len(v)
+    return 8
+
+
 def execute_readonly(
     db_path: str | Path,
     sql: str,
     timeout_s: float = 5.0,
     max_rows: int = 10_000,
 ) -> ExecResult:
+    try:
+        return _execute(db_path, sql, timeout_s, max_rows)
+    except Exception as exc:  # noqa: BLE001 - model input must never crash the caller
+        return ExecResult(False, None, f"internal: {type(exc).__name__}")
+
+
+def _execute(db_path, sql: str, timeout_s: float, max_rows: int) -> ExecResult:
+    if "\x00" in sql:
+        return ExecResult(False, None, "rejected: NUL character")
+    try:
+        sql.encode("utf-8")
+    except UnicodeEncodeError:
+        return ExecResult(False, None, "rejected: invalid unicode")
+
     sql = _strip_trailing_semicolons(sql)
     if not sql:
         return ExecResult(False, None, "rejected: empty")
@@ -75,12 +103,23 @@ def execute_readonly(
         return 0
 
     try:
+        conn.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, MAX_VALUE_BYTES)
         conn.set_authorizer(_authorizer)
         conn.set_progress_handler(_progress, 1000)
         cur = conn.execute(sql)
-        rows = cur.fetchmany(max_rows + 1)
-        truncated = len(rows) > max_rows
-        return ExecResult(True, [tuple(r) for r in rows[:max_rows]], None, truncated)
+
+        rows: list[tuple] = []
+        size = 0
+        truncated = False
+        for row in cur:
+            if len(rows) == max_rows:
+                truncated = True
+                break
+            size += sum(_value_size(v) for v in row)
+            if size > MAX_RESULT_BYTES:
+                return ExecResult(False, None, "rejected: result too large")
+            rows.append(tuple(row))
+        return ExecResult(True, rows, None, truncated)
     except sqlite3.ProgrammingError as exc:  # e.g. more than one statement
         return ExecResult(False, None, f"rejected: {exc}")
     except sqlite3.DatabaseError as exc:
