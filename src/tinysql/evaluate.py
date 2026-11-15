@@ -1,0 +1,91 @@
+"""Model-agnostic Spider evaluation (SPEC §5.4).
+
+``generate`` takes a batch of chat-message lists and returns one completion per item,
+so the same harness scores HF models, vLLM, llama.cpp or a fake in tests.
+"""
+
+from __future__ import annotations
+
+import statistics
+import time
+from collections.abc import Callable, Sequence
+from pathlib import Path
+
+from tinysql.compare import gold_is_ordered, results_match
+from tinysql.data import Example
+from tinysql.executor import execute_readonly
+from tinysql.prompt import build_messages, serialize_schema
+from tinysql.reward import extract_sql
+
+Messages = list[dict[str, str]]
+Generate = Callable[[list[Messages]], list[str]]
+
+# Evaluation is not a reward: allow large gold answers (e.g. wta_1 in dev) so all 1,034
+# dev questions can be scored, matching the standard Spider dev set.
+EVAL_MAX_ROWS = 200_000
+
+
+def evaluate(
+    examples: Sequence[Example],
+    database_dir: str | Path,
+    generate: Generate,
+    batch_size: int = 8,
+    sample_rows: int = 0,
+    timeout_s: float = 30.0,
+) -> tuple[list[dict], dict]:
+    database_dir = Path(database_dir)
+    schema_cache: dict[str, str] = {}
+
+    def db_path(db_id: str) -> Path:
+        return database_dir / db_id / f"{db_id}.sqlite"
+
+    def messages_for(e: Example) -> Messages:
+        if e.db_id not in schema_cache:
+            schema_cache[e.db_id] = serialize_schema(db_path(e.db_id), sample_rows=sample_rows)
+        return build_messages(schema_cache[e.db_id], e.question)
+
+    records: list[dict] = []
+    gen_seconds = 0.0
+    for start in range(0, len(examples), batch_size):
+        batch = list(examples[start : start + batch_size])
+        prompts = [messages_for(e) for e in batch]
+        t0 = time.perf_counter()
+        completions = generate(prompts)
+        gen_seconds += time.perf_counter() - t0
+        if len(completions) != len(batch):
+            raise ValueError(f"generate returned {len(completions)} completions for {len(batch)} prompts")
+
+        for e, msgs, completion in zip(batch, prompts, completions):
+            pred_sql = extract_sql(completion)
+            rec = {
+                "db_id": e.db_id,
+                "question": e.question,
+                "gold": e.query,
+                "completion": completion,
+                "pred_sql": pred_sql,
+                "prompt_chars": sum(len(m["content"]) for m in msgs),
+                "format_ok": pred_sql is not None,
+                "exec_ok": False,
+                "match": False,
+                "error": None,
+            }
+            if pred_sql is not None:
+                gold = execute_readonly(db_path(e.db_id), e.query, timeout_s=timeout_s, max_rows=EVAL_MAX_ROWS)
+                pred = execute_readonly(db_path(e.db_id), pred_sql, timeout_s=timeout_s, max_rows=EVAL_MAX_ROWS)
+                rec["exec_ok"] = pred.ok
+                rec["error"] = pred.error if not pred.ok else (None if gold.ok else f"gold: {gold.error}")
+                if pred.ok and gold.ok and not pred.truncated and not gold.truncated:
+                    rec["match"] = results_match(pred.rows, gold.rows, ordered=gold_is_ordered(e.query))
+            records.append(rec)
+
+    n = len(records)
+    summary = {
+        "n": n,
+        "execution_accuracy": sum(r["match"] for r in records) / n if n else 0.0,
+        "format_failure_rate": sum(not r["format_ok"] for r in records) / n if n else 0.0,
+        "execution_error_rate": sum(r["format_ok"] and not r["exec_ok"] for r in records) / n if n else 0.0,
+        "max_prompt_chars": max((r["prompt_chars"] for r in records), default=0),
+        "median_prompt_chars": statistics.median([r["prompt_chars"] for r in records]) if records else 0,
+        "generation_seconds_total": round(gen_seconds, 2),
+    }
+    return records, summary
