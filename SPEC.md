@@ -108,7 +108,7 @@ Multi-turn conversations, PPO, training-data generation with frontier models, BI
 
 ## 12. Decisions (after Week 1 baselines, 2026-11-15)
 
-4. **Base model: under re-review.** Qwen3-1.7B was first chosen from a table that turned out to be confounded: the Qwen2.5-Coder models ran with their shipped `repetition_penalty` (1.05 / 1.1) and the comparison rejected permuted columns. After both fixes (commit b8cb79f) the two 1.5B-class models are statistically tied (paired McNemar p = 0.82; 157 vs 152 questions only one model solves).
+4. **Base model: `Qwen/Qwen3-1.7B`** (thinking disabled), re-confirmed by the user on the corrected table: tied on EX with Coder-1.5B, but ~35% shorter completions (faster GRPO on the laptop), fewer execution errors, and a baseline not inflated by format/truncation failures. It was first chosen from a table that turned out to be confounded: the Qwen2.5-Coder models ran with their shipped `repetition_penalty` (1.05 / 1.1) and the comparison rejected permuted columns. After both fixes (commit b8cb79f) the two 1.5B-class models are statistically tied (paired McNemar p = 0.82; 157 vs 152 questions only one model solves).
 5. **No SFT warm-up:** all format-failure rates are below the 20% threshold. Qwen3 failures are mostly bare SQL without a fence; Coder-1.5B failures are mostly prose explanations, about half cut off at 256 tokens. The format reward handles both.
 
 Zero-shot Spider dev (all 1,034 questions, nf4 4-bit, greedy with `repetition_penalty=1.0` for every model, `max_new_tokens=256`, column-permutation-tolerant EX; source: `results/baseline_*.json`):

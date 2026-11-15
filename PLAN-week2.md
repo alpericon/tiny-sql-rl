@@ -4,7 +4,7 @@
 
 Goal of the week: a QLoRA GRPO run on **Qwen3-1.7B** (SPEC §12) that **beats its own zero-shot EX on a fixed 200-question dev subset**, with VRAM headroom and reward-hacking checks logged.
 
-Baseline to beat: 50.7% EX on full dev. The dev-200 baseline is read from the existing `results/baseline_Qwen__Qwen3-1.7B.records.jsonl`, so no re-run is needed.
+Baseline to beat: 53.7% EX on full dev; **55.0% on dev-200** (`results/dev200_Qwen__Qwen3-1.7B.json`). The dev-200 baseline is re-run with the same command as the checkpoints: with 4-bit weights, batch composition alone changed 28/200 greedy completions and 3 matches, so differences under ~1.5 pp are noise.
 
 Same rules as week 1:
 - CPU tasks are test-first.
@@ -33,7 +33,7 @@ Same rules as week 1:
 | W1 | GRPO dataset builder | `src/tinysql/grpo_data.py`, `tests/test_grpo_data.py` | Turns `data/train_filtered.json` (6,890) into records with `prompt` (chat messages), `db_path` and `gold`. Test: no SpokenSpider example present, every db_path exists, prompt matches `build_messages` exactly. |
 | W2 | TRL reward adapter | `src/tinysql/grpo_reward.py`, `tests/test_grpo_reward.py` | `reward_fn(prompts, completions, db_path, gold, **kw) -> list[float]` handles both conversational and plain-string completions. Never raises on model output. Raises loudly on a failing gold. Tests cover all SPEC §5.2 outcomes and batch alignment. |
 | — | **Review gate** (CPU core of week 2) | | Reviewer approves, or findings are fixed |
-| W3 | Fixed dev-200 subset + adapter eval | `scripts/make_dev_subset.py`, `data/dev200_ids.json`, `scripts/eval_baseline.py --adapter` | Subset is seeded and committed. Baseline EX on it is computed from the existing records. Eval loads a LoRA adapter on the same 4-bit base and uses the same prompt and greedy decoding. |
+| W3 | Fixed dev-200 subset + adapter eval | `scripts/make_dev_subset.py`, `data/dev200_ids.json`, `scripts/eval_baseline.py --adapter` | Subset is seeded and committed. Baseline re-run with the same command as checkpoints (see above). Eval loads a LoRA adapter on the same 4-bit base and uses the same prompt and greedy decoding. |
 | W4 | Training script + 50-step pre-flight | `scripts/train_grpo.py`, `configs/grpo_qwen3_1p7b.yaml` | 50 steps run without OOM. Logged: peak VRAM, seconds/step, GPU temperature, mean reward, completion length. Full-run time is extrapolated from these. |
 | W5 | Main GRPO run | `checkpoints/` (git-ignored), `results/train_log_*.csv` | Reward curve rises. Checkpoint every 100 steps, and the run resumes from a checkpoint after an interruption. |
 | W6 | Checkpoint selection on dev-200 | `results/dev200_*.json` | EX per checkpoint. **The best checkpoint beats the baseline on dev-200.** Only the best one goes to full dev in week 3. |

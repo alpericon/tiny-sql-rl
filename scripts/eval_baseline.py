@@ -19,6 +19,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 from tinysql.data import load_spider_split
 from tinysql.evaluate import evaluate
+from tinysql.subset import load_subset
 
 ROOT = Path(__file__).resolve().parents[1]
 SPIDER = ROOT / "data" / "spider"
@@ -32,6 +33,9 @@ def main():
     ap.add_argument("--max-new-tokens", type=int, default=256)
     ap.add_argument("--max-prompt-tokens", type=int, default=3072)
     ap.add_argument("--no-4bit", action="store_true")
+    ap.add_argument("--subset", type=Path, default=None, help="ids file, e.g. data/dev200_ids.json")
+    ap.add_argument("--adapter", type=Path, default=None, help="LoRA adapter dir (GRPO checkpoint)")
+    ap.add_argument("--tag", default=None, help="output name; default derives from model/adapter/subset")
     args = ap.parse_args()
 
     assert torch.cuda.is_available(), "CUDA not available: is the CPU torch wheel installed?"
@@ -46,6 +50,10 @@ def main():
     model = AutoModelForCausalLM.from_pretrained(
         args.model, quantization_config=quant, dtype=torch.bfloat16, device_map="cuda:0"
     )
+    if args.adapter is not None:
+        from peft import PeftModel
+
+        model = PeftModel.from_pretrained(model, str(args.adapter))
     model.eval()
 
     prompt_tokens: list[int] = []
@@ -87,7 +95,10 @@ def main():
             hit_limit.append(len(row) == args.max_new_tokens and not any(t in stop_ids for t in row))
         return tok.batch_decode(new, skip_special_tokens=True)
 
-    dev = load_spider_split(SPIDER / "dev.json")[: args.limit]
+    dev = load_spider_split(SPIDER / "dev.json")
+    if args.subset is not None:
+        dev = load_subset(dev, json.loads(args.subset.read_text(encoding="utf-8")))
+    dev = dev[: args.limit]
     torch.cuda.reset_peak_memory_stats()
     t0 = time.perf_counter()
     records, summary = evaluate(dev, SPIDER / "database", generate, batch_size=args.batch_size)
@@ -98,6 +109,8 @@ def main():
         decoding="greedy, repetition_penalty=1.0",
         hit_max_new_tokens_rate=sum(hit_limit) / len(hit_limit),
         model=args.model,
+        adapter=str(args.adapter) if args.adapter else None,
+        subset=str(args.subset) if args.subset else None,
         quantization="none" if args.no_4bit else "nf4-4bit",
         wall_seconds=round(time.perf_counter() - t0, 1),
         max_prompt_tokens=max(prompt_tokens),
@@ -106,11 +119,17 @@ def main():
         limit=args.limit,
     )
 
-    tag = args.model.replace("/", "__") + (f"_limit{args.limit}" if args.limit else "")
+    tag = args.tag or (
+        ("dev200" if args.subset else "baseline")
+        + "_"
+        + args.model.replace("/", "__")
+        + (f"_{args.adapter.parent.name}-{args.adapter.name}" if args.adapter else "")
+        + (f"_limit{args.limit}" if args.limit else "")
+    )
     out_dir = ROOT / "results"
     out_dir.mkdir(exist_ok=True)
-    (out_dir / f"baseline_{tag}.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
-    with (out_dir / f"baseline_{tag}.records.jsonl").open("w", encoding="utf-8") as f:
+    (out_dir / f"{tag}.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
+    with (out_dir / f"{tag}.records.jsonl").open("w", encoding="utf-8") as f:
         for r in records:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
     print(json.dumps(summary, indent=1))

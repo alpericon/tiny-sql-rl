@@ -1,0 +1,20 @@
+{
+ "n": 200,
+ "execution_accuracy": 0.55,
+ "format_failure_rate": 0.065,
+ "execution_error_rate": 0.105,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 130.8,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "hit_max_new_tokens_rate": 0.02,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": null,
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 152.7,
+ "max_prompt_tokens": 922,
+ "peak_vram_gib": 2.49,
+ "max_new_tokens": 256,
+ "limit": null
+}
