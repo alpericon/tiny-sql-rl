@@ -9,3 +9,5 @@ data/spider/
 checkpoints/
 wandb/
 *.db
+data/train_filtered.json
+data/dev_clean.json

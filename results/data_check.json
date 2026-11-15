@@ -1,0 +1,87 @@
+{
+ "train_total": 7000,
+ "spokenspider_first100_match_train_spider_json_order": 100,
+ "leakage_removed": 101,
+ "leakage_removed_beyond_index_99": 1,
+ "leakage_removed_index_range": [
+  0,
+  100
+ ],
+ "train_gold_failed": 9,
+ "train_final": 6890,
+ "dev_total": 1034,
+ "dev_gold_failed": 2,
+ "dev_final": 1032,
+ "gold_failure_reasons": {
+  "sql_error": 3,
+  "truncated": 8
+ },
+ "failed_examples": [
+  {
+   "db_id": "assets_maintenance",
+   "question": "What is the description of the type of the company who concluded its contracts most recently?",
+   "query": "SELECT T1.company_name FROM Third_Party_Companies AS T1 JOIN Maintenance_Contracts AS T2 ON T1.company_id  =  T2.maintenance_contract_company_id JOIN Ref_Company_Types AS T3 ON T1.company_type_code  =  T3.company_type_code ORDER BY T2.contract_end_date DESC LIMIT 1",
+   "error": "sql_error: no such table: Ref_Company_Types"
+  },
+  {
+   "db_id": "baseball_1",
+   "question": "Find the players' first name and last name who won award both in 1960 and in 1961.",
+   "query": "SELECT T1.name_first , T1.name_last FROM player AS T1 JOIN player_award AS T2 WHERE T2.year  =  1960 INTERSECT SELECT T1.name_first , T1.name_last FROM player AS T1 JOIN player_award AS T2 WHERE T2.year  =  1961",
+   "error": "truncated"
+  },
+  {
+   "db_id": "baseball_1",
+   "question": "Which players won awards in both 1960 and 1961? Return their first names and last names.",
+   "query": "SELECT T1.name_first , T1.name_last FROM player AS T1 JOIN player_award AS T2 WHERE T2.year  =  1960 INTERSECT SELECT T1.name_first , T1.name_last FROM player AS T1 JOIN player_award AS T2 WHERE T2.year  =  1961",
+   "error": "truncated"
+  },
+  {
+   "db_id": "baseball_1",
+   "question": "List players' first name and last name who have weight greater than 220 or height shorter than 75.",
+   "query": "SELECT name_first ,  name_last FROM player WHERE weight  >  220 OR height  <  75",
+   "error": "truncated"
+  },
+  {
+   "db_id": "baseball_1",
+   "question": "What are the first name and last name of the players who have weight above 220 or height below 75?",
+   "query": "SELECT name_first ,  name_last FROM player WHERE weight  >  220 OR height  <  75",
+   "error": "truncated"
+  },
+  {
+   "db_id": "document_management",
+   "question": "Find the list of documents that are both in the most three popular type and have the most three popular structure.",
+   "query": "SELECT document_name FROM documents GROUP BY document_type_code ORDER BY count(*) DESC LIMIT 3 INTERSECT SELECT document_name FROM documents GROUP BY document_structure_code ORDER BY count(*) DESC LIMIT 3",
+   "error": "sql_error: ORDER BY clause should come after INTERSECT not before"
+  },
+  {
+   "db_id": "document_management",
+   "question": "What are the names of documents that have both one of the three most common types and one of three most common structures?",
+   "query": "SELECT document_name FROM documents GROUP BY document_type_code ORDER BY count(*) DESC LIMIT 3 INTERSECT SELECT document_name FROM documents GROUP BY document_structure_code ORDER BY count(*) DESC LIMIT 3",
+   "error": "sql_error: ORDER BY clause should come after INTERSECT not before"
+  },
+  {
+   "db_id": "flight_4",
+   "question": "Find the id of routes whose source and destination airports are in the United States.",
+   "query": "SELECT rid FROM routes WHERE dst_apid IN (SELECT apid FROM airports WHERE country  =  'United States') AND src_apid IN (SELECT apid FROM airports WHERE country  =  'United States')",
+   "error": "truncated"
+  },
+  {
+   "db_id": "flight_4",
+   "question": "What is the id of the routes whose source and destination airports are in the United States?",
+   "query": "SELECT rid FROM routes WHERE dst_apid IN (SELECT apid FROM airports WHERE country  =  'United States') AND src_apid IN (SELECT apid FROM airports WHERE country  =  'United States')",
+   "error": "truncated"
+  },
+  {
+   "db_id": "wta_1",
+   "question": "List the first and last name of all players in the order of birth date.",
+   "query": "SELECT first_name ,  last_name FROM players ORDER BY birth_date",
+   "error": "truncated"
+  },
+  {
+   "db_id": "wta_1",
+   "question": "What are the full names of all players, sorted by birth date?",
+   "query": "SELECT first_name ,  last_name FROM players ORDER BY birth_date",
+   "error": "truncated"
+  }
+ ]
+}
