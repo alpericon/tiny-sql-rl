@@ -8,3 +8,4 @@ data/spider/
 !tests/fixtures/*.sqlite
 checkpoints/
 wandb/
+*.db
