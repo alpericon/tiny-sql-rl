@@ -12,6 +12,8 @@ uv venv --python 3.12 "$VENV"
 # Unsloth pins compatible torch / transformers / trl / peft / bitsandbytes versions.
 uv pip install --python "$VENV/bin/python" unsloth
 uv pip install --python "$VENV/bin/python" vllm || echo "WARN: vllm install failed; GRPO will fall back to HF generation"
+# vLLM >= 0.28 moved bitsandbytes (4-bit) loading out of tree; Unsloth fast_inference needs it.
+uv pip install --python "$VENV/bin/python" vllm-bnb-plugin || echo "WARN: vllm-bnb-plugin install failed"
 uv pip install --python "$VENV/bin/python" -e "$REPO" pytest
 
 "$VENV/bin/python" - <<'EOF'
