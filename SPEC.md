@@ -108,15 +108,17 @@ Multi-turn conversations, PPO, training-data generation with frontier models, BI
 
 ## 12. Decisions (after Week 1 baselines, 2026-11-15)
 
-4. **Base model: `Qwen/Qwen3-1.7B`** (thinking disabled), chosen by the user from the zero-shot table below. Highest EX, lowest execution-error rate, fastest generation; fits 8 GB with room for GRPO.
-5. **No SFT warm-up:** all format-failure rates are below the 20% threshold. Failures are bare SQL without a fence (Qwen3) or explanations cut off at 256 tokens (Coder-1.5B); the format reward handles both.
+4. **Base model: under re-review.** Qwen3-1.7B was first chosen from a table that turned out to be confounded: the Qwen2.5-Coder models ran with their shipped `repetition_penalty` (1.05 / 1.1) and the comparison rejected permuted columns. After both fixes (commit b8cb79f) the two 1.5B-class models are statistically tied (paired McNemar p = 0.82; 157 vs 152 questions only one model solves).
+5. **No SFT warm-up:** all format-failure rates are below the 20% threshold. Qwen3 failures are mostly bare SQL without a fence; Coder-1.5B failures are mostly prose explanations, about half cut off at 256 tokens. The format reward handles both.
 
-Zero-shot Spider dev (all 1,034 questions, nf4 4-bit, greedy, `max_new_tokens=256`; source: `results/baseline_*.json`):
+Zero-shot Spider dev (all 1,034 questions, nf4 4-bit, greedy with `repetition_penalty=1.0` for every model, `max_new_tokens=256`, column-permutation-tolerant EX; source: `results/baseline_*.json`):
 
-| Model | EX | Format fail | Exec error | Peak VRAM | Wall time |
-|---|---|---|---|---|---|
-| Qwen3-1.7B | **50.7%** | 4.9% | 12.6% | 2.5 GiB | 14 min |
-| Qwen2.5-Coder-1.5B-Instruct | 47.2% | 8.7% | 25.3% | 1.8 GiB | 21 min |
-| Qwen2.5-Coder-0.5B-Instruct | 39.7% | 0.5% | 38.6% | 0.8 GiB | 9 min |
+| Model | EX | EX when format OK | Format fail | Hit 256 tokens | Exec error | Peak VRAM | Wall time |
+|---|---|---|---|---|---|---|---|
+| Qwen2.5-Coder-1.5B-Instruct | **54.2%** | 59.4% | 8.8% | 9.4% | 18.9% | 1.8 GiB | 20 min |
+| Qwen3-1.7B | **53.7%** | 56.5% | 4.9% | 1.5% | 12.6% | 2.5 GiB | 14 min |
+| Qwen2.5-Coder-0.5B-Instruct | 43.1% | | 1.7% | 1.6% | 34.7% | 0.8 GiB | 9 min |
 
-Max prompt length: 930 tokens (no truncation). Two dev gold queries fail in the sandbox, so EX is capped at 99.8% on the raw 1,034. The reported dev numbers use the raw set for comparability with published Spider dev EX.
+Mean completion length: 242 chars (Coder-1.5B) vs 158 chars (Qwen3).
+
+Max prompt length: 930 tokens (no truncation). Two dev gold queries fail in the sandbox, so EX is capped at 99.8% on the raw 1,034. EX accepts permuted columns, like the official Spider / test-suite metrics, but compares rows as a multiset rather than a set; it is close to, not identical with, published Spider dev EX.
