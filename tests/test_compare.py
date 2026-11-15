@@ -111,3 +111,15 @@ def test_wide_result_does_not_blow_up():
     gold = [tuple([1] * 12)]
     pred = [tuple([1] * 11 + [2])]
     assert not results_match(pred, gold, ordered=False)
+
+
+def test_adversarial_wide_result_is_fast():
+    # Reviewer repro: gold has identical columns, pred has distinct columns with the same bags.
+    import time
+
+    width, n = 10, 10_000
+    gold = [tuple([i] * width) for i in range(n)]
+    pred = [tuple((i + k) % n for k in range(width)) for i in range(n)]
+    t0 = time.perf_counter()
+    assert not results_match(pred, gold, ordered=False)
+    assert time.perf_counter() - t0 < 1.0

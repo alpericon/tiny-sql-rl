@@ -80,7 +80,9 @@ def main():
             pad_token_id=tok.pad_token_id,
         )
         new = out[:, enc["input_ids"].shape[1]:]
-        stop_ids = {tok.eos_token_id, tok.pad_token_id, *(model.generation_config.eos_token_id or [])}
+        cfg_eos = model.generation_config.eos_token_id
+        cfg_eos = cfg_eos if isinstance(cfg_eos, (list, tuple)) else [cfg_eos]  # int for some models
+        stop_ids = {t for t in (tok.eos_token_id, tok.pad_token_id, *cfg_eos) if t is not None}
         for row in new.tolist():
             hit_limit.append(len(row) == args.max_new_tokens and not any(t in stop_ids for t in row))
         return tok.batch_decode(new, skip_special_tokens=True)

@@ -93,6 +93,12 @@ def results_match(pred: list[tuple], gold: list[tuple], ordered: bool) -> bool:
         return False
     if len(pred_n[0]) != len(gold_n[0]) or len(gold_n[0]) < 2:
         return False
+    # Necessary condition, invariant under column permutation: each row's bag of values.
+    # Cheap to check and rules out almost every non-match before the mapping search.
+    pred_sig = [frozenset(Counter(r).items()) for r in pred_n]
+    gold_sig = [frozenset(Counter(r).items()) for r in gold_n]
+    if (pred_sig != gold_sig) if ordered else (Counter(pred_sig) != Counter(gold_sig)):
+        return False
     for m in _column_mappings(pred_n, gold_n):
         if _rows_equal([tuple(r[i] for i in m) for r in pred_n], gold_n, ordered):
             return True
