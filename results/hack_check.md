@@ -29,19 +29,22 @@ The top 20 (deduplicated) were read by hand → `results/hack_check_top20.txt`.
 | 8, 17–19 | Correct result, with redundant filters (`IS NOT NULL`, `> 0`) that do not change it on this DB. |
 
 **12 of 20 are wrong queries that earned full reward, and every one of them is the same
-exploit: the gold result is empty, so any query that returns nothing matches it.**
+exploit: the gold result is empty, so any query that returns nothing matches it.** They come from only 5 distinct prompts; 7 of the 12 are the same college_2 question.
 
-No other exploit was found:
+No other exploit was found among the flagged candidates. This is not an exhaustive search: the
+ranking puts empty-gold cases first, and the ~430 unflagged full-reward samples were not read.
+Across all 480 full-reward samples:
 - no literal-only or FROM-less queries;
 - no matches on a single 0/1 gold answer;
 - no truncation tricks;
-- every wrong-but-rewarded case is empty-gold.
+- 13 read different tables than the gold query. The ones read by hand were correct or empty-gold.
 
 ## How big is it
 
 - 252 of 6,890 training examples (3.7%) have an empty gold result. In the sample, 32 of 480
   full rewards (6.7%) came from them.
-- No sign that the policy *learned* to exploit it:
+- No evidence that the policy *learned* to exploit it. The evidence is indirect, and no base-model
+  rollout sample exists to compare the 6.7% against:
   - training reward stayed flat;
   - the redundant-filter habit did not grow (dev-200 greedy, mean `AND` per query: 0.23 base → 0.15 ckpt-1000;
     `IS NOT NULL`: 3 → 1).
