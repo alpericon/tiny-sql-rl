@@ -28,6 +28,10 @@ def paired_summary(base: list[dict], cand: list[dict]) -> dict:
     """EX of both, discordant counts, where the wins came from, and the candidate's error breakdown."""
     if len(base) != len(cand):
         raise ValueError(f"records not aligned: {len(base)} vs {len(cand)}")
+    for i, (b, c) in enumerate(zip(base, cand)):
+        key = ("db_id", "question", "gold")
+        if any(b.get(k) != c.get(k) for k in key):
+            raise ValueError(f"records not aligned at row {i}: {[b.get(k) for k in key]} vs {[c.get(k) for k in key]}")
     errors = ("format_fail", "exec_error", "wrong_result")
     wins = [b for b, c in zip(base, cand) if c["match"] and not b["match"]]
     losses = sum(b["match"] and not c["match"] for b, c in zip(base, cand))

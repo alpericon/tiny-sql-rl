@@ -34,3 +34,10 @@ def test_paired_summary_counts_and_breakdown():
 def test_paired_summary_rejects_unaligned():
     with pytest.raises(ValueError):
         paired_summary([{"match": True}], [])
+
+
+def test_paired_summary_rejects_misordered_questions():
+    a = {"match": True, "format_ok": True, "exec_ok": True, "db_id": "d", "question": "q1", "gold": "G"}
+    b = dict(a, question="q2")
+    with pytest.raises(ValueError):
+        paired_summary([a, b], [b, a])

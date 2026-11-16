@@ -17,7 +17,7 @@ Sources:
 - `results/baseline_Qwen__Qwen3-1.7B.json`
 - `results/baseline_Qwen__Qwen3-1.7B_main-checkpoint-1000.json`
 
-**+3.4pp, significant.** The 54 wins break down by the base model's outcome on the same question:
+**+3.4pp, significant for this run.** This is a single training run with one seed: McNemar covers the noise from which dev questions were sampled, not run-to-run training variance. The 54 wins break down by the base model's outcome on the same question:
 - 29 were format failures;
 - 10 were execution errors;
 - 15 were wrong results.
@@ -27,3 +27,12 @@ overstated the format share. Some fixed format failures became wrong results ins
 wrong results rose from 298 to 313.
 
 Rows for v2 and v2-binary follow in X5.
+
+## Caveat for the v2 comparison (from the X1–X2 review)
+
+The v2 filter drops questions the base model solves 0/8 or 8/8, so v2 trains on a smaller,
+mid-difficulty subset of train. v2 vs main is therefore confounded:
+- by dataset size and composition, not only by learning-signal density;
+- by the pass rates being measured on the base model while the policy drifts during training.
+
+X5 reports the kept fraction and the pass-rate histogram next to the result.
