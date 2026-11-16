@@ -11,6 +11,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from tinysql.data import Example, Exclusions, assert_no_leakage
+from tinysql.executor import execute_readonly
 from tinysql.prompt import build_messages, serialize_schema
 
 
@@ -19,7 +20,10 @@ def build_grpo_records(
     database_dir: str | Path,
     exclusions: Exclusions,
     sample_rows: int = 0,
+    drop_empty_gold: bool = False,
 ) -> list[dict]:
+    """drop_empty_gold: skip examples whose gold query returns no rows. Against an empty gold
+    answer any query that returns nothing scores 1.0, so those examples reward wrong SQL (W7)."""
     # Defence in depth: the input should already be filtered, but never train on SpokenSpider.
     assert_no_leakage(list(examples), exclusions)
 
@@ -32,6 +36,10 @@ def build_grpo_records(
             if not db_path.is_file():
                 raise FileNotFoundError(db_path)
             schemas[e.db_id] = serialize_schema(db_path, sample_rows=sample_rows)
+        if drop_empty_gold:
+            gold = execute_readonly(db_path, e.query)
+            if gold.ok and not gold.rows:  # a failing gold is kept so the reward raises loudly
+                continue
         records.append(
             {
                 "prompt": build_messages(schemas[e.db_id], e.question),

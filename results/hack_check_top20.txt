@@ -1,0 +1,102 @@
+reward distribution: Counter({1.0: 480, 0.1: 259, 0.0: 61})
+reward-1.0 flag counts: Counter({'gold-empty': 32, 'tables-differ': 13}) of 480
+
+#1 [gold-empty, tables-differ] scientist_1 | Question: Find the name of the scientist who worked on both a project named 'Matter of Time' and a project named 'A Puzzling Parallax'.
+  gold: SELECT T3.name FROM assignedto AS T1 JOIN projects AS T2 ON T1.project = T2.code JOIN scientists AS T3 ON T1.scientist = T3.SSN WHERE T2.name = 'Matter of Time' INTERSECT SELECT T3.name FROM assignedto AS T1 JOIN projects AS T2 ON T1.project = T2.code JOIN scientists AS T3 ON T1.scientist = T3.SSN WHERE T2.name = 'A Puzzling Parallax'
+  pred: SELECT s.Name FROM Scientists s WHERE s.SSN IN ( SELECT a.Scientist FROM AssignedTo a WHERE a.Project = 'Matter of Time' ) AND s.SSN IN ( SELECT a.Scientist FROM AssignedTo a WHERE a.Project = 'A Puzzling Parallax' );
+  gold rows: []
+
+#2 [gold-empty, tables-differ] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT s.name FROM student s WHERE s.ID IN ( SELECT t.ID FROM takes t WHERE t.course_id = 'International Finance' AND t.grade IS NOT NULL );
+  gold rows: []
+
+#3 [gold-empty, tables-differ] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT s.name FROM student s WHERE s.ID IN ( SELECT t.ID FROM takes t WHERE t.course_id = 'International Finance' AND t.sec_id = ( SELECT p.prereq_id FROM prereq p WHERE p.course_id = 'International Finance' ) );
+  gold rows: []
+
+#4 [gold-empty, tables-differ] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT student.name FROM student WHERE student.ID IN ( SELECT takes.ID FROM takes WHERE takes.course_id = ( SELECT course.course_id FROM course WHERE course.title = 'International Finance' ) );
+  gold rows: []
+
+#5 [gold-empty, tables-differ] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT s.name FROM student s WHERE s.ID IN ( SELECT t.ID FROM takes t WHERE t.course_id = (SELECT c.course_id FROM course c WHERE c.title = 'International Finance') AND t.semester = 'Fall' AND t.year = 2023 );
+  gold rows: []
+
+#6 [gold-empty, tables-differ] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT s.name FROM student s WHERE s.ID IN ( SELECT t.ID FROM takes t WHERE t.course_id = 'course_id' AND t.sec_id = 'sec_id' AND t.semester = 'Fall' AND t.year = 2023 AND t.grade IN ('A', 'B', 'C', 'D', 'F') );
+  gold rows: []
+
+#7 [gold-empty] store_product | Question: Find all the stores in the district with the most population.
+  gold: SELECT t1.store_name FROM store AS t1 JOIN store_district AS t2 ON t1.store_id = t2.store_id WHERE district_id = (SELECT district_id FROM district ORDER BY city_population DESC LIMIT 1)
+  pred: SELECT s.Store_ID, s.Store_Name, s.Type, s.Area_size, s.Number_of_product_category, s.Ranking FROM store s JOIN store_district sd ON s.Store_ID = sd.Store_ID JOIN district d ON sd.District_ID = d.District_ID WHERE d.District_name = ( SELECT DISTINCT District_name FROM district ORDER BY District_name LIMIT 1 );
+  gold rows: []
+
+#8 [tables-differ] company_employee | Question: List the names of people that are not employed by any company
+  gold: SELECT Name FROM people WHERE People_ID NOT IN (SELECT People_ID FROM employment)
+  pred: SELECT "people"."Name" FROM "people" WHERE "people"."People_ID" NOT IN (SELECT "People_ID" FROM "employment" WHERE "employment"."Company_ID" IN (SELECT "Company_ID" FROM "company"))
+  gold rows: [('David Butler',), ('Tim Naegeli',)]
+
+#9 [gold-empty] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT s.name FROM student s JOIN takes t ON s.ID = t.ID JOIN course c ON t.course_id = c.course_id JOIN prereq pr ON c.course_id = pr.course_id WHERE c.title = 'International Finance';
+  gold rows: []
+
+#10 [gold-empty] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT s.name FROM student s JOIN takes t ON s.ID = t.ID JOIN course c ON t.course_id = c.course_id JOIN prereq pr ON t.course_id = pr.course_id WHERE c.title = 'International Finance';
+  gold rows: []
+
+#11 [gold-empty] store_product | Question: Find all the stores in the district with the most population.
+  gold: SELECT t1.store_name FROM store AS t1 JOIN store_district AS t2 ON t1.store_id = t2.store_id WHERE district_id = (SELECT district_id FROM district ORDER BY city_population DESC LIMIT 1)
+  pred: SELECT s.Store_Name FROM store s JOIN store_district sd ON s.Store_ID = sd.Store_ID JOIN district d ON sd.District_ID = d.District_ID WHERE d.District_ID = (SELECT District_ID FROM district ORDER BY City_Population DESC LIMIT 1)
+  gold rows: []
+
+#12 [gold-empty] inn_1 | Question: Return the number of kids for the room reserved and checked in by DAMIEN TRACHSEL on  Sep 21, 2010.
+  gold: SELECT Kids FROM Reservations WHERE CheckIn = "2010-09-21" AND FirstName = "DAMIEN" AND LastName = "TRACHSEL";
+  pred: SELECT Kids FROM Reservations WHERE LastName = 'TRACHSEL' AND FirstName = 'DAMIEN' AND CheckIn = 'Sep 21, 2010';
+  gold rows: []
+
+#13 [gold-empty] inn_1 | Question: Return the number of kids for the room reserved and checked in by DAMIEN TRACHSEL on  Sep 21, 2010.
+  gold: SELECT Kids FROM Reservations WHERE CheckIn = "2010-09-21" AND FirstName = "DAMIEN" AND LastName = "TRACHSEL";
+  pred: SELECT Kids FROM Reservations WHERE LastName = 'DAMIEN' AND FirstName = 'TRACHSEL' AND CheckIn = 'Sep 21, 2010';
+  gold rows: []
+
+#14 [gold-empty] inn_1 | Question: Return the number of kids for the room reserved and checked in by DAMIEN TRACHSEL on  Sep 21, 2010.
+  gold: SELECT Kids FROM Reservations WHERE CheckIn = "2010-09-21" AND FirstName = "DAMIEN" AND LastName = "TRACHSEL";
+  pred: SELECT Kids FROM Reservations WHERE LastName = 'DAMIEN' AND FirstName = 'TRACHSEL' AND CheckIn = 'Sep 21, 2010';
+  gold rows: []
+
+#15 [gold-empty] hr_1 | Question: What are the emails of employees with null commission, salary between 7000 and 12000, and who work in department 50?
+  gold: SELECT email FROM employees WHERE commission_pct = "null" AND salary BETWEEN 7000 AND 12000 AND department_id = 50
+  pred: SELECT EMAIL FROM employees WHERE COMMISSION_PCT IS NULL AND SALARY BETWEEN 7000 AND 12000 AND DEPARTMENT_ID = 50;
+  gold rows: []
+
+#16 [gold-empty] hr_1 | Question: What are the emails of employees with null commission, salary between 7000 and 12000, and who work in department 50?
+  gold: SELECT email FROM employees WHERE commission_pct = "null" AND salary BETWEEN 7000 AND 12000 AND department_id = 50
+  pred: SELECT EMAIL FROM employees WHERE COMMISSION_PCT IS NULL AND SALARY BETWEEN 7000 AND 12000 AND DEPARTMENT_ID = 50;
+  gold rows: []
+
+#17 [none] entrepreneur | Question: Return the name of the heaviest entrepreneur.
+  gold: SELECT T2.Name FROM entrepreneur AS T1 JOIN people AS T2 ON T1.People_ID = T2.People_ID ORDER BY T2.Weight DESC LIMIT 1
+  pred: SELECT p."Name" FROM "entrepreneur" e JOIN "people" p ON e."People_ID" = p."People_ID" WHERE p."Weight" = (SELECT MAX("Weight") FROM "people") AND e."Money_Requested" > 0 AND e."Investor" IS NOT NULL AND e."Company" != '' AND e."Entrepreneur_ID" IN (SELECT "Entrepreneur_ID" FROM "entrepreneur" WHERE "Money_Requested" > 0 AND "Investor" IS NOT NULL AND "Company" != '') LIMIT 1;
+  gold rows: [('Goran Fiorentini',)]
+
+#18 [none] entrepreneur | Question: Return the name of the heaviest entrepreneur.
+  gold: SELECT T2.Name FROM entrepreneur AS T1 JOIN people AS T2 ON T1.People_ID = T2.People_ID ORDER BY T2.Weight DESC LIMIT 1
+  pred: SELECT p.Name FROM entrepreneur e JOIN people p ON e.People_ID = p.People_ID WHERE p.Weight = (SELECT MAX(Weight) FROM people) AND e.Investor IS NOT NULL AND e.Money_Requested IS NOT NULL AND e.Company IS NOT NULL AND e.People_ID IN (SELECT People_ID FROM entrepreneur)
+  gold rows: [('Goran Fiorentini',)]
+
+#19 [none] entrepreneur | Question: Return the name of the heaviest entrepreneur.
+  gold: SELECT T2.Name FROM entrepreneur AS T1 JOIN people AS T2 ON T1.People_ID = T2.People_ID ORDER BY T2.Weight DESC LIMIT 1
+  pred: SELECT p."Name" FROM "entrepreneur" e JOIN "people" p ON e."People_ID" = p."People_ID" WHERE p."Weight" = (SELECT MAX("Weight") FROM "people") AND e."Money_Requested" > 0 AND e."Investor" IS NOT NULL AND e."Company" IS NOT NULL AND e."Entrepreneur_ID" IS NOT NULL;
+  gold rows: [('Goran Fiorentini',)]
+
+#20 [none] protein_institute | Question: Show the names and heights of buildings with at least two institutions founded after 1880.
+  gold: SELECT T1.name , T1.height_feet FROM building AS T1 JOIN institution AS T2 ON T1.building_id = T2.building_id WHERE T2.founded > 1880 GROUP BY T1.building_id HAVING count(*) >= 2
+  pred: SELECT b."Name", b."Height_feet" FROM "building" b WHERE b."building_id" IN ( SELECT b2."building_id" FROM "building" b2 JOIN "Institution" i ON b2."building_id" = i."building_id" WHERE i."Founded" > 1880 GROUP BY b2."building_id" HAVING COUNT(i."Institution_id") >= 2 );
+  gold rows: [('Citizens Bank Building', 145), ('Tampa City Hall', 160), ('One Tampa City Center', 537)]

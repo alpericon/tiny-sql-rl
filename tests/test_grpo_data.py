@@ -53,3 +53,11 @@ def test_records_are_plain_json_types(db_dir):
 
     records = build_grpo_records(EXAMPLES, db_dir, Exclusions())
     assert json.loads(json.dumps(records)) == records
+
+
+def test_empty_gold_results_can_be_dropped(db_dir):
+    # Any query that returns nothing scores 1.0 against an empty gold answer (W7 reward hack).
+    examples = EXAMPLES + [Example("toy", "Nobody?", "SELECT name FROM t WHERE id = 99")]
+    kept = build_grpo_records(examples, db_dir, Exclusions(), drop_empty_gold=True)
+    assert [r["gold"] for r in kept] == [e.query for e in EXAMPLES]
+    assert len(build_grpo_records(examples, db_dir, Exclusions())) == 3  # default unchanged

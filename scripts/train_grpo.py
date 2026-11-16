@@ -95,6 +95,8 @@ def main():
     ap.add_argument("--save-steps", type=int, default=100)
     ap.add_argument("--seed", type=int, default=3407)
     ap.add_argument("--resume", action="store_true")
+    ap.add_argument("--keep-empty-gold", action="store_true",
+                    help="keep examples whose gold result is empty (the week-2 main run did; W7 hack)")
     args = ap.parse_args()
 
     assert torch.cuda.is_available(), "CUDA not available: is the CPU torch wheel installed?"
@@ -123,6 +125,7 @@ def main():
         load_spider_split(ROOT / "data" / "train_filtered.json"),
         ROOT / "data" / "spider" / "database",
         load_exclusions(ROOT / "data" / "spokenspider_exclude.json"),
+        drop_empty_gold=not args.keep_empty_gold,
     )
     for r in records:
         r["prompt"] = tok.apply_chat_template(r["prompt"], tokenize=False, add_generation_prompt=True, enable_thinking=False)
