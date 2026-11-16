@@ -104,7 +104,7 @@ def main():
     assert torch.cuda.is_available(), "CUDA not available: is the CPU torch wheel installed?"
     out_dir = ROOT / "checkpoints" / args.run_name
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "run_args.json").write_text(json.dumps(vars(args), indent=1), encoding="utf-8")
+    (out_dir / "run_args.json").write_text(json.dumps(vars(args), indent=1, default=str), encoding="utf-8")
 
     model, tok = FastLanguageModel.from_pretrained(
         model_name=args.model,
