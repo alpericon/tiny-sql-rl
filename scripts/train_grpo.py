@@ -29,7 +29,7 @@ from trl import GRPOConfig, GRPOTrainer
 from unsloth import FastLanguageModel
 
 from tinysql.data import load_exclusions, load_spider_split
-from tinysql.grpo_data import build_grpo_records
+from tinysql.grpo_data import build_grpo_records, filter_by_pass_rate
 from tinysql.grpo_reward import make_reward_fn
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -97,6 +97,8 @@ def main():
     ap.add_argument("--resume", action="store_true")
     ap.add_argument("--keep-empty-gold", action="store_true",
                     help="keep examples whose gold result is empty (the week-2 main run did; W7 hack)")
+    ap.add_argument("--pass-rate", type=Path, default=None,
+                    help="data/train_pass_rate.jsonl: train only on questions the base model solves 1..n-1 of n times")
     args = ap.parse_args()
 
     assert torch.cuda.is_available(), "CUDA not available: is the CPU torch wheel installed?"
@@ -127,6 +129,12 @@ def main():
         load_exclusions(ROOT / "data" / "spokenspider_exclude.json"),
         drop_empty_gold=not args.keep_empty_gold,
     )
+    if args.pass_rate is not None:
+        with args.pass_rate.open(encoding="utf-8") as f:
+            rates = [json.loads(line) for line in f]
+        n_before = len(records)
+        records = filter_by_pass_rate(records, rates)
+        print(f"pass-rate filter: kept {len(records)} of {n_before} questions", flush=True)
     for r in records:
         r["prompt"] = tok.apply_chat_template(r["prompt"], tokenize=False, add_generation_prompt=True, enable_thinking=False)
         r["prompt_tokens"] = len(tok(r["prompt"], add_special_tokens=False)["input_ids"])

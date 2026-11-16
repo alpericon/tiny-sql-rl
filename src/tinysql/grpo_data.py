@@ -46,6 +46,24 @@ def build_grpo_records(
                 "db_path": str(db_path),
                 "gold": e.query,
                 "db_id": e.db_id,
+                "question": e.question,
             }
         )
     return records
+
+
+def filter_by_pass_rate(records: list[dict], rates: list[dict]) -> list[dict]:
+    """Keep records whose base-model pass rate is strictly between 0 and n (W3/X2).
+
+    A group of n samples that all fail or all succeed has zero advantage in GRPO, so it gives no
+    learning signal. ``rates`` items are {db_id, question, gold, n_correct, n}, keyed on all three
+    because Spider train repeats some questions; a record without a rate
+    raises KeyError instead of being silently dropped.
+    """
+    by_key = {(r["db_id"], r["question"], r["gold"]): r for r in rates}
+    kept = []
+    for rec in records:
+        rate = by_key[(rec["db_id"], rec["question"], rec["gold"])]
+        if 0 < rate["n_correct"] < rate["n"]:
+            kept.append(rec)
+    return kept

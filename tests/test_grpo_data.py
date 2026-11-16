@@ -61,3 +61,27 @@ def test_empty_gold_results_can_be_dropped(db_dir):
     kept = build_grpo_records(examples, db_dir, Exclusions(), drop_empty_gold=True)
     assert [r["gold"] for r in kept] == [e.query for e in EXAMPLES]
     assert len(build_grpo_records(examples, db_dir, Exclusions())) == 3  # default unchanged
+
+
+def test_records_carry_question_for_pass_rate_keys(db_dir):
+    records = build_grpo_records(EXAMPLES, db_dir, Exclusions())
+    assert [r["question"] for r in records] == ["How many rows?", "Names?"]
+
+
+def test_filter_by_pass_rate_keeps_only_mixed_groups():
+    from tinysql.grpo_data import filter_by_pass_rate
+
+    records = [{"db_id": "a", "question": q, "gold": "G"} for q in ("never", "some", "always")]
+    rates = [
+        {"db_id": "a", "question": "never", "gold": "G", "n_correct": 0, "n": 8},
+        {"db_id": "a", "question": "some", "gold": "G", "n_correct": 3, "n": 8},
+        {"db_id": "a", "question": "always", "gold": "G", "n_correct": 8, "n": 8},
+    ]
+    assert [r["question"] for r in filter_by_pass_rate(records, rates)] == ["some"]
+
+
+def test_filter_by_pass_rate_refuses_missing_rates():
+    from tinysql.grpo_data import filter_by_pass_rate
+
+    with pytest.raises(KeyError):
+        filter_by_pass_rate([{"db_id": "a", "question": "q", "gold": "G"}], [])
