@@ -1,8 +1,12 @@
-"""Paired comparison of main-run checkpoints vs the dev-200 baseline (exact McNemar, two-sided)."""
+"""Paired comparison of a run's checkpoints vs the dev-200 baseline (exact McNemar, two-sided).
+
+    python scripts/compare_checkpoints.py [run-name]   # default: main
+"""
 import json, math, sys
 from pathlib import Path
 R = Path(__file__).resolve().parents[1] / "results"
 def load(p): return [json.loads(l) for l in open(p, encoding="utf-8")]
+run = sys.argv[1] if len(sys.argv) > 1 else "main"
 base = load(R / "dev200_Qwen__Qwen3-1.7B.records.jsonl")
 def exact_p(b, c):
     n = b + c
@@ -12,7 +16,7 @@ def exact_p(b, c):
 print(f"{'ckpt':>6} {'EX':>6} {'delta':>6} {'fmt':>5} {'hit':>5} {'win':>4} {'loss':>4} {'p':>6}")
 print(f"{'base':>6} {sum(r['match'] for r in base)/len(base):6.3f}")
 for n in range(100, 1001, 100):
-    p = R / f"dev200_Qwen__Qwen3-1.7B_main-checkpoint-{n}.records.jsonl"
+    p = R / f"dev200_Qwen__Qwen3-1.7B_{run}-checkpoint-{n}.records.jsonl"
     if not p.exists(): continue
     recs = load(p); s = json.load(open(str(p).replace(".records.jsonl", ".json")))
     assert len(recs) == len(base)
