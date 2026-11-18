@@ -50,7 +50,7 @@ Each quantity has its own test, all fixed now, before training:
   - Repeating the failed SQL scores 0, so it is discouraged with no new reward term.
   - No reward shaping is added, so there is nothing new to hack. Re-read the top-reward repair
     samples by hand, as in W7.
-- **500 steps:** about 2.5–3 h, one overnight run started by you, with checkpoints every 100 steps.
+- **500 steps:** about 3.5–4 h (repair prompts are longer; the smoke run measured 18–53 s/step), one overnight run started by you, with checkpoints every 100 steps.
 - **Logged:** reward split by prompt type (repair vs first-turn) and `frac_reward_zero_std` per type.
 
 **Selection** (fixed now): best dev-200 **EX with repair** among checkpoints 100–500, ties to the
