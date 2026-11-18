@@ -83,3 +83,16 @@ later step. Then the evaluation in the table above, once, on full dev.
 ## Not in this plan
 
 ASR value normalisation, more seeds, schema grounding and BIRD stay in "Future work".
+
+## Notes from the Z1–Z3 review gate (2026-11-18, APPROVE)
+
+- **KL reference is the base model, not v2-900.** Unsloth/PEFT computes the reference by disabling the
+  adapter. Training therefore continues v2's objective (KL to base at β=0.04) rather than anchoring
+  to v2-900. This may pull slightly against first-turn skill, which is exactly what the guard rail
+  measures. It is a known caveat, not changed.
+- **Mixing is 50/50 in expectation**, not exactly per step: a fixed shuffled 1,688 + 1,688 set.
+- **Z4 needs one more script, written test-first before Z4.** It feeds v2-900's stored first attempts
+  (`first_completion`, `first_error` in its repair records) into the new model's repair turn only, for
+  the paired primary comparison on the same 133 inputs.
+- At step 100, check `frac_reward_zero_std` per prompt type. Repair questions are not pass-rate
+  filtered, so their signal may be thin.
