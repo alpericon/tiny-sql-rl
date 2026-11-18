@@ -67,3 +67,41 @@ def filter_by_pass_rate(records: list[dict], rates: list[dict]) -> list[dict]:
         if 0 < rate["n_correct"] < rate["n"]:
             kept.append(rec)
     return kept
+
+
+def build_repair_records(samples: Sequence[dict], max_per_question: int = 2, timeout_s: float = 5.0) -> list[dict]:
+    """Repair-turn GRPO records from sampled policy answers (PLAN-week5 Z1).
+
+    ``samples`` carry the original record fields (db_id, question, gold, db_path, prompt) plus the
+    sampled ``completion``. Only answers with no ```sql block, or whose SQL does not execute, become
+    records; the prompt is exactly the inference-time retry (``tinysql.repair.repair_messages``).
+    Duplicate (question, failed answer) pairs are dropped and each question keeps at most
+    ``max_per_question`` records, in sample order.
+    """
+    from tinysql.repair import NO_BLOCK, repair_messages
+    from tinysql.reward import extract_sql
+
+    records, seen, per_question = [], set(), {}
+    for s in samples:
+        qkey = (s["db_id"], s["question"], s["gold"])
+        if per_question.get(qkey, 0) >= max_per_question:
+            continue
+        sql = extract_sql(s["completion"])
+        if sql is None:
+            error = None
+        else:
+            res = execute_readonly(s["db_path"], sql, timeout_s=timeout_s)
+            if res.ok:
+                continue
+            error = res.error
+        key = (*qkey, (sql if sql is not None else s["completion"]).strip())
+        if key in seen:
+            continue
+        seen.add(key)
+        per_question[qkey] = per_question.get(qkey, 0) + 1
+        records.append({
+            "prompt": repair_messages(s["prompt"], s["completion"], error),
+            "db_path": s["db_path"], "gold": s["gold"], "db_id": s["db_id"], "question": s["question"],
+            "kind": "repair", "first_error": NO_BLOCK if error is None else error,
+        })
+    return records
