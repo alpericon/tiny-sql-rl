@@ -1,0 +1,22 @@
+{
+ "gguf": "v2-900-merged-Q8_0.gguf",
+ "threads": 2,
+ "prefix_cache": "reset before every query (cold)",
+ "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+ "text_to_sql_and_query": {
+  "n": 30,
+  "median_s": 4.837307790500006,
+  "p95_s": 6.134878641,
+  "mean_s": 4.840371374300001,
+  "max_s": 7.646574812999972
+ },
+ "queries_without_error": 29,
+ "speech_to_text": {
+  "n": 12,
+  "median_s": 1.4721810945000016,
+  "p95_s": 1.572872325999981,
+  "mean_s": 1.4841050717499964,
+  "max_s": 1.572872325999981
+ },
+ "end_to_end_median_s": 6.3094888850000075
+}

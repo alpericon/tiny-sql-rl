@@ -1,0 +1,32 @@
+{
+ "n": 200,
+ "execution_accuracy": 0.52,
+ "format_failure_rate": 0.115,
+ "execution_error_rate": 0.12,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 635.91,
+ "decoding": "greedy (temperature 0, top_k 1), llama-server /completion, HF chat template",
+ "hit_max_new_tokens_rate": 0.0,
+ "model": "v2-900-merged-Q4_K_M.gguf",
+ "subset": "dev200_ids.json",
+ "limit": null,
+ "latency": {
+  "n": 200,
+  "median_s": 2.7868678765003096,
+  "p95_s": 6.286193509999066,
+  "mean_s": 3.1795594007200223,
+  "max_s": 9.22883059600099
+ },
+ "new_tokens": {
+  "n": 200,
+  "median_s": 34.0,
+  "p95_s": 73.0,
+  "mean_s": 36.585,
+  "max_s": 110.0
+ },
+ "ms_per_token": 86.90882604127435,
+ "cpu": "x86_64",
+ "threads": 8,
+ "llama_cpp": "b12400"
+}

@@ -1,0 +1,8 @@
+# Demo / Hugging Face Space runtime (CPU). Versions as tested locally (results/week4_results.md, Y5).
+gradio==5.49.1
+llama-cpp-python==0.3.16
+faster-whisper==1.2.0
+av==13.1.0
+transformers==5.17.0
+huggingface_hub==1.33.0
+# plus this repo's src/tinysql (copied into the Space as a package)

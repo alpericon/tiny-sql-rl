@@ -1,0 +1,853 @@
+{
+ "summary": {
+  "system": "sqlcoder",
+  "model": "defog/sqlcoder-7b-2",
+  "adapter": null,
+  "setup": "nf4 4-bit, HF generate, batch 1, greedy, clean transcripts, 5 warm-up queries untimed",
+  "max_new_tokens": 300,
+  "text_to_sql": {
+   "n": 100,
+   "median_s": 2.0799953199998527,
+   "p95_s": 4.306138538000596,
+   "mean_s": 2.3155299675799323,
+   "max_s": 6.371452778000275
+  },
+  "new_tokens": {
+   "n": 100,
+   "median_s": 41.5,
+   "p95_s": 82.0,
+   "mean_s": 46.65,
+   "max_s": 135.0
+  },
+  "e2e_estimate": {
+   "n": 100,
+   "median_s": 2.6501983457010283,
+   "p95_s": 4.874000186235207,
+   "mean_s": 2.959771987233253,
+   "max_s": 6.974213092941682
+  },
+  "voice_to_sql_recorded_sql_stage": {
+   "n": 100,
+   "median_s": 13.775603413581848,
+   "p95_s": 26.527390241622925,
+   "mean_s": 14.504965102672577,
+   "max_s": 37.67386269569397
+  },
+  "voice_to_sql_recorded_total": {
+   "n": 100,
+   "median_s": 14.298205375671387,
+   "p95_s": 27.23481798171997,
+   "mean_s": 15.149207122325898,
+   "max_s": 38.276623010635376
+  },
+  "same_sql_as_voice_to_sql": 93,
+  "load_seconds": 65.5,
+  "peak_vram_gib": 4.01,
+  "gpu": "NVIDIA GeForce RTX 3070 Ti Laptop GPU",
+  "torch": "2.14.0+cu130",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "limit": null
+ },
+ "rows": [
+  {
+   "query_id": "train_00000",
+   "latency_s": 1.448824503000651,
+   "new_tokens": 31,
+   "sql": "SELECT COUNT(*) FROM head h JOIN management m ON h.head_ID = m.head_ID WHERE h.age > 56;",
+   "same_sql_as_voice_to_sql": false,
+   "e2e_estimate_s": 3.106184818323527
+  },
+  {
+   "query_id": "train_00001",
+   "latency_s": 1.8550038210005368,
+   "new_tokens": 43,
+   "sql": "SELECT h.name, h.born_state, h.age FROM head h JOIN management m ON h.head_ID = m.head_ID ORDER BY h.age NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.1347854009718503
+  },
+  {
+   "query_id": "train_00002",
+   "latency_s": 1.4955386689998704,
+   "new_tokens": 35,
+   "sql": "SELECT d.creation, d.name, d.budget_in_billions FROM department d ORDER BY d.creation NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.425975995431145
+  },
+  {
+   "query_id": "train_00003",
+   "latency_s": 1.8508951419998994,
+   "new_tokens": 44,
+   "sql": "SELECT MAX(d.budget_in_billions) AS max_budget, MIN(d.budget_in_billions) AS min_budget FROM department d;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.6543457264115204
+  },
+  {
+   "query_id": "train_00004",
+   "latency_s": 1.4078781509997498,
+   "new_tokens": 33,
+   "sql": "SELECT AVG(d.num_employees) FROM department d WHERE d.ranking BETWEEN 10 AND 15;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.6026127243640076
+  },
+  {
+   "query_id": "train_00005",
+   "latency_s": 0.9263659150001331,
+   "new_tokens": 20,
+   "sql": "SELECT h.name FROM head h WHERE h.born_state != 'California';",
+   "same_sql_as_voice_to_sql": false,
+   "e2e_estimate_s": 2.091433110892467
+  },
+  {
+   "query_id": "train_00006",
+   "latency_s": 3.3835805599992455,
+   "new_tokens": 82,
+   "sql": "SELECT EXTRACT(YEAR FROM d.creation::DATE) AS creation_year FROM department d JOIN management m ON d.department_id = m.department_id JOIN head h ON m.head_id = h.head_id WHERE h.born_state = 'Alabama' GROUP BY creation_year ORDER BY creation_year NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.874000186235207
+  },
+  {
+   "query_id": "train_00007",
+   "latency_s": 1.37221382899952,
+   "new_tokens": 32,
+   "sql": "SELECT h.born_state FROM head h GROUP BY h.born_state HAVING COUNT(h.head_ID) >= 3;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.4094059352464683
+  },
+  {
+   "query_id": "train_00008",
+   "latency_s": 2.5945297110001775,
+   "new_tokens": 65,
+   "sql": "SELECT EXTRACT(YEAR FROM to_date(d.creation, 'YYYY')) AS year_of_creation, COUNT(*) AS number_of_departments FROM department d GROUP BY year_of_creation ORDER BY year_of_creation DESC LIMIT 1;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.275061212770197
+  },
+  {
+   "query_id": "train_00009",
+   "latency_s": 2.548260439999467,
+   "new_tokens": 61,
+   "sql": "SELECT d.name, d.num_employees FROM department d JOIN management m ON d.department_id = m.department_id JOIN head h ON m.head_id = h.head_id WHERE m.temporary_acting = 'yes';",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.873773326046832
+  },
+  {
+   "query_id": "train_00010",
+   "latency_s": 0.9180449349996707,
+   "new_tokens": 20,
+   "sql": "SELECT COUNT(*) FROM management m WHERE m.temporary_acting IS NOT NULL;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.5811449391958377
+  },
+  {
+   "query_id": "train_00011",
+   "latency_s": 2.7644873210001606,
+   "new_tokens": 63,
+   "sql": "SELECT COUNT(DISTINCT d.department_id) AS num_departments FROM department d JOIN management m ON d.department_id = m.department_id LEFT JOIN head h ON m.head_id = h.head_id WHERE h.name IS NULL;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.7846849509287477
+  },
+  {
+   "query_id": "train_00012",
+   "latency_s": 1.2672765600000275,
+   "new_tokens": 27,
+   "sql": "SELECT DISTINCT h.age FROM head h JOIN management m ON h.head_ID = m.head_ID;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.1188156949792756
+  },
+  {
+   "query_id": "train_00013",
+   "latency_s": 4.541414927000005,
+   "new_tokens": 104,
+   "sql": "SELECT h1.born_state AS state_of_birth_for_treasury_secretary, h2.born_state AS state_of_birth_for_homeland_security_secretary FROM head h1 JOIN management m1 ON h1.head_ID = m1.head_ID JOIN head h2 ON m1.department_ID = h2.head_ID WHERE h1.born_state = h2.born_state;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 6.784001062864263
+  },
+  {
+   "query_id": "train_00014",
+   "latency_s": 4.167495149999922,
+   "new_tokens": 99,
+   "sql": "SELECT d.department_id, d.name, COUNT(h.head_id) AS num_heads FROM department d JOIN management m ON d.department_id = m.department_id JOIN head h ON m.head_id = h.head_id GROUP BY d.department_id, d.name HAVING COUNT(h.head_id) > 1 ORDER BY num_heads DESC NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.814355511099166
+  },
+  {
+   "query_id": "train_00015",
+   "latency_s": 1.0895373559997097,
+   "new_tokens": 24,
+   "sql": "SELECT h.head_ID, h.name FROM head h WHERE h.name ilike '%ha%';",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.645514462094071
+  },
+  {
+   "query_id": "train_00016",
+   "latency_s": 1.1919704760002787,
+   "new_tokens": 22,
+   "sql": "SELECT COUNT(f.farm_id) AS number_of_farms FROM farm f;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.4999162043022807
+  },
+  {
+   "query_id": "train_00017",
+   "latency_s": 1.1364665470000546,
+   "new_tokens": 22,
+   "sql": "SELECT COUNT(f.farm_id) AS number_of_farms FROM farm f;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.4401171645995419
+  },
+  {
+   "query_id": "train_00018",
+   "latency_s": 1.1614548010002181,
+   "new_tokens": 23,
+   "sql": "SELECT f.total_horses FROM farm f ORDER BY f.total_horses ASC;",
+   "same_sql_as_voice_to_sql": false,
+   "e2e_estimate_s": 1.653489474691014
+  },
+  {
+   "query_id": "train_00019",
+   "latency_s": 1.4327454170006604,
+   "new_tokens": 30,
+   "sql": "SELECT f.farm_id, f.total_horses FROM farm f ORDER BY f.total_horses ASC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.973520239235767
+  },
+  {
+   "query_id": "train_00020",
+   "latency_s": 1.3635815190000358,
+   "new_tokens": 27,
+   "sql": "SELECT fc.hosts FROM farm_competition fc WHERE fc.theme not ilike '%aliens%';",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.806964735857946
+  },
+  {
+   "query_id": "train_00021",
+   "latency_s": 1.3593805830005294,
+   "new_tokens": 27,
+   "sql": "SELECT fc.hosts FROM farm_competition fc WHERE fc.theme not ilike '%aliens%';",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.8446899454120285
+  },
+  {
+   "query_id": "train_00022",
+   "latency_s": 1.3343615350004256,
+   "new_tokens": 27,
+   "sql": "SELECT fc.year, fc.theme FROM farm_competition fc ORDER BY fc.year ASC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.8307316121336044
+  },
+  {
+   "query_id": "train_00023",
+   "latency_s": 1.247424172999672,
+   "new_tokens": 27,
+   "sql": "SELECT fc.year, fc.theme FROM farm_competition fc ORDER BY fc.year ASC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.735278176905922
+  },
+  {
+   "query_id": "train_00024",
+   "latency_s": 1.435927171000003,
+   "new_tokens": 32,
+   "sql": "SELECT AVG(f.Working_Horses) FROM farm f WHERE f.Total_Horses > 5000;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.0433526222786895
+  },
+  {
+   "query_id": "train_00025",
+   "latency_s": 1.619544677999329,
+   "new_tokens": 32,
+   "sql": "SELECT AVG(f.Working_Horses) FROM farm f WHERE f.Total_Horses > 5000;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.1861464312341923
+  },
+  {
+   "query_id": "train_00026",
+   "latency_s": 1.7217897969994738,
+   "new_tokens": 32,
+   "sql": "SELECT MIN(f.cows) AS min_cows, MAX(f.cows) AS max_cows FROM farm f;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.211233337572594
+  },
+  {
+   "query_id": "train_00027",
+   "latency_s": 2.049010208999789,
+   "new_tokens": 32,
+   "sql": "SELECT MAX(f.cows) AS max_cows, MIN(f.cows) AS min_cows FROM farm f;",
+   "same_sql_as_voice_to_sql": false,
+   "e2e_estimate_s": 2.507351092254794
+  },
+  {
+   "query_id": "train_00028",
+   "latency_s": 1.1115920070005814,
+   "new_tokens": 15,
+   "sql": "SELECT COUNT(DISTINCT c.status) FROM city c;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.462022018749849
+  },
+  {
+   "query_id": "train_00029",
+   "latency_s": 0.8715797589993599,
+   "new_tokens": 15,
+   "sql": "SELECT COUNT(DISTINCT c.status) FROM city c;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.218555323956025
+  },
+  {
+   "query_id": "train_00030",
+   "latency_s": 1.0143013200004134,
+   "new_tokens": 19,
+   "sql": "SELECT c.official_name FROM city c ORDER BY c.population DESC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.3976183137137923
+  },
+  {
+   "query_id": "train_00031",
+   "latency_s": 1.0273185959995317,
+   "new_tokens": 19,
+   "sql": "SELECT c.official_name FROM city c ORDER BY c.population DESC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.4561823598087358
+  },
+  {
+   "query_id": "train_00032",
+   "latency_s": 1.5316088059998947,
+   "new_tokens": 30,
+   "sql": "SELECT c.official_name, c.status FROM city c ORDER BY c.population DESC NULLS LAST LIMIT 1;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.004709706649919
+  },
+  {
+   "query_id": "train_00033",
+   "latency_s": 1.4191975109997657,
+   "new_tokens": 26,
+   "sql": "SELECT c.official_name, c.status FROM city c ORDER BY c.population DESC LIMIT 1;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.9309746735516455
+  },
+  {
+   "query_id": "train_00034",
+   "latency_s": 1.9162091379994308,
+   "new_tokens": 40,
+   "sql": "SELECT fc.year, c.official_name FROM farm_competition fc JOIN city c ON fc.host_city_id = c.city_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.427601969801799
+  },
+  {
+   "query_id": "train_00035",
+   "latency_s": 2.1648457399996914,
+   "new_tokens": 45,
+   "sql": "SELECT c.year, c.host_city_id, v.official_name FROM farm_competition c JOIN city v ON c.host_city_id = v.city_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.646050964990536
+  },
+  {
+   "query_id": "train_00036",
+   "latency_s": 3.235494016999837,
+   "new_tokens": 71,
+   "sql": "SELECT c.official_name FROM city c JOIN (SELECT h.host_city_id FROM farm_competition h GROUP BY h.host_city_id HAVING COUNT(h.competition_id) > 1) AS m ON c.city_id = m.host_city_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.7734457248398012
+  },
+  {
+   "query_id": "train_00037",
+   "latency_s": 2.9540616459999,
+   "new_tokens": 71,
+   "sql": "SELECT c.official_name FROM city c JOIN (SELECT h.host_city_id FROM farm_competition h GROUP BY h.host_city_id HAVING COUNT(h.competition_id) > 1) AS m ON c.city_id = m.host_city_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.50655450297927
+  },
+  {
+   "query_id": "train_00038",
+   "latency_s": 3.4419139439996798,
+   "new_tokens": 74,
+   "sql": "SELECT c.status FROM city c JOIN (SELECT f.host_city_id, COUNT(*) AS num_competitions FROM farm_competition f GROUP BY f.host_city_id ORDER BY num_competitions DESC LIMIT 1) AS mc ON c.city_id = mc.host_city_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.9689012582239247
+  },
+  {
+   "query_id": "train_00039",
+   "latency_s": 3.367903723999916,
+   "new_tokens": 77,
+   "sql": "SELECT c.status FROM city c JOIN (SELECT fc.host_city_id, COUNT(*) AS num_competitions FROM farm_competition fc GROUP BY fc.host_city_id ORDER BY num_competitions DESC LIMIT 1) AS mc ON c.city_id = mc.host_city_id;",
+   "same_sql_as_voice_to_sql": false,
+   "e2e_estimate_s": 3.898589864060341
+  },
+  {
+   "query_id": "train_00040",
+   "latency_s": 2.488578272000268,
+   "new_tokens": 54,
+   "sql": "SELECT fc.theme FROM farm_competition fc JOIN city c ON fc.host_city_id = c.city_id WHERE c.population > 1000 ORDER BY fc.theme NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.0040325642976313
+  },
+  {
+   "query_id": "train_00041",
+   "latency_s": 2.120481098999335,
+   "new_tokens": 44,
+   "sql": "SELECT fc.theme FROM farm_competition fc JOIN city c ON fc.host_city_id = c.city_id WHERE c.population > 1000;",
+   "same_sql_as_voice_to_sql": false,
+   "e2e_estimate_s": 2.707663620819403
+  },
+  {
+   "query_id": "train_00042",
+   "latency_s": 1.888379007000367,
+   "new_tokens": 39,
+   "sql": "SELECT c.status, AVG(c.population) AS average_population FROM city c GROUP BY c.status ORDER BY average_population DESC NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.4486095005458974
+  },
+  {
+   "query_id": "train_00043",
+   "latency_s": 1.9133738739992623,
+   "new_tokens": 39,
+   "sql": "SELECT c.status, AVG(c.population) AS average_population FROM city c GROUP BY c.status ORDER BY average_population DESC NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.375327275564816
+  },
+  {
+   "query_id": "train_00044",
+   "latency_s": 1.6463707259999865,
+   "new_tokens": 33,
+   "sql": "SELECT c.status, COUNT(c.city_id) AS city_count FROM city c GROUP BY c.status ORDER BY city_count DESC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.2424372009145372
+  },
+  {
+   "query_id": "train_00045",
+   "latency_s": 1.2566484519993537,
+   "new_tokens": 23,
+   "sql": "SELECT c.status, COUNT(*) AS frequency FROM city c GROUP BY c.status ORDER BY frequency ASC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.7202681610142463
+  },
+  {
+   "query_id": "train_00046",
+   "latency_s": 2.0741147740000088,
+   "new_tokens": 35,
+   "sql": "SELECT c.status, c.city_id, COUNT(*) AS frequency FROM city c GROUP BY c.status, c.city_id ORDER BY frequency DESC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.4579434139841396
+  },
+  {
+   "query_id": "train_00047",
+   "latency_s": 1.3672742369999469,
+   "new_tokens": 26,
+   "sql": "SELECT c.status FROM city c GROUP BY c.status ORDER BY COUNT(c.status) DESC LIMIT 1;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.8157779696812213
+  },
+  {
+   "query_id": "train_00048",
+   "latency_s": 2.8410358090004593,
+   "new_tokens": 59,
+   "sql": "SELECT c.official_name FROM city c LEFT JOIN farm_competition fc ON c.city_id = fc.host_city_id WHERE fc.host_city_id IS NULL ORDER BY c.official_name NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.281904186686008
+  },
+  {
+   "query_id": "train_00049",
+   "latency_s": 2.8901848310006244,
+   "new_tokens": 59,
+   "sql": "SELECT c.official_name FROM city c LEFT JOIN farm_competition fc ON c.city_id = fc.host_city_id WHERE fc.host_city_id IS NULL ORDER BY c.official_name NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.4070355409157855
+  },
+  {
+   "query_id": "train_00050",
+   "latency_s": 1.5314785509999638,
+   "new_tokens": 30,
+   "sql": "SELECT c.status FROM city c WHERE c.population > 1500 AND c.population < 500;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.078447964757288
+  },
+  {
+   "query_id": "train_00051",
+   "latency_s": 1.523314525999922,
+   "new_tokens": 30,
+   "sql": "SELECT c.status FROM city c WHERE c.population > 1500 AND c.population < 500;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.2834425472401563
+  },
+  {
+   "query_id": "train_00052",
+   "latency_s": 1.7183522420000372,
+   "new_tokens": 34,
+   "sql": "SELECT c.Official_Name FROM city c WHERE (c.Population > 1500 OR c.Population < 500);",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.241394920833045
+  },
+  {
+   "query_id": "train_00053",
+   "latency_s": 2.321028467999895,
+   "new_tokens": 45,
+   "sql": "SELECT c.official_name FROM city c WHERE c.population > 1500 OR c.population < 500 ORDER BY c.official_name NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.8864362209906176
+  },
+  {
+   "query_id": "train_00054",
+   "latency_s": 2.2503460209991317,
+   "new_tokens": 45,
+   "sql": "SELECT c.official_name, c.census_ranking FROM city c WHERE c.status not ilike '%village%' ORDER BY c.census_ranking NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.688491896929918
+  },
+  {
+   "query_id": "train_00055",
+   "latency_s": 2.2976085640002566,
+   "new_tokens": 45,
+   "sql": "SELECT c.official_name, c.census_ranking FROM city c WHERE c.status not ilike '%village%' ORDER BY c.census_ranking NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.864306876759656
+  },
+  {
+   "query_id": "train_00056",
+   "latency_s": 3.3772792429999754,
+   "new_tokens": 69,
+   "sql": "SELECT c.course_name, COUNT(sc.student_id) AS number_of_students FROM Student_Course_Registrations sc JOIN Courses c ON sc.course_id = c.course_id GROUP BY c.course_name ORDER BY number_of_students DESC LIMIT 1;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.759586534030859
+  },
+  {
+   "query_id": "train_00057",
+   "latency_s": 3.4594363469996097,
+   "new_tokens": 69,
+   "sql": "SELECT c.course_name, COUNT(sc.student_id) AS number_of_students FROM Courses c JOIN Student_Course_Registrations sc ON c.course_id = sc.course_id GROUP BY c.course_name ORDER BY number_of_students DESC LIMIT 1;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.917789628020728
+  },
+  {
+   "query_id": "train_00058",
+   "latency_s": 3.979023118999976,
+   "new_tokens": 81,
+   "sql": "SELECT p.first_name, p.last_name, COUNT(scr.course_id) AS number_of_courses FROM People p JOIN Student_Course_Registrations scr ON p.person_id = scr.student_id GROUP BY p.first_name, p.last_name ORDER BY number_of_courses ASC LIMIT 1;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.631850381878394
+  },
+  {
+   "query_id": "train_00059",
+   "latency_s": 3.416257711999606,
+   "new_tokens": 71,
+   "sql": "SELECT s.student_id FROM Student_Course_Registrations s GROUP BY s.student_id HAVING COUNT(s.course_id) = (SELECT MIN(COUNT(s.course_id)) FROM Student_Course_Registrations) ORDER BY s.student_id NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.146549078576754
+  },
+  {
+   "query_id": "train_00060",
+   "latency_s": 1.8852676469996368,
+   "new_tokens": 36,
+   "sql": "SELECT p.first_name, p.last_name FROM People p JOIN Candidates c ON p.person_id = c.candidate_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.311652334423343
+  },
+  {
+   "query_id": "train_00061",
+   "latency_s": 1.9184869640002944,
+   "new_tokens": 36,
+   "sql": "SELECT p.first_name, p.last_name FROM People p JOIN Candidates c ON p.person_id = c.candidate_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.346443306697438
+  },
+  {
+   "query_id": "train_00062",
+   "latency_s": 2.206917182000325,
+   "new_tokens": 42,
+   "sql": "SELECT s.student_id FROM Students s LEFT JOIN Student_Course_Attendance sa ON s.student_id = sa.student_id WHERE sa.student_id IS NULL;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.586580649407555
+  },
+  {
+   "query_id": "train_00063",
+   "latency_s": 2.241022307000094,
+   "new_tokens": 42,
+   "sql": "SELECT s.student_id FROM Students s LEFT JOIN Student_Course_Attendance sa ON s.student_id = sa.student_id WHERE sa.student_id IS NULL;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.7565991464471153
+  },
+  {
+   "query_id": "train_00064",
+   "latency_s": 1.0610791079998307,
+   "new_tokens": 17,
+   "sql": "SELECT s.student_id FROM Student_Course_Attendance s;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.4676333301067626
+  },
+  {
+   "query_id": "train_00065",
+   "latency_s": 1.3978797230001874,
+   "new_tokens": 20,
+   "sql": "SELECT DISTINCT s.student_id FROM Student_Course_Attendance s;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.9051319393393005
+  },
+  {
+   "query_id": "train_00066",
+   "latency_s": 2.162593260999529,
+   "new_tokens": 40,
+   "sql": "SELECT s.student_id, c.course_name FROM Student_Course_Registrations s JOIN Courses c ON s.course_id = c.course_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.69718660473427
+  },
+  {
+   "query_id": "train_00067",
+   "latency_s": 6.368102150000595,
+   "new_tokens": 135,
+   "sql": "SELECT s.student_id, p.first_name, p.last_name, c.course_name, row_number() OVER(PARTITION BY s.student_id ORDER BY scr.registration_date DESC) AS recent_registration_rank FROM Students s JOIN Person_Addresses pa ON s.student_id = pa.person_id JOIN People p ON pa.person_id = p.person_id JOIN Courses c ON s.student_id = c.course_id JOIN Student_Course_Registrations scr ON s.student_id = scr.student_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 6.747950391806626
+  },
+  {
+   "query_id": "train_00068",
+   "latency_s": 6.371452778000275,
+   "new_tokens": 135,
+   "sql": "SELECT s.student_id, p.first_name, p.last_name, c.course_name, row_number() OVER(PARTITION BY s.student_id ORDER BY scr.registration_date DESC) AS recent_registration_rank FROM Students s JOIN Person_Addresses pa ON s.student_id = pa.person_id JOIN People p ON pa.person_id = p.person_id JOIN Courses c ON s.student_id = c.course_id JOIN Student_Course_Registrations scr ON s.student_id = scr.student_id;",
+   "same_sql_as_voice_to_sql": false,
+   "e2e_estimate_s": 6.974213092941682
+  },
+  {
+   "query_id": "train_00069",
+   "latency_s": 3.241691787000491,
+   "new_tokens": 61,
+   "sql": "SELECT COUNT(DISTINCT sca.student_id) AS number_of_students FROM Student_Course_Attendance sca JOIN Courses c ON sca.course_id = c.course_id WHERE c.course_name ILIKE '%English%';",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.5348491260965567
+  },
+  {
+   "query_id": "train_00070",
+   "latency_s": 3.090441913000177,
+   "new_tokens": 61,
+   "sql": "SELECT COUNT(DISTINCT sca.student_id) AS number_of_students FROM Student_Course_Attendance sca JOIN Courses c ON sca.course_id = c.course_id WHERE c.course_name ILIKE '%English%';",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.4056088632260177
+  },
+  {
+   "query_id": "train_00071",
+   "latency_s": 2.0858758659996965,
+   "new_tokens": 44,
+   "sql": "SELECT COUNT(DISTINCT sca.course_id) AS number_of_courses FROM Student_Course_Attendance sca WHERE sca.student_id = 171;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.50056636053705
+  },
+  {
+   "query_id": "train_00072",
+   "latency_s": 2.3371484059998693,
+   "new_tokens": 44,
+   "sql": "SELECT COUNT(DISTINCT sca.course_id) AS number_of_courses FROM Student_Course_Attendance sca WHERE sca.student_id = 171;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.7593409795472326
+  },
+  {
+   "query_id": "train_00073",
+   "latency_s": 2.3425488800003222,
+   "new_tokens": 45,
+   "sql": "SELECT c.candidate_id, c.candidate_details FROM Candidates c WHERE c.candidate_details ilike '%stanley.monahan@example.org%';",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.865844520945757
+  },
+  {
+   "query_id": "train_00074",
+   "latency_s": 2.8016614280004433,
+   "new_tokens": 51,
+   "sql": "SELECT c.candidate_id FROM People p JOIN Candidates c ON p.person_id = c.candidate_id WHERE p.email_address ilike '%stanley.monahan@example.org%'",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.3613063655156985
+  },
+  {
+   "query_id": "train_00075",
+   "latency_s": 4.399855485000444,
+   "new_tokens": 85,
+   "sql": "SELECT c.candidate_id, c.candidate_details, row_number() OVER(PARTITION BY c.candidate_id ORDER BY ca.assessment_date DESC) AS recent_assessment_rank FROM Candidates c JOIN Candidate_Assessments ca ON c.candidate_id = ca.candidate_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.832950463332963
+  },
+  {
+   "query_id": "train_00076",
+   "latency_s": 3.872920249999879,
+   "new_tokens": 75,
+   "sql": "SELECT c.candidate_id, row_number() OVER(PARTITION BY c.candidate_id ORDER BY a.date_of_attendance DESC) AS recent_attendance_rank FROM Candidates c JOIN Student_Course_Attendance a ON c.candidate_id = a.student_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.312309240402104
+  },
+  {
+   "query_id": "train_00077",
+   "latency_s": 4.038047990999985,
+   "new_tokens": 82,
+   "sql": "SELECT s.student_id, s.student_details, COUNT(scr.course_id) AS number_of_courses FROM Students s JOIN Student_Course_Registrations scr ON s.student_id = scr.student_id GROUP BY s.student_id, s.student_details ORDER BY number_of_courses DESC LIMIT 1;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.4699575521572115
+  },
+  {
+   "query_id": "train_00078",
+   "latency_s": 4.306138538000596,
+   "new_tokens": 81,
+   "sql": "SELECT p.first_name, p.last_name, COUNT(scr.course_id) AS number_of_courses FROM People p JOIN Student_Course_Registrations scr ON p.person_id = scr.student_id GROUP BY p.first_name, p.last_name ORDER BY number_of_courses DESC LIMIT 1;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.803451083776967
+  },
+  {
+   "query_id": "train_00079",
+   "latency_s": 3.625130354000248,
+   "new_tokens": 70,
+   "sql": "SELECT s.student_id, COUNT(sc.course_id) AS number_of_courses FROM Students s JOIN Student_Course_Registrations sc ON s.student_id = sc.student_id GROUP BY s.student_id ORDER BY number_of_courses DESC NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.128803669048466
+  },
+  {
+   "query_id": "train_00080",
+   "latency_s": 3.458605121999426,
+   "new_tokens": 70,
+   "sql": "SELECT s.student_id, COUNT(sc.course_id) AS number_of_courses FROM Student_Course_Registrations sc JOIN Students s ON sc.student_id = s.student_id GROUP BY s.student_id ORDER BY number_of_courses DESC NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.9686036819512047
+  },
+  {
+   "query_id": "train_00081",
+   "latency_s": 3.4316037259995937,
+   "new_tokens": 70,
+   "sql": "SELECT c.course_name, COUNT(sc.student_id) AS number_of_students FROM Courses c JOIN Student_Course_Registrations sc ON c.course_id = sc.course_id GROUP BY c.course_name ORDER BY number_of_students DESC NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.025443848222501
+  },
+  {
+   "query_id": "train_00082",
+   "latency_s": 4.332731511999555,
+   "new_tokens": 82,
+   "sql": "SELECT c.course_id, COUNT(sc.student_id) AS number_of_students, c.course_name FROM Courses c JOIN Student_Course_Registrations sc ON c.course_id = sc.course_id GROUP BY c.course_id, c.course_name ORDER BY number_of_students DESC NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.8495581416382265
+  },
+  {
+   "query_id": "train_00083",
+   "latency_s": 3.2411414529997273,
+   "new_tokens": 62,
+   "sql": "SELECT c.candidate_id, c.candidate_details FROM Candidates c JOIN Candidate_Assessments ca ON c.candidate_id = ca.candidate_id WHERE ca.asessment_outcome_code = 'PASS';",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.0467392351347335
+  },
+  {
+   "query_id": "train_00084",
+   "latency_s": 2.8917653009993955,
+   "new_tokens": 56,
+   "sql": "SELECT c.candidate_id FROM Candidates c JOIN Candidate_Assessments ca ON c.candidate_id = ca.candidate_id WHERE ca.asessment_outcome_code ilike '%pass%';",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.857080166111704
+  },
+  {
+   "query_id": "train_00085",
+   "latency_s": 3.720630103000076,
+   "new_tokens": 71,
+   "sql": "SELECT p.cell_mobile_number FROM People p JOIN Candidates c ON p.person_id = c.candidate_id JOIN Candidate_Assessments ca ON c.candidate_id = ca.candidate_id WHERE ca.asessment_outcome_code = 'fail';",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 4.669044190295605
+  },
+  {
+   "query_id": "train_00086",
+   "latency_s": 3.711110584999915,
+   "new_tokens": 71,
+   "sql": "SELECT p.cell_mobile_number FROM People p JOIN Candidates c ON p.person_id = c.candidate_id JOIN Candidate_Assessments ca ON c.candidate_id = ca.candidate_id WHERE ca.asessment_outcome_code = 'fail';",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 5.006126873757239
+  },
+  {
+   "query_id": "train_00087",
+   "latency_s": 1.7288539060000403,
+   "new_tokens": 29,
+   "sql": "SELECT s.student_id FROM Student_Course_Registrations s WHERE s.course_id = 301;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.3758837827090247
+  },
+  {
+   "query_id": "train_00088",
+   "latency_s": 1.6603026929997213,
+   "new_tokens": 29,
+   "sql": "SELECT s.student_id FROM Student_Course_Registrations s WHERE s.course_id = 301;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.627944046606899
+  },
+  {
+   "query_id": "train_00089",
+   "latency_s": 2.129159236000305,
+   "new_tokens": 41,
+   "sql": "SELECT s.student_id FROM Student_Course_Registrations s WHERE s.course_id = 301 ORDER BY s.registration_date DESC LIMIT 1;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.0610227823717615
+  },
+  {
+   "query_id": "train_00090",
+   "latency_s": 2.2078938099994048,
+   "new_tokens": 42,
+   "sql": "SELECT s.student_id FROM Student_Course_Registrations s WHERE s.course_id = 301 ORDER BY s.registration_date DESC LIMIT 10;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.1336152169360503
+  },
+  {
+   "query_id": "train_00091",
+   "latency_s": 0.8776195290001851,
+   "new_tokens": 13,
+   "sql": "SELECT DISTINCT a.city FROM Addresses a;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.531888032189272
+  },
+  {
+   "query_id": "train_00092",
+   "latency_s": 1.376283773999603,
+   "new_tokens": 24,
+   "sql": "SELECT a.city FROM Addresses a GROUP BY a.city ORDER BY a.city NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.083436140637785
+  },
+  {
+   "query_id": "train_00093",
+   "latency_s": 2.2865048769999703,
+   "new_tokens": 47,
+   "sql": "SELECT DISTINCT a.city FROM Addresses a JOIN People_Addresses pa ON a.address_id = pa.address_id JOIN Students s ON pa.person_id = s.student_id;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.917106044678807
+  },
+  {
+   "query_id": "train_00094",
+   "latency_s": 2.586078527999234,
+   "new_tokens": 49,
+   "sql": "SELECT a.city FROM Addresses a JOIN People_Addresses pa ON a.address_id = pa.address_id JOIN Students s ON pa.person_id = s.student_id GROUP BY a.city;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 3.1635249887231147
+  },
+  {
+   "query_id": "train_00095",
+   "latency_s": 1.335295710000537,
+   "new_tokens": 20,
+   "sql": "SELECT c.course_name FROM Courses c ORDER BY c.course_name ASC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 1.972216638955615
+  },
+  {
+   "query_id": "train_00096",
+   "latency_s": 1.2130500209996171,
+   "new_tokens": 20,
+   "sql": "SELECT c.course_name FROM Courses c ORDER BY c.course_name ASC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.106073988742537
+  },
+  {
+   "query_id": "train_00097",
+   "latency_s": 1.1860974439996426,
+   "new_tokens": 19,
+   "sql": "SELECT p.first_name FROM People p ORDER BY p.first_name ASC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.0500212320703195
+  },
+  {
+   "query_id": "train_00098",
+   "latency_s": 1.1625608989998,
+   "new_tokens": 19,
+   "sql": "SELECT p.first_name FROM People p ORDER BY p.first_name ASC;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 2.100043256024943
+  },
+  {
+   "query_id": "train_00099",
+   "latency_s": 4.159850532999371,
+   "new_tokens": 81,
+   "sql": "SELECT s.student_id FROM Students s JOIN Student_Course_Registrations r ON s.student_id = r.student_id OR s.student_id = (SELECT a.student_id FROM Student_Course_Attendance a WHERE a.course_id = r.course_id) ORDER BY s.student_id NULLS LAST;",
+   "same_sql_as_voice_to_sql": true,
+   "e2e_estimate_s": 5.104059154978131
+  }
+ ]
+}

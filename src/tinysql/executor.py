@@ -37,6 +37,7 @@ class ExecResult:
     rows: list[tuple] | None
     error: str | None = None
     truncated: bool = False
+    columns: tuple[str, ...] | None = None  # result column names (for display)
 
 
 def _authorizer(action, *_args):
@@ -119,7 +120,8 @@ def _execute(db_path, sql: str, timeout_s: float, max_rows: int) -> ExecResult:
             if size > MAX_RESULT_BYTES:
                 return ExecResult(False, None, "rejected: result too large")
             rows.append(tuple(row))
-        return ExecResult(True, rows, None, truncated)
+        columns = tuple(d[0] for d in cur.description) if cur.description else None
+        return ExecResult(True, rows, None, truncated, columns)
     except sqlite3.ProgrammingError as exc:  # e.g. more than one statement
         return ExecResult(False, None, f"rejected: {exc}")
     except sqlite3.DatabaseError as exc:

@@ -133,3 +133,9 @@ def test_many_large_rows_hit_the_result_size_cap(db):
 def test_unencodable_sql_is_rejected_not_raised(db, sql):
     res = execute_readonly(db, sql)
     assert not res.ok
+
+
+def test_result_carries_column_names(db):
+    res = execute_readonly(db, "SELECT name, age AS years FROM singer LIMIT 1")
+    assert res.columns == ("name", "years")
+    assert execute_readonly(db, "SELECT nope FROM singer").columns is None
