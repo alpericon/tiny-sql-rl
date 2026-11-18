@@ -1,0 +1,36 @@
+{
+ "n": 1034,
+ "official_ex": 0.6083172147001934,
+ "official_cli_all": 0.608,
+ "ours_ex": 0.6034816247582205,
+ "agree_both": 616,
+ "ours_only": 8,
+ "official_only": 13,
+ "capped_over_s": 120,
+ "capped_rows": [
+  459,
+  460
+ ],
+ "by_hardness": {
+  "easy": {
+   "n": 248,
+   "official_ex": 0.8467741935483871,
+   "ours_ex": 0.8306451612903226
+  },
+  "medium": {
+   "n": 446,
+   "official_ex": 0.6569506726457399,
+   "ours_ex": 0.6524663677130045
+  },
+  "hard": {
+   "n": 174,
+   "official_ex": 0.4482758620689655,
+   "ours_ex": 0.4540229885057471
+  },
+  "extra": {
+   "n": 166,
+   "official_ex": 0.2891566265060241,
+   "ours_ex": 0.2891566265060241
+  }
+ }
+}

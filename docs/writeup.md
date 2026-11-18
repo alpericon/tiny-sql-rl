@@ -29,7 +29,9 @@ Three things mattered more than tuning:
   - llama-cpp-python's default `repeat_penalty=1.1` broke it again.
   - Q8_0, merged, with neutral sampling matches the evaluated model.
 
-**On voice, the 1.7B model ties the 7B model** from clean audio down to 10 dB SNR. It falls behind
+**On voice, the 1.7B model ties the 7B model** from clean audio down to 10 dB SNR. Giving it the same one-retry repair step
+the 7B pipeline had (60.8% official on dev, from 59.0%) puts it level or slightly ahead, though n=100 cannot
+separate them. In 53 of 133 retries it simply repeats its SQL: it never learned to use feedback. It falls behind
 at 0 dB. Clean ASR alone costs ~5 points, because transcripts lose capitalisation and quotes in
 literal values, so `WHERE theme = 'Aliens'` stops matching.
 

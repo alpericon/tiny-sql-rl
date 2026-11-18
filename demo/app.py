@@ -48,6 +48,10 @@ def run(db_id, question, audio):
     result, timings["text-to-SQL + query"] = timed(answer_question, question or "", db_path(db_id), load_generator())
     status = result.error and f"⚠ {result.error}" or result.answer
     timing = " · ".join(f"{k}: {v:.1f} s" for k, v in timings.items())
+    if result.repaired:
+        first = f"\n\n`{result.first_sql}`" if result.first_sql else ""
+        timing = (f"🔧 **Repaired:** the first answer failed (`{result.first_error}`), so the model was asked "
+                  f"once to fix it.{first}\n\n{timing}")
     if result.rows:
         table = gr.update(value={"data": [list(r) for r in result.rows], "headers": list(result.columns)}, visible=True)
     else:

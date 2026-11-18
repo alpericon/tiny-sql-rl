@@ -1,0 +1,16 @@
+{
+ "n": 200,
+ "execution_accuracy": 0.635,
+ "format_failure_rate": 0.0,
+ "execution_error_rate": 0.035,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 1182.94,
+ "first_attempt_execution_accuracy": 0.62,
+ "repair_attempts": 22,
+ "repair_rescued": 3,
+ "runtime": "llama-cpp-python (demo/runtime.py)",
+ "gguf": "v2-900-merged-Q8_0.gguf",
+ "threads": 6,
+ "repair": true
+}

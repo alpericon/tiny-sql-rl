@@ -64,3 +64,36 @@ def test_single_value_formatting(db):
     assert answer_question("q", db, fixed("```sql\nSELECT 10.0 / 3\n```")).answer == "The answer is 3.33."
     assert answer_question("q", db, fixed("```sql\nSELECT max(age) FROM singer WHERE age > 99\n```")).answer == \
         "The answer is empty (NULL)."
+
+
+def scripted(*completions):
+    calls, queue = [], list(completions)
+
+    def generate(batch):
+        calls.append(batch)
+        return [queue.pop(0)]
+    generate.calls = calls
+    return generate
+
+
+def test_repair_retries_once_and_reports_first_attempt(db):
+    gen = scripted("```sql\nSELECT agee FROM singer\n```", "```sql\nSELECT count(*) FROM singer\n```")
+    r = answer_question("How many?", db, gen)
+    assert r.repaired and r.answer == "The answer is 3." and r.error is None
+    assert r.first_sql == "SELECT agee FROM singer" and "agee" in r.first_error
+    assert len(gen.calls) == 2 and gen.calls[1][0][-1]["content"].startswith("That SQL failed")
+
+
+def test_no_repair_when_sql_runs_or_disabled(db):
+    gen = scripted("```sql\nSELECT name FROM singer WHERE age > 99\n```")
+    r = answer_question("q", db, gen)
+    assert not r.repaired and len(gen.calls) == 1
+    gen = scripted("```sql\nSELECT agee FROM singer\n```")
+    r = answer_question("q", db, gen, repair=False)
+    assert not r.repaired and r.error.startswith("sql_error") and len(gen.calls) == 1
+
+
+def test_failed_repair_is_final(db):
+    gen = scripted("no sql", "still no sql")
+    r = answer_question("q", db, gen)
+    assert r.repaired and "no SQL" in r.error and r.first_error == "no ```sql block" and len(gen.calls) == 2

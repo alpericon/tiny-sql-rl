@@ -39,6 +39,7 @@ column-permutation-tolerant multiset EX.
 | Qwen3-1.7B zero-shot (nf4) | 53.7% | 54.1% |
 | + GRPO, unfiltered data (nf4) | 57.1% | 58.1% |
 | **+ GRPO, pass-rate-filtered data (this model, nf4 + adapter)** | **58.5%** | **59.0%** |
+| this model + one retry on SQL errors (see Usage) | 60.3% | 60.8% |
 
 - **vs zero-shot:** 84 wins / 33 losses on the same questions (official metric, exact McNemar p<0.0001).
 - **vs the unfiltered run:** 39 / 30, p=0.34. That gap is not significant.
@@ -82,6 +83,11 @@ The prompt format matters. Use the chat template with `enable_thinking=False`, a
 as `CREATE TABLE` statements followed by the question. The exact prompt is `tinysql.prompt.build_messages`
 in the repository. The model answers with a ```sql block. Decode greedily, with no repetition penalty:
 llama-cpp-python's default `repeat_penalty=1.1` noticeably hurts it.
+
+**Repair:** if the SQL fails to run, or there is no block, one follow-up turn helps. Add the model's
+answer as the assistant turn, then the user turn *"That SQL failed: `<error>`. Write a corrected
+SQLite query that answers the question, in a ```sql block."*. This rescued 19 of 133 failures on
+Spider dev. In 53 of the 133 retries the model repeated the same SQL.
 
 ## Limitations
 

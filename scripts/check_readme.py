@@ -67,6 +67,19 @@ def main():
     checks.append(f"−{100 * (bf16_ex - gguf_q4):.1f} points")
     checks.append(f"{sum(1 for l in open(ROOT / 'data' / 'train_pass_rate.jsonl') if 0 < json.loads(l)['n_correct'] < json.loads(l)['n']):,} of")
 
+    # Y9 repair
+    rep = j(f"{B}_v2-checkpoint-900_repair.json")
+    checks.append(pct(rep["execution_accuracy"]))
+    checks.append(pct(om["v2-900-repair"]["official_ex"]))
+    checks.append(f"{rep['repair_rescued']} more rescued")
+    checks.append(f"rescues {rep['repair_rescued']} of {rep['repair_attempts']}")
+    rrecs = recs(f"{B}_v2-checkpoint-900_repair.records.jsonl")
+    same = sum(r["repaired"] and (r["pred_sql"] or "").strip() == (r["first_pred_sql"] or "").strip() for r in rrecs)
+    checks.append(f"In {same} of the retries")
+    vrep = j("voice_Qwen__Qwen3-1.7B_v2-checkpoint-900_repair.json")["conditions"]
+    for c in ["text", "clean", "20db", "10db", "0db"]:
+        checks.append(f"{round(100 * vrep[c]['ours_ex'])}%")
+
     missing = [c for c in checks if c not in README]
     for c in checks:
         print(("OK   " if c not in missing else "MISS ") + c)

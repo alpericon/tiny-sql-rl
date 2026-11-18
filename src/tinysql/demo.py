@@ -14,6 +14,7 @@ from pathlib import Path
 
 from tinysql.executor import execute_readonly
 from tinysql.prompt import build_messages, serialize_schema
+from tinysql.repair import NO_BLOCK, repair_messages
 from tinysql.reward import extract_sql
 
 
@@ -26,6 +27,9 @@ class DemoResult:
     answer: str | None
     error: str | None
     completion: str | None = None
+    repaired: bool = False  # the first answer failed and this is the one retry (tinysql.repair)
+    first_sql: str | None = None
+    first_error: str | None = None
 
 
 @lru_cache(maxsize=32)
@@ -51,16 +55,31 @@ def _answer(rows: list[tuple], truncated: bool) -> str:
     return f"Found {len(rows)} row{'s' if len(rows) != 1 else ''}."
 
 
+def _attempt(messages, db_path, generate, max_rows, timeout_s):
+    completion = generate([messages])[0]
+    sql = extract_sql(completion)
+    if sql is None:
+        return completion, None, None
+    return completion, sql, execute_readonly(db_path, sql, timeout_s=timeout_s, max_rows=max_rows)
+
+
 def answer_question(question: str, db_path: str | Path, generate: Callable, max_rows: int = 200,
-                    timeout_s: float = 10.0) -> DemoResult:
+                    timeout_s: float = 10.0, repair: bool = True) -> DemoResult:
+    """With ``repair`` (the default), an answer with no SQL block or SQL that does not run gets one
+    retry with the error message, under the same rule as the evaluation (PLAN-week4 Y9)."""
     question = question.strip()
     if not question:
         return DemoResult(question, None, None, None, None, "empty question")
-    completion = generate([build_messages(_schema(str(db_path)), question)])[0]
-    sql = extract_sql(completion)
+    messages = build_messages(_schema(str(db_path)), question)
+    completion, sql, res = _attempt(messages, db_path, generate, max_rows, timeout_s)
+    extra = {}
+    if repair and (sql is None or not res.ok):
+        first_error = NO_BLOCK if sql is None else res.error
+        extra = {"repaired": True, "first_sql": sql, "first_error": first_error}
+        retry = repair_messages(messages, completion, None if sql is None else res.error)
+        completion, sql, res = _attempt(retry, db_path, generate, max_rows, timeout_s)
     if sql is None:
-        return DemoResult(question, None, None, None, None, "the model returned no SQL block", completion)
-    res = execute_readonly(db_path, sql, timeout_s=timeout_s, max_rows=max_rows)
+        return DemoResult(question, None, None, None, None, "the model returned no SQL block", completion, **extra)
     if not res.ok:
-        return DemoResult(question, sql, None, None, None, res.error, completion)
-    return DemoResult(question, sql, res.columns, res.rows, _answer(res.rows, res.truncated), None, completion)
+        return DemoResult(question, sql, None, None, None, res.error, completion, **extra)
+    return DemoResult(question, sql, res.columns, res.rows, _answer(res.rows, res.truncated), None, completion, **extra)

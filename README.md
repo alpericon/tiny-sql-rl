@@ -27,13 +27,18 @@ Every training run uses **one seed**, so the tests cover question sampling, not 
 | GRPO, all training questions | 57.1% | 58.1% | 58 / 16, p<0.0001 |
 | **GRPO, pass-rate-filtered questions (released)** | **58.5%** | **59.0%** | 84 / 33, p<0.0001 |
 | GRPO, filtered, binary reward (ablation) | 58.2% | 58.8% | |
+| **released model + one retry on SQL errors** | **60.3%** | **60.8%** | 19 more rescued, 0 lost |
 
 - **Yes: +4.9 points** (official), significant.
 - **The difficulty filter** (train only on questions the base model solves 1–7 of 8 times) cut the
   share of groups with no learning signal from ~65% to 25–41% and made training reward rise.
   But on dev it is **not significantly better** than training on everything (39 / 30, p=0.34).
 - **The 0.1 partial credit** for executable-but-wrong SQL made **no difference** (19 / 17).
-- What still fails is mostly SQL logic. 296 of 429 failures return the wrong rows; only 10 are format failures.
+- **One retry with the error message** (the same repair step SQLCoder's pipeline had) rescues 19 of 133
+  failing answers. In 53 of the retries the model just repeats its SQL, since it was never trained on
+  multi-turn prompts.
+- What still fails is mostly SQL logic. Without repair, 296 of 429 failures return the wrong rows
+  and only 10 are format failures.
 
 ![Training curves](docs/figures/training_curves.png)
 
@@ -43,16 +48,16 @@ The test set is 100 SpokenSpider questions (3 databases, never trained on), each
 transcribed by ASR at four noise levels. SQLCoder's SQL is the voice-to-SQL project's stored output,
 re-scored with the same comparator.
 
-| Input | Qwen3-1.7B base | **GRPO model** | SQLCoder-7B |
-|---|---|---|---|
-| typed question | 46% | **57%** | — |
-| clean ASR | 43% | 52% | 52% |
-| 20 dB SNR | 43% | 55% | 50% |
-| 10 dB SNR | 43% | 52% | 48% |
-| 0 dB SNR | 27% | 38% | 44% |
+| Input | Qwen3-1.7B base | **GRPO model** | GRPO + repair | SQLCoder-7B (with its repair) |
+|---|---|---|---|---|
+| typed question | 46% | **57%** | 58% | — |
+| clean ASR | 43% | 52% | 55% | 52% |
+| 20 dB SNR | 43% | 55% | 57% | 50% |
+| 10 dB SNR | 43% | 52% | 54% | 48% |
+| 0 dB SNR | 27% | 38% | 39% | 44% |
 
-- **The 1.7B model ties the 7B model from clean to 10 dB.** No per-condition difference is
-  significant (n=100).
+- **The 1.7B model ties the 7B model from clean to 10 dB.** With a repair step on both sides it is level
+  or ahead (55 vs 52 clean, 57 vs 50 at 20 dB). No per-condition difference is significant (n=100).
 - **It degrades more at 0 dB**: −14 points vs −8 for SQLCoder. That gap is directional and was not tested.
 - **Even clean ASR costs ~5 points vs typed text.** Transcripts lose literal case and formatting
   (`"Aliens"` → `aliens`, `1000` → `1,000`), so string filters stop matching.

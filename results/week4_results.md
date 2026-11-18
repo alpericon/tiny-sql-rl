@@ -156,3 +156,60 @@ Sources: `results/demo_latency_*.json`.
   live Space (Y6). If it fails there, the fallback is text-only.
 - llama-cpp-python reuses the schema prefix between consecutive questions on the same database.
   This is why follow-up questions are ~2.7× faster than the first one.
+
+## Y9: execution-error repair (plan addendum)
+
+The rule was fixed before measuring (PLAN-week4 addendum):
+- Retry at most once, only when the answer has no ```sql block or its SQL does not execute.
+- The retry continues the conversation with the error message, decoded the same way.
+- Repair can only turn a failure into a success, never the reverse. So "with vs without" is reported
+  as a count of rescued questions, not as a test.
+
+**Full dev**, v2-900 adapter, nf4, the week-3 command plus `--repair`. The first attempts are identical to
+the week-3 run (1,034/1,034 completions), so "without repair" is exactly the week-3 result.
+
+| | Ours | Official |
+|---|---|---|
+| v2-900 (week 3) | 58.5% | 59.0% |
+| **v2-900 + repair** | **60.3%** | **60.8%** |
+| rescued / lost | 19 / 0 | 19 / 0 |
+
+Sources: `results/baseline_Qwen__Qwen3-1.7B_v2-checkpoint-900_repair.json`, `results/official/v2-900-repair.json`.
+
+**What the 133 retries became:**
+
+| First failure | → correct | → wrong result | → still failing |
+|---|---|---|---|
+| SQL did not execute (123) | 16 | 25 | 82 |
+| no ```sql block (10) | 3 | 0 | 7 |
+
+- **In 53 of 133 retries the model wrote the identical SQL again.** It ignores the error message.
+  This is the off-distribution risk named in the plan: the model was trained only on single-turn prompts.
+  The demo's failing example ("Which stadium had the most concerts?") is one of these, so repair
+  does not fix it.
+- Repair moves 25 errors into wrong results. These were already scored 0, but they now return a
+  plausible-looking table.
+- Remaining failures: 4 format, 85 exec error, 321 wrong result.
+- v2 + repair vs main-1000 (58 / 24) is not a fair comparison, because main was not given the repair
+  step. It is not reported as a result.
+
+**Voice with repair** (`results/voice_Qwen__Qwen3-1.7B_v2-checkpoint-900_repair.json`).
+The SQLCoder column is unchanged, and its stored SQL already includes voice-to-sql's repair step:
+
+| Input | v2-900 | **v2-900 + repair** | SQLCoder-7B (with its repair) | repair vs SQLCoder (w / l, p) |
+|---|---|---|---|---|
+| typed question | 57% | 58% | (52%) | 18 / 12, 0.36 |
+| clean | 52% | 55% | 52% | 14 / 11, 0.69 |
+| 20 dB | 55% | 57% | 50% | 16 / 9, 0.23 |
+| 10 dB | 52% | 54% | 48% | 16 / 10, 0.33 |
+| 0 dB | 38% | 39% | 44% | 6 / 11, 0.33 |
+
+- Repair rescues 1–3 questions per condition (15–18 retries each).
+- **With repair on both sides, the 1.7B model is level with or ahead of SQLCoder-7B from clean to 10 dB.**
+  It is still behind at 0 dB. No difference is significant (n=100).
+
+**Demo path** (Q8_0, llama-cpp-python, dev-200, `results/dev200_demo-path-v2-900-merged-Q8_0_repair.json`):
+62.0% → **63.5%** with repair. There were 22 retries and 3 rescued; exec errors fell from 10.5% to 3.5%.
+The demo now repairs by default, and the UI says when an answer was repaired and shows the failed first SQL.
+Retries cost one extra generation, ~1–3 s on CPU. This was not measured separately: only 22 of 200
+questions retry.

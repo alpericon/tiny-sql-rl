@@ -48,9 +48,11 @@ MODELS = {
     "main-1000": "_main-checkpoint-1000",
     "v2-900": "_v2-checkpoint-900",
     "v2-binary-800": "_v2-binary-checkpoint-800",
+    "v2-900-repair": "_v2-checkpoint-900_repair",  # PLAN-week4 Y9
 }
 CAP_S = 120
-PAIRS = [("v2-900", "base"),("v2-900", "main-1000"), ("v2-900", "v2-binary-800"), ("main-1000", "base")]
+PAIRS = [("v2-900", "base"),("v2-900", "main-1000"), ("v2-900", "v2-binary-800"), ("main-1000", "base"),
+         ("v2-900-repair", "v2-900")]
 
 sys.path.insert(0, str(OFFICIAL))
 from evaluation import Evaluator  # noqa: E402

@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT / "demo"))
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--threads", type=int, default=8)
+    ap.add_argument("--repair", action="store_true")
     args = ap.parse_args()
     os.environ["TINYSQL_THREADS"] = str(args.threads)
 
@@ -34,10 +35,11 @@ def main():
 
     dev = load_subset(load_spider_split(ROOT / "data" / "spider" / "dev.json"),
                       json.loads((ROOT / "data" / "dev200_ids.json").read_text(encoding="utf-8")))
-    records, summary = evaluate(dev, ROOT / "data" / "spider" / "database", load_generator(), batch_size=1)
+    records, summary = evaluate(dev, ROOT / "data" / "spider" / "database", load_generator(), batch_size=1,
+                               repair=args.repair)
     summary.update(runtime="llama-cpp-python (demo/runtime.py)", gguf=Path(os.environ["TINYSQL_GGUF"]).name,
-                   threads=args.threads)
-    tag = f"dev200_demo-path-{Path(os.environ['TINYSQL_GGUF']).stem}"
+                   threads=args.threads, repair=args.repair)
+    tag = f"dev200_demo-path-{Path(os.environ['TINYSQL_GGUF']).stem}" + ("_repair" if args.repair else "")
     (ROOT / "results" / f"{tag}.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
     with (ROOT / "results" / f"{tag}.records.jsonl").open("w", encoding="utf-8") as f:
         for r in records:

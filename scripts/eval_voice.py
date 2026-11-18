@@ -29,6 +29,7 @@ def main():
     ap.add_argument("--adapter", type=Path, default=None)
     ap.add_argument("--batch-size", type=int, default=8)
     ap.add_argument("--max-new-tokens", type=int, default=256)
+    ap.add_argument("--repair", action="store_true", help="one retry on exec error / missing SQL block (Y9)")
     ap.add_argument("--build-csv", type=Path, default=None, help="voice-to-sql metadata.csv -> " + str(VOICE_CSV))
     args = ap.parse_args()
 
@@ -51,11 +52,12 @@ def main():
     generate = HFGenerator(args.model, args.adapter, max_new_tokens=args.max_new_tokens)
 
     all_records, summary = [], {"model": args.model, "adapter": str(args.adapter) if args.adapter else None,
-                                "decoding": "greedy, nf4 4-bit, thinking off", "conditions": {}}
+                                "decoding": "greedy, nf4 4-bit, thinking off", "repair": args.repair, "conditions": {}}
     t0 = time.perf_counter()
     for cond in CONDITIONS:
         meta = voice_rows(rows, cond)
-        records, s = evaluate(voice_examples(rows, cond), DATABASE, generate, batch_size=args.batch_size)
+        records, s = evaluate(voice_examples(rows, cond), DATABASE, generate, batch_size=args.batch_size,
+                                      repair=args.repair)
         for r, m in zip(records, meta):
             sc = score_sql(DATABASE / m["db_id"] / f"{m['db_id']}.sqlite", m["gold"], m["sqlcoder_sql"])
             r.update(condition=cond, query_id=m["query_id"], wer=float(m["wer"]),
@@ -79,7 +81,7 @@ def main():
     summary["hit_max_new_tokens_rate"] = sum(generate.hit_limit) / len(generate.hit_limit)
 
     tag = "voice_" + args.model.replace("/", "__") + (
-        f"_{args.adapter.parent.name}-{args.adapter.name}" if args.adapter else "")
+        f"_{args.adapter.parent.name}-{args.adapter.name}" if args.adapter else "") + ("_repair" if args.repair else "")
     (ROOT / "results" / f"{tag}.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
     with (ROOT / "results" / f"{tag}.records.jsonl").open("w", encoding="utf-8") as f:
         for r in all_records:
