@@ -129,3 +129,40 @@ def test_repair_records_dedup_and_cap_per_question(db_dir):
     assert per_q == {"How many rows?": 2, "Names?": 1}
     first_sqls = [r["prompt"][-2]["content"] for r in recs if r["question"] == "How many rows?"]
     assert len(set(first_sqls)) == 2
+
+
+def _rec(i, kind):
+    return {"prompt": [{"role": "user", "content": f"{kind}{i}"}], "db_path": "p", "gold": "g",
+            "db_id": "d", "question": f"q{i}", "kind": kind, "first_error": "x"}
+
+
+def test_mix_records_hits_the_fraction_and_keeps_common_columns():
+    from tinysql.grpo_data import mix_records
+
+    first = [{k: v for k, v in _rec(i, "first").items() if k != "first_error"} for i in range(10)]
+    repair = [_rec(i, "repair") for i in range(25)]
+    mixed = mix_records(first, repair, repair_frac=0.5, seed=0)
+    kinds = [r["kind"] for r in mixed]
+    assert kinds.count("first") == 10 and kinds.count("repair") == 10
+    assert all(set(r) == {"prompt", "db_path", "gold", "db_id", "question", "kind"} for r in mixed)
+    assert mixed == mix_records(first, repair, repair_frac=0.5, seed=0)  # deterministic
+    assert kinds != sorted(kinds)  # shuffled, not blocked
+
+
+def test_mix_records_downsamples_first_turn_when_repair_is_scarce():
+    from tinysql.grpo_data import mix_records
+
+    first = [{k: v for k, v in _rec(i, "first").items() if k != "first_error"} for i in range(10)]
+    mixed = mix_records(first, [_rec(i, "repair") for i in range(3)], repair_frac=0.5, seed=0)
+    kinds = [r["kind"] for r in mixed]
+    assert kinds.count("repair") == 3 and kinds.count("first") == 3
+
+
+def test_kind_reward_logger_only_scores_its_kind():
+    from tinysql.grpo_data import kind_reward_logger
+
+    base = lambda prompts, completions, **kw: [1.0, 0.1, 0.0]  # noqa: E731
+    log_repair = kind_reward_logger(base, "repair")
+    out = log_repair([None] * 3, ["a", "b", "c"], kind=["first", "repair", "repair"])
+    assert out == [None, 0.1, 0.0]
+    assert log_repair.__name__ == "reward_repair"
