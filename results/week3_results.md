@@ -100,3 +100,56 @@ Results:
 - 1,000 steps × 4 prompts is about 2.4 epochs over the kept set.
 - 33% of training questions are never solved and 41% are always solved. Those 74% give no GRPO
   signal at the base policy. This matches the ~65% zero-variance groups seen in the main run's log.
+
+## X6: voice EX vs SQLCoder (RQ2, RQ4)
+
+**Data.** The data is the 100 SpokenSpider queries from voice-to-sql, each with ASR transcripts at 4 SNR
+conditions: `data/spokenspider_transcripts.csv`, a slim copy of voice-to-sql's `data/metadata.csv`.
+- All 100 are Spider *train* questions on 3 databases (student_assessment 44, farm 40,
+  department_management 16).
+- All 100 are in `data/spokenspider_exclude.json`, so none was trained on.
+
+**Method** (`scripts/eval_voice.py`):
+- Our models get each transcript in the same prompt and decoding as Spider dev (greedy, 4-bit).
+- "text" is the original typed question (no ASR).
+- SQLCoder-7B's stored SQL (voice-to-sql pipeline, including its repair step) is re-scored with
+  **our** comparator (`tinysql.evaluate.score_sql`).
+  - Our comparator gives SQLCoder 2 more matches per condition than voice-to-sql's own matcher (52 vs 50
+    clean). It tolerates column permutation.
+  - SQLCoder only ever saw transcripts, so its "text" number is its clean-transcript result.
+
+Sources: `results/voice_Qwen__Qwen3-1.7B_v2-checkpoint-900.json`, `results/voice_Qwen__Qwen3-1.7B.json`.
+
+| Condition | mean WER | Qwen3-1.7B base | **v2-900** | SQLCoder-7B | v2 vs SQLCoder (w / l, p) | v2 vs base (w / l, p) |
+|---|---|---|---|---|---|---|
+| text (no ASR) | — | 46% | **57%** | (52%) | 18 / 13, 0.47 | 15 / 4, 0.019 |
+| clean | 1.3% | 43% | 52% | 52% | 12 / 12, 1.0 | 11 / 2, 0.022 |
+| 20 dB | 1.7% | 43% | 55% | 50% | 15 / 10, 0.42 | 13 / 1, 0.002 |
+| 10 dB | 4.5% | 43% | 52% | 48% | 15 / 11, 0.56 | 11 / 2, 0.022 |
+| 0 dB | 16.9% | 27% | 38% | 44% | 5 / 11, 0.21 | 11 / 0, 0.001 |
+
+The base model's format failures are 9–10% per condition; v2's are 0–2%.
+
+### Reading
+
+- **RQ2: on these 100 queries, the 1.7B GRPO model matches SQLCoder-7B at clean to 10 dB.**
+  None of the per-condition differences is significant: 12–15 wins vs 10–12 losses. With n=100 on 3
+  databases, "matches" means "no detectable difference", not "equal".
+- **GRPO helps on voice too.** v2 beats its own base model in every condition, by +9 to +12pp
+  (p ≤ 0.022 everywhere). The base model is significantly behind SQLCoder at 0 dB (4 / 21, p=0.001)
+  and trails at every other condition.
+- **RQ4: v2 is as noise-robust as its base, but not as robust as SQLCoder.**
+  - Clean → 0 dB costs v2 14pp (1 gained / 15 lost, p=0.0005) and the base 16pp. SQLCoder loses 8pp
+    (2 / 10, p=0.039).
+  - At 0 dB, SQLCoder is ahead (44 vs 38, p=0.21, not significant).
+  - The questions v2 loses at 0 dB have a mean WER of 27% vs 17% overall. They are real ASR errors
+    ("departments" → "apartments", "acting" → "action", "ID" → "unit"). SQLCoder's
+    repair step and larger model recover some of these.
+- **Even clean ASR costs our model 5pp vs typed text** (57 → 52), at 1.3% WER. 7 of the 9 flips are
+  losses, and they come from lost formatting, not wrong words:
+  - quoted, capitalised literals become lower case (`"Aliens"` → `aliens`, `"Village"` → `village`), so
+    string filters no longer match;
+  - "1000" becomes "1,000".
+  - One flip had an identical question text: that is the batch-composition noise seen on dev.
+
+  Value normalisation before the SQL stage, or case-insensitive literal matching, would target exactly this.

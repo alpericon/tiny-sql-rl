@@ -1,0 +1,69 @@
+{
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": null,
+ "decoding": "greedy, nf4 4-bit, thinking off",
+ "conditions": {
+  "text": {
+   "n": 100,
+   "ours_ex": 0.46,
+   "ours_format_fail": 0.09,
+   "ours_exec_error": 0.17,
+   "sqlcoder_ex": 0.52,
+   "sqlcoder_exec_error": 0.15,
+   "ours_wins": 14,
+   "ours_losses": 20,
+   "mcnemar_p": 0.39152830513194203,
+   "mean_wer": 0.012543631806789699
+  },
+  "clean": {
+   "n": 100,
+   "ours_ex": 0.43,
+   "ours_format_fail": 0.09,
+   "ours_exec_error": 0.18,
+   "sqlcoder_ex": 0.52,
+   "sqlcoder_exec_error": 0.15,
+   "ours_wins": 9,
+   "ours_losses": 18,
+   "mcnemar_p": 0.12207812070846558,
+   "mean_wer": 0.012543631806789699
+  },
+  "20db": {
+   "n": 100,
+   "ours_ex": 0.43,
+   "ours_format_fail": 0.09,
+   "ours_exec_error": 0.18,
+   "sqlcoder_ex": 0.5,
+   "sqlcoder_exec_error": 0.15,
+   "ours_wins": 11,
+   "ours_losses": 18,
+   "mcnemar_p": 0.26493089646101,
+   "mean_wer": 0.017057520695678587
+  },
+  "10db": {
+   "n": 100,
+   "ours_ex": 0.43,
+   "ours_format_fail": 0.1,
+   "ours_exec_error": 0.18,
+   "sqlcoder_ex": 0.48,
+   "sqlcoder_exec_error": 0.16,
+   "ours_wins": 12,
+   "ours_losses": 17,
+   "mcnemar_p": 0.45825831964612007,
+   "mean_wer": 0.04493043373035633
+  },
+  "0db": {
+   "n": 100,
+   "ours_ex": 0.27,
+   "ours_format_fail": 0.1,
+   "ours_exec_error": 0.17,
+   "sqlcoder_ex": 0.44,
+   "sqlcoder_exec_error": 0.19,
+   "ours_wins": 4,
+   "ours_losses": 21,
+   "mcnemar_p": 0.0009105205535888672,
+   "mean_wer": 0.16878420199511526
+  }
+ },
+ "wall_seconds": 335.3,
+ "hit_max_new_tokens_rate": 0.016
+}

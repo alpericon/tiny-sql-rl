@@ -25,6 +25,18 @@ Generate = Callable[[list[Messages]], list[str]]
 EVAL_MAX_ROWS = 200_000
 
 
+def score_sql(db_path: str | Path, gold_sql: str, pred_sql: str, timeout_s: float = 30.0) -> dict:
+    """EX of one predicted query against gold: {exec_ok, match, error}. Also used to re-score
+    SQL produced by other systems (e.g. SQLCoder in voice-to-sql) with the same comparator."""
+    gold = execute_readonly(db_path, gold_sql, timeout_s=timeout_s, max_rows=EVAL_MAX_ROWS)
+    pred = execute_readonly(db_path, pred_sql, timeout_s=timeout_s, max_rows=EVAL_MAX_ROWS)
+    match = False
+    if pred.ok and gold.ok and not pred.truncated and not gold.truncated:
+        match = results_match(pred.rows, gold.rows, ordered=gold_is_ordered(gold_sql))
+    error = pred.error if not pred.ok else (None if gold.ok else f"gold: {gold.error}")
+    return {"exec_ok": pred.ok, "match": match, "error": error}
+
+
 def evaluate(
     examples: Sequence[Example],
     database_dir: str | Path,
@@ -70,12 +82,7 @@ def evaluate(
                 "error": None,
             }
             if pred_sql is not None:
-                gold = execute_readonly(db_path(e.db_id), e.query, timeout_s=timeout_s, max_rows=EVAL_MAX_ROWS)
-                pred = execute_readonly(db_path(e.db_id), pred_sql, timeout_s=timeout_s, max_rows=EVAL_MAX_ROWS)
-                rec["exec_ok"] = pred.ok
-                rec["error"] = pred.error if not pred.ok else (None if gold.ok else f"gold: {gold.error}")
-                if pred.ok and gold.ok and not pred.truncated and not gold.truncated:
-                    rec["match"] = results_match(pred.rows, gold.rows, ordered=gold_is_ordered(e.query))
+                rec.update(score_sql(db_path(e.db_id), e.query, pred_sql, timeout_s=timeout_s))
             records.append(rec)
 
     n = len(records)

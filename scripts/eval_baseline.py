@@ -15,10 +15,10 @@ import time
 from pathlib import Path
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 from tinysql.data import load_spider_split
 from tinysql.evaluate import evaluate
+from tinysql.hf import HFGenerator
 from tinysql.subset import load_subset
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,60 +40,8 @@ def main():
 
     assert torch.cuda.is_available(), "CUDA not available: is the CPU torch wheel installed?"
 
-    tok = AutoTokenizer.from_pretrained(args.model)
-    tok.padding_side = "left"
-    if tok.pad_token is None:
-        tok.pad_token = tok.eos_token
-    quant = None if args.no_4bit else BitsAndBytesConfig(
-        load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16
-    )
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model, quantization_config=quant, dtype=torch.bfloat16, device_map="cuda:0"
-    )
-    if args.adapter is not None:
-        from peft import PeftModel
-
-        model = PeftModel.from_pretrained(model, str(args.adapter))
-    model.eval()
-
-    prompt_tokens: list[int] = []
-    hit_limit: list[bool] = []
-
-    def render(messages):
-        kwargs = {"tokenize": False, "add_generation_prompt": True}
-        try:  # Qwen3-style models: disable the thinking block for a fair, fast baseline
-            return tok.apply_chat_template(messages, enable_thinking=False, **kwargs)
-        except TypeError:
-            return tok.apply_chat_template(messages, **kwargs)
-
-    @torch.inference_mode()
-    def generate(batch):
-        texts = [render(m) for m in batch]
-        enc = tok(texts, return_tensors="pt", padding=True).to(model.device)
-        lengths = enc["attention_mask"].sum(dim=1).tolist()
-        prompt_tokens.extend(lengths)
-        too_long = [n for n in lengths if n > args.max_prompt_tokens]
-        if too_long:
-            raise RuntimeError(f"prompt of {max(too_long)} tokens exceeds --max-prompt-tokens; refusing to truncate")
-        # Override each model's generation_config sampling defaults (e.g. Qwen2.5-Coder ships
-        # repetition_penalty=1.1, which penalises re-using schema names) so decoding is identical.
-        out = model.generate(
-            **enc,
-            max_new_tokens=args.max_new_tokens,
-            do_sample=False,
-            repetition_penalty=1.0,
-            temperature=None,
-            top_p=None,
-            top_k=None,
-            pad_token_id=tok.pad_token_id,
-        )
-        new = out[:, enc["input_ids"].shape[1]:]
-        cfg_eos = model.generation_config.eos_token_id
-        cfg_eos = cfg_eos if isinstance(cfg_eos, (list, tuple)) else [cfg_eos]  # int for some models
-        stop_ids = {t for t in (tok.eos_token_id, tok.pad_token_id, *cfg_eos) if t is not None}
-        for row in new.tolist():
-            hit_limit.append(len(row) == args.max_new_tokens and not any(t in stop_ids for t in row))
-        return tok.batch_decode(new, skip_special_tokens=True)
+    generate = HFGenerator(args.model, args.adapter, args.no_4bit, args.max_new_tokens, args.max_prompt_tokens)
+    prompt_tokens, hit_limit = generate.prompt_tokens, generate.hit_limit
 
     dev = load_spider_split(SPIDER / "dev.json")
     if args.subset is not None:

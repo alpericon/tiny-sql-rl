@@ -62,3 +62,16 @@ def test_records_keep_inputs_and_outputs(db_dir):
 def test_generator_returning_wrong_count_raises(db_dir):
     with pytest.raises(ValueError):
         evaluate(EXAMPLES, db_dir, lambda batch: ["x"])
+
+
+def test_score_sql_matches_evaluate_semantics(db_dir):
+    from tinysql.evaluate import score_sql
+
+    db = db_dir / "toy" / "toy.sqlite"
+    assert score_sql(db, "SELECT count(*) FROM singer", "SELECT COUNT(id) FROM singer") == {
+        "exec_ok": True, "match": True, "error": None}
+    wrong = score_sql(db, "SELECT name FROM singer ORDER BY age DESC LIMIT 1",
+                      "SELECT name FROM singer ORDER BY age LIMIT 1")
+    assert wrong["exec_ok"] and not wrong["match"]
+    bad = score_sql(db, "SELECT age FROM singer", "SELECT agee FROM singer")
+    assert not bad["exec_ok"] and not bad["match"] and bad["error"]
