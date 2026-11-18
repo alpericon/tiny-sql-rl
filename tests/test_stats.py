@@ -41,3 +41,11 @@ def test_paired_summary_rejects_misordered_questions():
     b = dict(a, question="q2")
     with pytest.raises(ValueError):
         paired_summary([a, b], [b, a])
+
+
+def test_latency_summary_median_and_nearest_rank_p95():
+    from tinysql.stats import latency_summary
+
+    s = latency_summary([float(x) for x in range(1, 101)])  # 1..100 s
+    assert s == {"n": 100, "median_s": 50.5, "p95_s": 95.0, "mean_s": 50.5, "max_s": 100.0}
+    assert latency_summary([2.0])["p95_s"] == 2.0

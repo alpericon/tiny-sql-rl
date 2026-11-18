@@ -47,3 +47,13 @@ def paired_summary(base: list[dict], cand: list[dict]) -> dict:
         "base_breakdown": {e: sum(_outcome(r) == e for r in base) for e in errors},
         "cand_breakdown": {e: sum(_outcome(r) == e for r in cand) for e in errors},
     }
+
+
+def latency_summary(seconds: list[float]) -> dict:
+    """Median, nearest-rank p95, mean and max of per-query latencies (PLAN-week3 X7)."""
+    import statistics
+
+    xs = sorted(seconds)
+    p95 = xs[max(math.ceil(0.95 * len(xs)) - 1, 0)]
+    return {"n": len(xs), "median_s": statistics.median(xs), "p95_s": p95,
+            "mean_s": statistics.mean(xs), "max_s": xs[-1]}
