@@ -51,8 +51,9 @@ MODELS = {
     "v2-900-repair": "_v2-checkpoint-900_repair",  # PLAN-week4 Y9
 }
 CAP_S = 120
-PAIRS = [("v2-900", "base"),("v2-900", "main-1000"), ("v2-900", "v2-binary-800"), ("main-1000", "base"),
-         ("v2-900-repair", "v2-900")]
+PAIRS = [("v2-900", "base"),("v2-900", "main-1000"), ("v2-900", "v2-binary-800"), ("main-1000", "base")]
+# v2-900-repair vs v2-900 is deliberately not tested: repair can only rescue, never lose (Y9), so it
+# is reported as a count of rescued rows.
 
 sys.path.insert(0, str(OFFICIAL))
 from evaluation import Evaluator  # noqa: E402

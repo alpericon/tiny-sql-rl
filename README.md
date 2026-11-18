@@ -50,11 +50,14 @@ re-scored with the same comparator.
 
 | Input | Qwen3-1.7B base | **GRPO model** | GRPO + repair | SQLCoder-7B (with its repair) |
 |---|---|---|---|---|
-| typed question | 46% | **57%** | 58% | — |
+| typed question | 46% | **57%** | 58% | (52%)¹ |
 | clean ASR | 43% | 52% | 55% | 52% |
 | 20 dB SNR | 43% | 55% | 57% | 50% |
 | 10 dB SNR | 43% | 52% | 54% | 48% |
 | 0 dB SNR | 27% | 38% | 39% | 44% |
+
+¹ SQLCoder never saw typed text in that pipeline; its clean-transcript result is shown for reference.
+SQLCoder's repair step is voice-to-sql's own (a different prompt and mechanism), not this project's one-retry rule.
 
 - **The 1.7B model ties the 7B model from clean to 10 dB.** With a repair step on both sides it is level
   or ahead (55 vs 52 clean, 57 vs 50 at 20 dB). No per-condition difference is significant (n=100).
