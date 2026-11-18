@@ -18,8 +18,9 @@ and the merged model is evaluated again.
 
 Sources: `results/baseline_v2-900-merged-bf16.json`, `results/baseline_v2-900-merged-nf4.json`.
 
-- **Merging loses nothing measurable.** Neither merged version differs significantly from the adapter
-  model.
+- **No detectable difference from merging.** Neither merged version differs significantly from the
+  adapter model. This is not proof of equivalence: with 158 and 66 discordant questions, a loss
+  of a few points cannot be ruled out.
 - **bf16 vs nf4 (both merged): 59.7 vs 57.5, 70 / 92, p=0.099.**
   - The direction suggests 4-bit costs ~2pp, but the test is not significant.
   - The base model was never evaluated in bf16, so this cannot be attributed to the adapter.
@@ -41,10 +42,12 @@ The three systems were run back to back under the same conditions, while the off
 Sources: `results/latency_*_y2.json`.
 
 - **The merged model has no adapter overhead.** Per token it is as fast as the base model (45 vs 46 ms).
-- **It is ~32% faster than SQLCoder-7B** at the median (1.42 vs 2.08 s). This confirms the week-3
-  hypothesis (~25% faster, from the no-adapter lower bound), now measured on the release model.
-  - Most of the gap is fewer output tokens (31 vs 41.5 median), not faster decoding. Per token the
-    1.7B and 7B 4-bit models remain close (45 vs 50 ms).
+- **About 30% lower median latency than SQLCoder-7B** (1.42 vs 2.08 s; one run of 100 queries, no CI).
+  This is in line with the week-3 hypothesis (~25%, from the no-adapter lower bound).
+  - Most of the gap comes from shorter outputs (31 vs 41.5 median tokens), not faster decoding. Per
+    token the 1.7B and 7B 4-bit models remain close (45 vs 50 ms).
+  - SQLCoder runs with its own 300-token limit, ours with 256; neither is hit at the median.
+  - The 1.42 vs 1.49 s gap between merged and base is noise.
 - Memory: 1.4 GiB vs 4.0 GiB peak.
 
 ## Y3: GGUF export (llama.cpp b12400)
@@ -72,7 +75,9 @@ and quantises it with `llama-quantize`. Both tools come from llama.cpp tag b1240
 
 Sources: `results/dev200_gguf-v2-900-merged-Q8_0.json`, `results/dev200_gguf-v2-900-merged-Q4_K_M.json`.
 
-- **Q8_0 is faithful.** It disagrees with the bf16 merged model on only 6 of 200 questions.
+- **No detectable difference between Q8_0 and bf16.** They disagree on only 6 of 200 questions
+  (2 / 4, p=0.69). With n=200 this bounds the gap only loosely (roughly ±5pp), and is not proof of
+  equivalence.
 - **Q4_K_M breaks the model: −12.5pp vs bf16 (p<0.001).** 14 of its 31 losses are format failures:
   it answers with bare SQL instead of a ```sql block, which the evaluation (and the demo) require.
   - The cause is visible in the first output token. Q8_0 puts p≈1.0 on ```` ``` ````, while Q4_K_M
@@ -99,6 +104,22 @@ Sources: `results/dev200_gguf-v2-900-merged-Q8_0.json`, `results/dev200_gguf-v2-
 - The example questions are ones the model answers correctly, checked by hand. The UI says it is
   wrong on roughly 4 in 10 questions.
 
+**Demo path accuracy** (`scripts/eval_demo_path.py`): the demo's own generator (Q8_0 through
+llama-cpp-python 0.3.16), run on dev-200 with the same evaluate() harness. This was added after the
+Y1–Y3 review, which noted that the Q8_0 accuracy above was measured through llama-server.
+
+| Generation path | dev-200 EX | Format fail | vs llama-server Q8_0 (w / l, p) | vs merged bf16 (w / l, p) |
+|---|---|---|---|---|
+| demo path (llama-cpp-python, Q8_0) | 62.0% | 1 | 2 / 5, 0.45 | 2 / 7, 0.18 |
+
+Source: `results/dev200_demo-path-v2-900-merged-Q8_0.json`.
+
+- **No detectable difference from the measured Q8_0.** 165 of 200 completions are identical to the
+  llama-server ones.
+- The older bundled llama.cpp that broke Q4_K_M's format does not affect Q8_0 (format failures: 1 of 200).
+- vs bf16 the gap is 2.5pp (2 / 7, p=0.18). It is not significant, but it points the same way as
+  every quantised variant.
+
 **CPU gate** (`scripts/bench_demo.py`, demo code path, Q8_0, i9-12900H in WSL2):
 - Text-to-SQL is timed on the first 30 clean SpokenSpider transcripts.
 - Speech-to-text is timed on four 5-second clips, 3 runs each. The SpokenSpider audio itself was
@@ -112,8 +133,14 @@ Sources: `results/dev200_gguf-v2-900-merged-Q8_0.json`, `results/dev200_gguf-v2-
 
 Sources: `results/demo_latency_*.json`.
 
-- **Gate: passed locally.** At 2 threads with a cold cache (the worst case), the median is 6.3 s,
-  under the ~15 s limit. So the Space ships with **voice enabled**.
+- **Preliminary local gate: passed.** At 2 threads with a cold cache (the worst case), the median is
+  6.3 s, under the ~15 s limit. So the Space is built with **voice enabled**. The evidence is limited:
+  - speech-to-text was timed on four synthetic 5-second clips, not on real questions;
+  - text-to-SQL used 30 questions on 3 databases;
+  - model loading and long utterances are excluded;
+  - Whisper runs with beam size 1.
+
+  The decisive check is the live Space.
 - 2 threads of an i9-12900H are faster than 2 free-tier vCPUs, so the gate is re-checked on the
   live Space (Y6). If it fails there, the fallback is text-only.
 - llama-cpp-python reuses the schema prefix between consecutive questions on the same database.

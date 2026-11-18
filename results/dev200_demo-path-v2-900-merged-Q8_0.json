@@ -1,0 +1,12 @@
+{
+ "n": 200,
+ "execution_accuracy": 0.62,
+ "format_failure_rate": 0.005,
+ "execution_error_rate": 0.105,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 431.11,
+ "runtime": "llama-cpp-python (demo/runtime.py)",
+ "gguf": "v2-900-merged-Q8_0.gguf",
+ "threads": 8
+}

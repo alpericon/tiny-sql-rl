@@ -229,7 +229,10 @@ Sources: `results/latency_ours_Qwen__Qwen3-1.7B_v2-checkpoint-900.json`, `result
   So predictions that do not finish within 120 s are scored as wrong:
   - base: 1 row; main: 3; v2: 2; v2-binary: 3 (rows 459/460 on wta_1, 730 on world_1).
   - For base and v2, the uncapped runs (`results/official/uncapped/`, ~25 min per slow query) gave
-    identical rows, so the cap changes no score.
+    identical rows, so for those two models the cap changes no score.
+  - main and v2-binary (row 730 on world_1, a nested correlated subquery) were not run uncapped,
+    so for them this is not verified. The capped prediction is a different question's SQL shape
+    (wrong filter), so it is very likely wrong anyway.
 
 Source: `results/official_ex.json`. Per-row files are in `results/official/`.
 
@@ -252,10 +255,11 @@ Source: `results/official_ex.json`. Per-row files are in `results/official/`.
 **Every week-3 conclusion holds under the official metric.** The v2-vs-main gap is, if anything,
 weaker (p=0.34 vs 0.09).
 
-**Why the two metrics disagree** (13–23 rows per model; all were classified):
+**Why the two metrics disagree** (20–23 rows per model; all were classified):
 - **Almost all of them come from the official default of removing DISTINCT.**
   - Removing it from `count(DISTINCT x)` turns the gold into `count(x)`, so a wrong `COUNT(*)`
-    prediction is scored correct (official-only: 11–16 rows per model).
+    prediction is scored correct (official-only: 11–16 rows per model, mostly gold-side DISTINCT).
+  - One row (687) is the mirror case: the prediction's `COUNT(DISTINCT state)` loses its DISTINCT.
   - Removing it from a joined gold query brings duplicate rows back. A correct, duplicate-free
     prediction (e.g. an `IN` subquery) is then scored wrong (ours-only: 6–8 rows).
   - So the official default is the more lenient of the two here, by +0.4 to +1.0pp.
