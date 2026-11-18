@@ -14,3 +14,5 @@ data/dev_clean.json
 unsloth_compiled_cache/
 results/*_limit*
 vllm_gen_lora/
+!demo/databases/*.sqlite
+third_party/

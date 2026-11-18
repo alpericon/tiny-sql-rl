@@ -8,12 +8,15 @@ Paired tests are exact two-sided McNemar on the same questions (`scripts/paired_
 
 ## RQ1: GRPO vs zero-shot, full Spider dev (1,034)
 
-| Model | EX | Format fail | Exec error | Wrong result | vs base: wins / losses | p |
-|---|---|---|---|---|---|---|
-| Qwen3-1.7B zero-shot | 53.7% | 51 | 130 | 298 | | |
-| + GRPO main (week 2), ckpt-1000 | 57.1% | 12 | 119 | 313 | 54 / 19 | 0.0001 |
-| + GRPO v2 (filtered, partial reward), ckpt-900 | **58.5%** | 10 | 123 | 296 | 83 / 33 | <0.0001 |
-| + GRPO v2-binary (filtered, binary reward), ckpt-800 | 58.2% | 7 | 124 | 301 | 78 / 31 | <0.0001 |
+| Model | EX | Official EX (week 4, Y1) | Format fail | Exec error | Wrong result | vs base: wins / losses | p |
+|---|---|---|---|---|---|---|---|
+| Qwen3-1.7B zero-shot | 53.7% | 54.1% | 51 | 130 | 298 | | |
+| + GRPO main (week 2), ckpt-1000 | 57.1% | 58.1% | 12 | 119 | 313 | 54 / 19 | 0.0001 |
+| + GRPO v2 (filtered, partial reward), ckpt-900 | **58.5%** | **59.0%** | 10 | 123 | 296 | 83 / 33 | <0.0001 |
+| + GRPO v2-binary (filtered, binary reward), ckpt-800 | 58.2% | 58.8% | 7 | 124 | 301 | 78 / 31 | <0.0001 |
+
+The "Official EX" column is Spider's official evaluation script re-scoring the same predictions.
+See the "Week 4 Y1" section at the end for how it was run and why it differs from ours.
 
 Sources:
 - `results/baseline_Qwen__Qwen3-1.7B.json`
@@ -210,3 +213,55 @@ Sources: `results/latency_ours_Qwen__Qwen3-1.7B_v2-checkpoint-900.json`, `result
   - merging the adapter into the weights (then re-checking EX after re-quantisation);
   - serving with a runtime that removes per-token overhead (vLLM is already in this project's stack for training).
   Neither was measured; both are follow-ups, not results.
+
+## Week 4 Y1: official Spider EX
+
+**Method** (`scripts/official_eval.py`):
+- The stored full-dev predictions are re-scored, with no regeneration.
+- Scorer: Spider's official evaluation script (`third_party/test-suite-sql-eval`, commit e97acc5),
+  `--etype exec`, on the standard Spider dev databases.
+- Values are predicted (no `--plug_value`), and the official default for DISTINCT is used
+  (no `--keep_distinct`, so DISTINCT is removed before execution).
+- The test-suite (distilled) databases were not downloaded, so this is official **exec** EX, not test-suite EX.
+- **Per-row reproduction:** each row is re-scored with the script's own `eval_exec_match`. The per-row
+  totals reproduce the CLI's printed accuracy for all four models.
+- **Run-time cap:** the official script's 60 s timeout never fires (it wraps a blocking sqlite call).
+  So predictions that do not finish within 120 s are scored as wrong:
+  - base: 1 row; main: 3; v2: 2; v2-binary: 3 (rows 459/460 on wta_1, 730 on world_1).
+  - For base and v2, the uncapped runs (`results/official/uncapped/`, ~25 min per slow query) gave
+    identical rows, so the cap changes no score.
+
+Source: `results/official_ex.json`. Per-row files are in `results/official/`.
+
+| Model | Ours | Official | easy / medium / hard / extra (official) |
+|---|---|---|---|
+| base | 53.7 | 54.1 | 73.4 / 61.9 / 32.8 / 26.5 |
+| main-1000 | 57.1 | 58.1 | 82.3 / 64.6 / 35.6 / 28.3 |
+| v2-900 | 58.5 | **59.0** | 82.7 / 63.7 / 42.5 / 28.3 |
+| v2-binary-800 | 58.2 | 58.8 | 81.9 / 63.9 / 40.8 / 29.5 |
+
+**Paired comparisons with the official metric:**
+
+| Comparison | Wins / losses | p |
+|---|---|---|
+| v2 vs base | 84 / 33 | <0.0001 |
+| main vs base | 58 / 16 | <0.0001 |
+| v2 vs main | 39 / 30 | 0.34 |
+| v2 vs v2-binary | 19 / 17 | 0.87 |
+
+**Every week-3 conclusion holds under the official metric.** The v2-vs-main gap is, if anything,
+weaker (p=0.34 vs 0.09).
+
+**Why the two metrics disagree** (13–23 rows per model; all were classified):
+- **Almost all of them come from the official default of removing DISTINCT.**
+  - Removing it from `count(DISTINCT x)` turns the gold into `count(x)`, so a wrong `COUNT(*)`
+    prediction is scored correct (official-only: 11–16 rows per model).
+  - Removing it from a joined gold query brings duplicate rows back. A correct, duplicate-free
+    prediction (e.g. an `IN` subquery) is then scored wrong (ours-only: 6–8 rows).
+  - So the official default is the more lenient of the two here, by +0.4 to +1.0pp.
+- **1 row per model is an error in our executor.** Question 455 (wta_1) returns names with invalid
+  UTF-8, which our executor fails to decode, so it is unscorable for every model. Question 456 has the
+  same problem, but there all models are wrong under both metrics. Since every model loses the same
+  rows, the comparisons are unaffected. It is a known limitation of our EX (−0.1 to −0.2pp).
+- Hardness view: v2's gain over main is mostly on *hard* questions (42.5 vs 35.6). Each hardness
+  bucket is small (174 hard questions), so this is not tested.

@@ -1,0 +1,172 @@
+{
+ "script": "taoyds/test-suite-sql-eval@e97acc5 evaluation.py --etype exec (standard Spider DBs, values predicted, DISTINCT removed)",
+ "models": {
+  "base": {
+   "n": 1034,
+   "official_ex": 0.5406189555125726,
+   "official_cli_all": 0.541,
+   "ours_ex": 0.5367504835589942,
+   "agree_both": 547,
+   "ours_only": 8,
+   "official_only": 12,
+   "capped_over_s": 120,
+   "capped_rows": [
+    459
+   ],
+   "by_hardness": {
+    "easy": {
+     "n": 248,
+     "official_ex": 0.7338709677419355,
+     "ours_ex": 0.7096774193548387
+    },
+    "medium": {
+     "n": 446,
+     "official_ex": 0.6188340807174888,
+     "ours_ex": 0.6210762331838565
+    },
+    "hard": {
+     "n": 174,
+     "official_ex": 0.3275862068965517,
+     "ours_ex": 0.3333333333333333
+    },
+    "extra": {
+     "n": 166,
+     "official_ex": 0.26506024096385544,
+     "ours_ex": 0.26506024096385544
+    }
+   }
+  },
+  "main-1000": {
+   "n": 1034,
+   "official_ex": 0.5812379110251451,
+   "official_cli_all": 0.581,
+   "ours_ex": 0.5705996131528046,
+   "agree_both": 584,
+   "ours_only": 6,
+   "official_only": 17,
+   "capped_over_s": 120,
+   "capped_rows": [
+    459,
+    460,
+    730
+   ],
+   "by_hardness": {
+    "easy": {
+     "n": 248,
+     "official_ex": 0.8225806451612904,
+     "ours_ex": 0.7862903225806451
+    },
+    "medium": {
+     "n": 446,
+     "official_ex": 0.6457399103139013,
+     "ours_ex": 0.6412556053811659
+    },
+    "hard": {
+     "n": 174,
+     "official_ex": 0.3563218390804598,
+     "ours_ex": 0.3563218390804598
+    },
+    "extra": {
+     "n": 166,
+     "official_ex": 0.28313253012048195,
+     "ours_ex": 0.28313253012048195
+    }
+   }
+  },
+  "v2-900": {
+   "n": 1034,
+   "official_ex": 0.5899419729206963,
+   "official_cli_all": 0.59,
+   "ours_ex": 0.5851063829787234,
+   "agree_both": 597,
+   "ours_only": 8,
+   "official_only": 13,
+   "capped_over_s": 120,
+   "capped_rows": [
+    459,
+    460
+   ],
+   "by_hardness": {
+    "easy": {
+     "n": 248,
+     "official_ex": 0.8266129032258065,
+     "ours_ex": 0.8104838709677419
+    },
+    "medium": {
+     "n": 446,
+     "official_ex": 0.6367713004484304,
+     "ours_ex": 0.6322869955156951
+    },
+    "hard": {
+     "n": 174,
+     "official_ex": 0.42528735632183906,
+     "ours_ex": 0.43103448275862066
+    },
+    "extra": {
+     "n": 166,
+     "official_ex": 0.28313253012048195,
+     "ours_ex": 0.28313253012048195
+    }
+   }
+  },
+  "v2-binary-800": {
+   "n": 1034,
+   "official_ex": 0.5880077369439072,
+   "official_cli_all": 0.588,
+   "ours_ex": 0.5822050290135397,
+   "agree_both": 595,
+   "ours_only": 7,
+   "official_only": 13,
+   "capped_over_s": 120,
+   "capped_rows": [
+    459,
+    460,
+    730
+   ],
+   "by_hardness": {
+    "easy": {
+     "n": 248,
+     "official_ex": 0.8185483870967742,
+     "ours_ex": 0.8024193548387096
+    },
+    "medium": {
+     "n": 446,
+     "official_ex": 0.6390134529147982,
+     "ours_ex": 0.6322869955156951
+    },
+    "hard": {
+     "n": 174,
+     "official_ex": 0.40804597701149425,
+     "ours_ex": 0.41379310344827586
+    },
+    "extra": {
+     "n": 166,
+     "official_ex": 0.29518072289156627,
+     "ours_ex": 0.29518072289156627
+    }
+   }
+  }
+ },
+ "pairs_official": {
+  "v2-900 vs base": {
+   "wins": 84,
+   "losses": 33,
+   "p": 2.673285486288063e-06
+  },
+  "v2-900 vs main-1000": {
+   "wins": 39,
+   "losses": 30,
+   "p": 0.33555761823401514
+  },
+  "v2-900 vs v2-binary-800": {
+   "wins": 19,
+   "losses": 17,
+   "p": 0.8679394004284404
+  },
+  "main-1000 vs base": {
+   "wins": 58,
+   "losses": 16,
+   "p": 9.674891137601899e-07
+  }
+ }
+}
