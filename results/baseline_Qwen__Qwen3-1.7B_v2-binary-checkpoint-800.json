@@ -1,0 +1,20 @@
+{
+ "n": 1034,
+ "execution_accuracy": 0.5822050290135397,
+ "format_failure_rate": 0.006769825918762089,
+ "execution_error_rate": 0.11992263056092843,
+ "max_prompt_chars": 3386,
+ "median_prompt_chars": 1200.0,
+ "generation_seconds_total": 764.12,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "hit_max_new_tokens_rate": 0.0038684719535783366,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-binary/checkpoint-800",
+ "subset": null,
+ "quantization": "nf4-4bit",
+ "wall_seconds": 908.7,
+ "max_prompt_tokens": 930,
+ "peak_vram_gib": 2.88,
+ "max_new_tokens": 256,
+ "limit": null
+}
