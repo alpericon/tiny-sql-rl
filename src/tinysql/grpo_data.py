@@ -105,3 +105,35 @@ def build_repair_records(samples: Sequence[dict], max_per_question: int = 2, tim
             "kind": "repair", "first_error": NO_BLOCK if error is None else error,
         })
     return records
+
+
+MIX_COLUMNS = ("prompt", "db_path", "gold", "db_id", "question", "kind")
+
+
+def mix_records(first: Sequence[dict], repair: Sequence[dict], repair_frac: float = 0.5, seed: int = 3407) -> list[dict]:
+    """Shuffle first-turn and repair records so that ``repair_frac`` of the dataset is repair turns
+    (PLAN-week5 Z3). The scarcer side is kept whole and the other is sampled down (seeded); every
+    record is cut to the shared columns so the HF Dataset has one schema."""
+    import random
+
+    rng = random.Random(seed)
+    want_repair = round(len(first) * repair_frac / (1 - repair_frac))
+    if want_repair <= len(repair):
+        first_sel, repair_sel = list(first), rng.sample(list(repair), want_repair)
+    else:
+        repair_sel = list(repair)
+        first_sel = rng.sample(list(first), round(len(repair) * (1 - repair_frac) / repair_frac))
+    mixed = [{k: r.get(k, "first") if k == "kind" else r[k] for k in MIX_COLUMNS} for r in first_sel + repair_sel]
+    rng.shuffle(mixed)
+    return mixed
+
+
+def kind_reward_logger(reward_fn, target: str):
+    """A logging-only reward (weight 0 in training): ``reward_fn``'s value on prompts of kind ``target`` and
+    None elsewhere, so TRL logs the mean reward per prompt type."""
+    def logged(prompts, completions, kind, **kw):  # TRL passes the dataset's "kind" column
+        values = reward_fn(prompts, completions, **kw)
+        return [v if k == target else None for v, k in zip(values, kind)]
+
+    logged.__name__ = f"reward_{target}"
+    return logged

@@ -20,6 +20,7 @@ import csv
 import json
 import subprocess
 import time
+from collections import Counter
 from pathlib import Path
 
 import torch
@@ -29,7 +30,7 @@ from trl import GRPOConfig, GRPOTrainer
 from unsloth import FastLanguageModel
 
 from tinysql.data import load_exclusions, load_spider_split
-from tinysql.grpo_data import build_grpo_records, filter_by_pass_rate
+from tinysql.grpo_data import build_grpo_records, filter_by_pass_rate, kind_reward_logger, mix_records
 from tinysql.grpo_reward import make_reward_fn
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -99,6 +100,11 @@ def main():
                     help="keep examples whose gold result is empty (the week-2 main run did; W7 hack)")
     ap.add_argument("--pass-rate", type=Path, default=None,
                     help="data/train_pass_rate.jsonl: train only on questions the base model solves 1..n-1 of n times")
+    ap.add_argument("--init-adapter", type=Path, default=None,
+                    help="start from these LoRA weights (e.g. checkpoints/v2/checkpoint-900); fresh optimizer (PLAN-week5)")
+    ap.add_argument("--repair-data", type=Path, default=None,
+                    help="data/train_repair.jsonl: repair-turn records mixed with the first-turn records (PLAN-week5)")
+    ap.add_argument("--repair-frac", type=float, default=0.5, help="share of repair-turn records in the mix")
     args = ap.parse_args()
 
     assert torch.cuda.is_available(), "CUDA not available: is the CPU torch wheel installed?"
@@ -122,6 +128,16 @@ def main():
         use_gradient_checkpointing="unsloth",
         random_state=args.seed,
     )
+    if args.init_adapter is not None:
+        from peft import load_peft_weights, set_peft_model_state_dict
+
+        loaded = set_peft_model_state_dict(model, load_peft_weights(str(args.init_adapter)))
+        if loaded.unexpected_keys:
+            raise SystemExit(f"--init-adapter: {len(loaded.unexpected_keys)} unexpected keys, e.g. {loaded.unexpected_keys[:3]}")
+        lora_missing = [k for k in loaded.missing_keys if "lora_" in k]
+        if lora_missing:
+            raise SystemExit(f"--init-adapter: {len(lora_missing)} LoRA weights not loaded, e.g. {lora_missing[:3]}")
+        print(f"init adapter: loaded LoRA weights from {args.init_adapter}", flush=True)
 
     records = build_grpo_records(
         load_spider_split(ROOT / "data" / "train_filtered.json"),
@@ -135,9 +151,22 @@ def main():
         n_before = len(records)
         records = filter_by_pass_rate(records, rates)
         print(f"pass-rate filter: kept {len(records)} of {n_before} questions", flush=True)
+    if args.repair_data is not None:
+        with args.repair_data.open(encoding="utf-8") as f:
+            repair = [json.loads(line) for line in f]
+        records = mix_records(records, repair, repair_frac=args.repair_frac, seed=args.seed)
+        kinds = Counter(r["kind"] for r in records)
+        print(f"repair mix: {kinds['first']} first-turn + {kinds['repair']} repair-turn records "
+              f"(of {len(repair)} available)", flush=True)
     for r in records:
         r["prompt"] = tok.apply_chat_template(r["prompt"], tokenize=False, add_generation_prompt=True, enable_thinking=False)
         r["prompt_tokens"] = len(tok(r["prompt"], add_special_tokens=False)["input_ids"])
+    # Repair prompts carry the failed answer, so a few can exceed the limit: drop those (counted);
+    # first-turn prompts are still never truncated or dropped.
+    n_rec = len(records)
+    records = [r for r in records if not (r.get("kind") == "repair" and r["prompt_tokens"] > args.max_prompt_length)]
+    if len(records) < n_rec:
+        print(f"dropped {n_rec - len(records)} over-long repair prompts", flush=True)
     too_long = [r["prompt_tokens"] for r in records if r["prompt_tokens"] > args.max_prompt_length]
     if too_long:
         raise SystemExit(f"{len(too_long)} prompts exceed --max-prompt-length (max {max(too_long)}); refusing to truncate")
@@ -169,11 +198,17 @@ def main():
         seed=args.seed,
         shuffle_dataset=not args.longest_first,
         bf16=True,
+        # With repair data, two weight-0 rewards log the mean reward per prompt type (first / repair).
+        reward_weights=[1.0, 0.0, 0.0] if args.repair_data is not None else None,
     )
+    reward = make_reward_fn(binary=args.binary_reward)
+    reward_funcs = [reward]
+    if args.repair_data is not None:
+        reward_funcs += [kind_reward_logger(reward, "first"), kind_reward_logger(reward, "repair")]
     trainer = GRPOTrainer(
         model=model,
         processing_class=tok,
-        reward_funcs=[make_reward_fn(binary=args.binary_reward)],
+        reward_funcs=reward_funcs,
         args=config,
         train_dataset=dataset,
         callbacks=[HardwareLog(ROOT / "results" / f"train_log_{args.run_name}.csv")],
