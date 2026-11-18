@@ -69,3 +69,53 @@ Order:
 
 Value normalisation for ASR literals, vLLM serving, multiple seeds and BIRD stay out of scope. They go in
 the README under "future work".
+
+---
+
+## Addendum (2026-11-18): Y9, execution-error repair
+
+**Status: APPROVED 2026-11-18.**
+
+**Why.** In the demo, the model sometimes writes SQL that does not run, e.g. `no such column:
+sic.Stadium_ID`: it joined the wrong table. On full dev, v2-900 has 123 execution errors and
+10 format failures out of 429 wrong answers. voice-to-sql's SQLCoder pipeline had a repair step,
+and its numbers in our voice comparison include it, while ours never did. One retry with the error
+message is the cheapest fix and makes that comparison fairer.
+
+**Rule (fixed before measuring, no tuning):**
+- Retry **at most once**. Only these trigger a retry:
+  - the SQL does not execute (any executor error, including timeout);
+  - the answer has no ```sql block.
+- Wrong-but-executing answers are never retried, because nothing at inference time can tell they are
+  wrong.
+- The repair prompt continues the same conversation:
+  - the original messages;
+  - the model's previous answer as the assistant turn;
+  - one fixed user turn: *"That SQL failed: `<error>`. Write a corrected SQLite query that answers the
+    question, in a ```sql block."* (for a missing block: *"Your answer had no ```sql block. …"*).
+- Decoding is the same as everywhere: greedy, 256 tokens, thinking off.
+- The repaired answer is final, even if it fails again.
+
+**Consequence for the statistics.** A retry only happens when the first answer already scores 0.
+So repair can only turn losses into wins, never the reverse. "With repair" vs "without" on the same
+run is therefore reported as a count of rescued questions, not as a two-sided test. The comparison
+that matters is with repair vs SQLCoder (which also had repair), paired as before.
+
+| # | Task | Files | Done when |
+|---|---|---|---|
+| Y9a | Repair core, test-first | `src/tinysql/repair.py` (+`tests/test_repair.py`); `evaluate(..., repair=False)` | Tests cover: no retry on success or on wrong-but-executing; one retry on exec error and on missing block; the exact repair messages; never more than one retry. Records keep the first attempt (`first_pred_sql`, `first_error`, `repaired`), so "without repair" is recoverable from the same run. `repair=False` reproduces current behaviour (existing tests unchanged). |
+| Y9b | Full-dev measurement | `scripts/eval_baseline.py --repair`, `results/baseline_*_v2-checkpoint-900_repair.*`; official EX via `scripts/official_eval.py` | v2-900 (adapter, nf4, same command as week 3) on full dev with repair. Reported: EX ours and official, with vs without (rescued count), how many retries happened, how many succeeded, and what the repaired failures became (correct / wrong result / still error). |
+| Y9c | Voice comparison with repair | `scripts/eval_voice.py --repair` | The 500-row voice eval re-run with repair. Paired McNemar vs SQLCoder per condition, replacing nothing: it is added as a new row next to the no-repair one. |
+| Y9d | Demo | `src/tinysql/demo.py` (`answer_question(..., repair=True)`), `demo/app.py` | The demo repairs by default. The UI shows when an answer was repaired, and the first failed SQL. The demo-path dev-200 eval (`scripts/eval_demo_path.py --repair`) gives the demo's EX. The CPU cost is measured on the retried questions only. |
+| Y9e | Docs + review gate | README, `results/week4_results.md`, model card (local file, and re-upload of the HF README only after the user's go-ahead) | README gets a "with repair" row and the RQ2 table a "+ repair" column. The reviewer approves before the HF card is updated. |
+
+**Estimated cost:** ~1 h of work. GPU: ~20 min full dev + ~8 min voice. CPU: ~10 min official EX +
+~10 min demo-path dev-200.
+
+**Risks.**
+- **The model was trained only on single-turn prompts**, so a multi-turn repair prompt is off-distribution.
+  It may ignore the error or repeat the same SQL. That is a valid result: report the success rate as
+  measured, and keep the demo's repair only if it rescues something.
+- **It cannot fix wrong-result answers** (296 of 429), so the expected gain is bounded: at most 133
+  questions, realistically a fraction of them.
+- **Latency:** failing questions take one more generation (~1–3 s on CPU).
