@@ -1,0 +1,79 @@
+"""Check that the numbers quoted in README.md are recomputed from results/ (PLAN-week4 Y7).
+
+Each check renders a string from the result files and asserts that the README contains it.
+    python scripts/check_readme.py
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+R = ROOT / "results"
+README = (ROOT / "README.md").read_text(encoding="utf-8")
+
+
+def j(name):
+    return json.loads((R / name).read_text(encoding="utf-8"))
+
+
+def recs(name):
+    return [json.loads(l) for l in open(R / name, encoding="utf-8")]
+
+
+def pct(x, nd=1):
+    return f"{100 * x:.{nd}f}%"
+
+
+def main():
+    checks = []
+    off = j("official_ex.json")
+    B = "baseline_Qwen__Qwen3-1.7B"
+    ours = {"base": j(f"{B}.json"), "main": j(f"{B}_main-checkpoint-1000.json"),
+            "v2": j(f"{B}_v2-checkpoint-900.json"), "bin": j(f"{B}_v2-binary-checkpoint-800.json")}
+    om = off["models"]
+    for k, o in [("base", "base"), ("main", "main-1000"), ("v2", "v2-900"), ("bin", "v2-binary-800")]:
+        checks.append(pct(ours[k]["execution_accuracy"]))
+        checks.append(pct(om[o]["official_ex"]))
+    p = off["pairs_official"]
+    for key in ["v2-900 vs base", "main-1000 vs base", "v2-900 vs main-1000", "v2-900 vs v2-binary-800"]:
+        checks.append(f"{p[key]['wins']} / {p[key]['losses']}")
+    checks.append(f"p={p['v2-900 vs main-1000']['p']:.2f}")
+    checks.append(f"+{100 * (om['v2-900']['official_ex'] - om['base']['official_ex']):.1f} points")
+
+    v2r = recs(f"{B}_v2-checkpoint-900.records.jsonl")
+    fmt = sum(not r["format_ok"] for r in v2r)
+    wrong = sum(r["format_ok"] and r["exec_ok"] and not r["match"] for r in v2r)
+    fail = sum(not r["match"] for r in v2r)
+    checks.append(f"{wrong} of {fail} failures")
+    checks.append(f"only {fmt} are format failures")
+
+    voice = j("voice_Qwen__Qwen3-1.7B_v2-checkpoint-900.json")["conditions"]
+    vbase = j("voice_Qwen__Qwen3-1.7B.json")["conditions"]
+    for c in ["text", "clean", "20db", "10db", "0db"]:
+        checks.append(f"{round(100 * voice[c]['ours_ex'])}%")
+        checks.append(f"{round(100 * vbase[c]['ours_ex'])}%")
+        if c != "text":
+            checks.append(f"{round(100 * voice[c]['sqlcoder_ex'])}%")
+
+    lat = {k: j(f)["summary"] for k, f in [("merged", "latency_ours_checkpoints__v2-900-merged_y2.json"),
+                                           ("sqlcoder", "latency_sqlcoder_y2.json")]}
+    checks.append(f"{lat['merged']['text_to_sql']['median_s']:.2f} vs {lat['sqlcoder']['text_to_sql']['median_s']:.2f} s")
+    checks.append(f"reproduces {lat['sqlcoder']['same_sql_as_voice_to_sql']}/100")
+    gguf_q4 = j("dev200_gguf-v2-900-merged-Q4_K_M.json")["execution_accuracy"]
+    bf16 = [recs("baseline_v2-900-merged-bf16.records.jsonl")[i["idx"]] for i in json.load(open(ROOT / "data" / "dev200_ids.json"))]
+    bf16_ex = sum(r["match"] for r in bf16) / len(bf16)
+    checks.append(f"−{100 * (bf16_ex - gguf_q4):.1f} points")
+    checks.append(f"{sum(1 for l in open(ROOT / 'data' / 'train_pass_rate.jsonl') if 0 < json.loads(l)['n_correct'] < json.loads(l)['n']):,} of")
+
+    missing = [c for c in checks if c not in README]
+    for c in checks:
+        print(("OK   " if c not in missing else "MISS ") + c)
+    if missing:
+        raise SystemExit(f"{len(missing)} README numbers do not match results/")
+    print(f"all {len(checks)} checks pass")
+
+
+if __name__ == "__main__":
+    main()

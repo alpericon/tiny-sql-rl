@@ -16,3 +16,4 @@ results/*_limit*
 vllm_gen_lora/
 !demo/databases/*.sqlite
 third_party/
+build/
