@@ -138,9 +138,10 @@ The base model's format failures are 9–10% per condition; v2's are 0–2%.
 - **GRPO helps on voice too.** v2 beats its own base model in every condition, by +9 to +12pp
   (p ≤ 0.022 everywhere). The base model is significantly behind SQLCoder at 0 dB (4 / 21, p=0.001)
   and trails at every other condition.
-- **RQ4: v2 is as noise-robust as its base, but not as robust as SQLCoder.**
+- **RQ4: v2 degrades like its base, and directionally more than SQLCoder. The difference is not tested.**
   - Clean → 0 dB costs v2 14pp (1 gained / 15 lost, p=0.0005) and the base 16pp. SQLCoder loses 8pp
     (2 / 10, p=0.039).
+  - The 6pp gap between the drops was not tested, and on n=100 it may be noise.
   - At 0 dB, SQLCoder is ahead (44 vs 38, p=0.21, not significant).
   - The questions v2 loses at 0 dB have a mean WER of 27% vs 17% overall. They are real ASR errors
     ("departments" → "apartments", "acting" → "action", "ID" → "unit"). SQLCoder's
@@ -153,6 +154,10 @@ The base model's format failures are 9–10% per condition; v2's are 0–2%.
   - One flip had an identical question text: that is the batch-composition noise seen on dev.
 
   Value normalisation before the SQL stage, or case-insensitive literal matching, would target exactly this.
+- **Caveats:**
+  - These are Spider *train* questions. Our model never saw them, but SQLCoder-7B-2's training data is
+    not documented here and may include Spider train, which would favour it.
+  - SQLCoder's numbers include voice-to-sql's SQL-repair step, which our model does not get.
 
 ## X7: latency (RQ3)
 
@@ -179,14 +184,21 @@ Sources: `results/latency_ours_Qwen__Qwen3-1.7B_v2-checkpoint-900.json`, `result
 
 - **RQ3: on this serving stack, the smaller model gives no latency gain as deployed.** v2-900 is
   *slower* than SQLCoder-7B (2.22 vs 1.76 s median).
-  - The unmerged LoRA adapter is the cause. It nearly doubles the time per token, from 39 ms (same model,
-    no adapter) to 71 ms.
+  - Measured: the unmerged LoRA adapter nearly doubles the time per token, from 39 ms (same model, no
+    adapter) to 71 ms. That accounts for the gap.
 - **Model size matters little here.** Per token, 4-bit Qwen3-1.7B (39 ms) and 4-bit SQLCoder-7B (41 ms)
-  are almost equal. At batch 1 with bitsandbytes 4-bit, decoding is bound by per-layer kernel overhead,
-  not by weight size.
-  - The only real saving is memory: 1.4–1.5 GiB vs 4.0 GiB peak.
-  - With the adapter merged, a 1.7B model would be at best ~25% faster (1.32 vs 1.76 s, the
-    no-adapter lower bound). It would also produce fewer tokens.
+  are almost equal.
+  - Hypothesis, not measured: at batch 1 with bitsandbytes 4-bit, decoding is bound by per-layer
+    kernel overhead rather than by weight size.
+  - The only measured saving is memory: 1.4–1.5 GiB vs 4.0 GiB peak.
+  - The no-adapter run suggests a merged 1.7B model might be ~25% faster (1.32 vs 1.76 s). This is
+    unmeasured: merging and re-quantising change the weights, and possibly the kernel path.
+- **Timing caveats (small, and both favour SQLCoder):**
+  - Our timed path also re-tokenises the output to count tokens.
+  - Our timed path builds the schema text on the first query of a database, if the 5 warm-ups did not
+    cover it.
+  - The systems ran one after another on a laptop GPU that reaches ~87 °C, so thermal drift is not
+    controlled.
 - **voice-to-sql's ~14 s SQL stage was not the model.** The same SQLCoder, with the same prompt, settings
   and outputs (93/100 identical SQL), takes 1.76 s here, about 8× faster.
   - The slowdown came from how voice-to-sql ran it, likely the transformers `pipeline`, `device_map="auto"`
