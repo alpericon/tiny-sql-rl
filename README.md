@@ -130,6 +130,22 @@ and every number in `results/` comes from a committed script and its output file
   than ours. Both are reported. Our executor cannot read one wta_1 question with broken UTF-8.
 - **The demo's speech latency** was measured on short synthetic clips, on a fast laptop CPU.
 
+## Future work
+
+These are ordered by how directly the results above point to them.
+
+1. **Teach the model to use error feedback.** In 53 of 133 repair retries the model repeats the SQL
+   that just failed. It was only ever trained on single-turn prompts. Adding "error message →
+   corrected SQL" turns to GRPO training is the most direct way to raise the repair rate.
+2. **Normalise ASR literals.** Clean speech still costs ~5 points vs typed text, because transcripts
+   lose case and quotes (`'Aliens'` → `aliens`). Matching string literals against the database's actual
+   values is cheap and needs no training.
+3. **More seeds.** Filtered vs unfiltered training is +1.5 points but not significant. Only 2–3 seeds
+   per arm can separate a real effect from run-to-run variance.
+4. **Schema grounding.** Most remaining errors are wrong tables or columns (e.g. joining a table that
+   lacks the column). Sample rows in the prompt, or training data chosen around these errors, could help.
+5. **Another benchmark** (e.g. BIRD), to see whether the gains hold beyond Spider.
+
 ## License and attribution
 
 - Code: Apache-2.0.
