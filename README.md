@@ -8,7 +8,8 @@ query. This project trains Qwen3-1.7B with GRPO on an **execution reward** (does
 right rows?) and measures it against that baseline on accuracy, robustness to ASR noise and latency.
 
 - **Model:** [Alpericon/tiny-sql-rl](https://huggingface.co/Alpericon/tiny-sql-rl) (LoRA adapter, merged bf16, Q8_0 GGUF)
-- **Demo:** [Alpericon/tiny-sql-rl-demo](https://huggingface.co/spaces/Alpericon/tiny-sql-rl-demo) (text or voice, free CPU tier)
+- **Demo:** text or voice, runs locally on CPU: [docs/demo.md](docs/demo.md). A hosted Space was
+  not possible: free Gradio Spaces now need a paid plan.
 - **Full results with every caveat:** [results/week3_results.md](results/week3_results.md), [results/week4_results.md](results/week4_results.md)
 
 ## Results
@@ -118,7 +119,7 @@ and every number in `results/` comes from a committed script and its output file
 - **Spider only, SQLite only, English only.** The voice test covers just 100 questions on 3 databases.
 - **Two EX definitions.** The official default removes DISTINCT, which makes it slightly more lenient
   than ours. Both are reported. Our executor cannot read one wta_1 question with broken UTF-8.
-- **The demo's speech latency** was measured on short synthetic clips. The live Space on shared CPUs is slower.
+- **The demo's speech latency** was measured on short synthetic clips, on a fast laptop CPU.
 
 ## License and attribution
 

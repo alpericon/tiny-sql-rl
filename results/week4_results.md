@@ -140,7 +140,18 @@ Sources: `results/demo_latency_*.json`.
   - model loading and long utterances are excluded;
   - Whisper runs with beam size 1.
 
-  The decisive check is the live Space.
+  The decisive check was meant to be the live Space.
+
+## Y4 / Y6: release
+
+- **Model:** published as a public repo, [Alpericon/tiny-sql-rl](https://huggingface.co/Alpericon/tiny-sql-rl),
+  on 2026-11-18 (`scripts/upload_model.py`). It contains the adapter, the merged bf16 model, the
+  Q8_0 GGUF and the card `release/model_card.md`. File sizes were checked against the local files.
+- **Space: not deployed.** Hugging Face refused to create it: Gradio/Docker Spaces on the free CPU
+  tier now require PRO. The user chose SPEC §7's fallback: a local demo (`scripts/setup_demo.sh`,
+  `docs/demo.md`) plus a recorded video.
+  - The live-Space latency check above therefore did not happen. The CPU numbers are local only.
+  - The local demo was run end to end against the model downloaded from the Hub.
 - 2 threads of an i9-12900H are faster than 2 free-tier vCPUs, so the gate is re-checked on the
   live Space (Y6). If it fails there, the fallback is text-only.
 - llama-cpp-python reuses the schema prefix between consecutive questions on the same database.
