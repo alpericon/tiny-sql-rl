@@ -8,7 +8,7 @@ Each query is timed from prompt rendering to decoded text, with CUDA synchronise
     ~/venvs/tinysql/bin/python scripts/bench_latency.py --system sqlcoder
 
 SQLCoder uses voice-to-sql's prompt, schema format, model settings and SQL extraction, copied below from
-C:/Users/alper/Desktop/4_2/speech/project/src/text_to_sql.py (_build_prompt, build_schema,
+the voice-to-sql project's src/text_to_sql.py (_build_prompt, build_schema,
 _SQLCoderBackend, _extract_sql). As a reproduction check, its extracted SQL is compared with the SQL
 voice-to-sql stored for the same transcripts.
 
@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import re
 import time
@@ -34,7 +35,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SPIDER = ROOT / "data" / "spider"
 SQLCODER = "defog/sqlcoder-7b-2"
 # voice-to-sql downloaded SQLCoder on the Windows side; reuse that cache instead of a 13 GB re-download.
-WINDOWS_HF_CACHE = "/mnt/c/Users/alper/.cache/huggingface/hub"
+WINDOWS_HF_CACHE = os.environ.get("SQLCODER_HF_CACHE")  # e.g. a Windows-side HF cache seen from WSL; None = default cache
 WARMUP = 5
 
 

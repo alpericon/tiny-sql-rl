@@ -3,7 +3,7 @@
 # Needs ~/llama.cpp built by scripts/setup_llamacpp.sh. The converter runs with the training venv's
 # torch/transformers and llama.cpp's own gguf-py (not pip-installed).
 set -euo pipefail
-REPO=/mnt/c/Users/alper/Desktop/sql-rl
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
 MERGED="${1:-$REPO/checkpoints/v2-900-merged}"
 NAME="${2:-v2-900-merged}"
 OUT="$HOME/gguf"

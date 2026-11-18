@@ -8,7 +8,7 @@ systems are measured by one EX. Paired exact McNemar per condition.
     ~/venvs/tinysql/bin/python scripts/eval_voice.py --adapter checkpoints/v2/checkpoint-900
 
 data/spokenspider_transcripts.csv is built once from voice-to-sql's data/metadata.csv:
-    python scripts/eval_voice.py --build-csv C:/Users/alper/Desktop/4_2/speech/project/data/metadata.csv
+    python scripts/eval_voice.py --build-csv <voice-to-sql>/data/metadata.csv
 """
 
 from __future__ import annotations

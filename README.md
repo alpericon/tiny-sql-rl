@@ -83,7 +83,8 @@ RTX 3070 Ti Laptop, nf4, batch 1, 100 clean transcripts:
 2. **Difficulty filter.** The base model samples 8 answers per training question. Only questions it
    solves 1–7 times are kept: 1,688 of 6,638.
 3. **GRPO.** TRL + Unsloth + vLLM, 4-bit QLoRA r=16. Settings:
-   - 8 samples per prompt, 1,000 steps, ≤7 GB VRAM, about 5.5 h overnight on the laptop.
+   - 8 samples per prompt, 1,000 steps. The released run peaked at 5.75 GiB reserved VRAM and took
+     5.3 h of training steps overnight on the laptop (`results/train_log_v2.csv`).
    - Reward: 1.0 if the rows match gold, 0.1 if the SQL runs but is wrong, 0 otherwise.
    - Sandboxed read-only SQLite executor with a timeout.
 4. **Selection and evaluation.** The checkpoint is chosen on a 200-question dev subset with a rule fixed

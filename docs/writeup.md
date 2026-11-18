@@ -6,7 +6,7 @@ one 8 GB laptop GPU, and swap it in.
 
 **The training worked.**
 - Setup: Qwen3-1.7B with GRPO and a reward that runs the generated SQL and checks the rows, as a 4-bit QLoRA.
-- Each run took about 5.5 hours overnight.
+- Each run took about 5.3–5.7 hours of training overnight.
 - Result: Spider dev execution accuracy went from 54.1% to 59.0% with the official script
   (84 wins / 33 losses on the same questions).
 

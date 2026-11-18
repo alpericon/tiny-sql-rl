@@ -4,7 +4,7 @@
 #  - a small CPU venv with its dependencies (sqlparse, nltk + punkt)
 #  - the 20 Spider dev databases copied to ~/spider_dev_db (sqlite over /mnt/c is ~10x slower)
 set -euo pipefail
-REPO=/mnt/c/Users/alper/Desktop/sql-rl
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
 TS="$REPO/third_party/test-suite-sql-eval"
 [ -d "$TS" ] || git clone -q https://github.com/taoyds/test-suite-sql-eval "$TS"
 git -C "$TS" checkout -q e97acc546ecbee8fa27fa8dbf025ef61493a876c
