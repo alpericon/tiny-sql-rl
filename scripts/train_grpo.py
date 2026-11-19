@@ -158,7 +158,8 @@ def main():
     if args.sample_rows > 0:
         # PLAN-week8 R2: a prompt with rows over --max-prompt-length falls back to the schema-only prompt.
         records, n_fallback = rows_or_schema_only(first_turn(args.sample_rows), records, chat_tokens, args.max_prompt_length)
-        print(f"sample rows: {n_fallback} prompts over {args.max_prompt_length} tokens fell back to schema-only", flush=True)
+        print(f"sample rows: {n_fallback} prompts over {args.max_prompt_length} tokens fell back to schema-only "
+              "(counted before the pass-rate filter)", flush=True)
     with_rows = sum("-- Example rows from " in r["prompt"][1]["content"] for r in records)
     print(f"sample rows: {args.sample_rows}; example rows in {with_rows} of {len(records)} first-turn prompts", flush=True)
     if args.pass_rate is not None:

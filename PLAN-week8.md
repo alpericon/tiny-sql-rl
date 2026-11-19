@@ -47,7 +47,7 @@ no signal. This shows in `frac_reward_zero_std` (v2 started at 0.25) and is repo
 
 | # | Task | Files | Done when |
 |---|---|---|---|
-| R1 | Plumbing, test-first | `scripts/train_grpo.py --sample-rows`, `scripts/compare_checkpoints.py --sample-rows`, `tests/test_grpo_data.py` | Tests: `build_grpo_records(..., sample_rows=3)` puts `-- Example rows from` in every prompt; `sample_rows=0` gives today's records byte for byte; the question set (db_id, question) is the same for both. |
+| R1 | Plumbing, test-first | `scripts/train_grpo.py --sample-rows`, `scripts/compare_checkpoints.py --suffix _rows3 --base <v2-900 rows3 dev-200 records>`, `tests/test_grpo_data.py` | Tests: `build_grpo_records(..., sample_rows=3)` puts `-- Example rows from` in every prompt; `sample_rows=0` gives today's records byte for byte; the question set (db_id, question) is the same for both. |
 | R2 | Train prompt lengths | `scripts/prompt_lengths.py` on the 1,688 train questions → `results/prompt_lengths_train_rows3.json` | Median / max tokens with rows. `--max-prompt-length` set just above the max (prompts are never truncated). **Stop rule:** if the max exceeds ~3,000 tokens, stop and decide with you (options: cap long cell values, fewer rows for very wide tables). |
 | R3 | 50-step pre-flight, longest prompts first | `train_grpo.py --sample-rows 3 --longest-first --max-steps 50 --run-name preflight-rows` | Peak VRAM, s/step, GPU temperature logged. **Stop rule:** OOM, or >40 s/step (1,000 steps > 11 h): stop and decide with you (options: 600 steps, G=6). |
 | — | **Review gate** (R1–R3) | | Reviewer approves before the overnight run. |
