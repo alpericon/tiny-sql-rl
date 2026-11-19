@@ -1,6 +1,6 @@
 # Week 7 plan: example rows in the prompt (schema grounding, inference-only)
 
-**Status: APPROVED 2026-11-19.**
+**Status: APPROVED 2026-11-19. Done 2026-11-19: official EX 60.9 -> 63.4 (p=0.021), decision rule met, demo uses 3 example rows.**
 
 This is README "Future work" item 4, first and cheapest step: no training.
 

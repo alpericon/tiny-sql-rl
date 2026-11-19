@@ -7,7 +7,10 @@ model never saw example rows during training.
 
 - Prompts get longer: median 304 → 647 tokens, longest 930 → 1,897 (the longest prompt passed to the
   model was 2,168 tokens, under the 3,072-token guard).
-- With `sample_rows=0`, all 1,034 prompts are byte-for-byte the week-6 length (`prompt_chars` equal).
+- With `sample_rows=0`, all 1,034 prompts have the same length as in the week-6 run (`prompt_chars` equal
+  for 1,034/1,034).
+- Source for both claims: `results/prompt_lengths_rows3.json` (`scripts/prompt_lengths.py`). Token figures
+  are for first-attempt prompts; repair prompts carry the failed answer and are longer.
 
 ## Primary: Spider dev, 1,034
 
@@ -48,15 +51,15 @@ are reported, and the decision follows the rule as written.
 |---|---|---|---|---|---|
 | typed question | 58% | **66%** | 18 / 10, 0.19 | (55%) | 20 / 9, 0.06 |
 | clean | 59% | **65%** | 15 / 9, 0.31 | 55% | 17 / 7, 0.06 |
-| 20 dB | 60% | **65%** | 14 / 9, 0.41 | 53% | 18 / 6, 0.02 |
-| 10 dB | 56% | **61%** | 14 / 9, 0.41 | 51% | 18 / 8, 0.08 |
+| 20 dB | 60% | **65%** | 14 / 9, 0.40 | 53% | 18 / 6, 0.02 |
+| 10 dB | 56% | **61%** | 14 / 9, 0.40 | 51% | 18 / 8, 0.08 |
 | 0 dB | 40% | **46%** | 10 / 4, 0.18 | 45% | 8 / 7, 1.0 |
 
 Source: `results/voice_Qwen__Qwen3-1.7B_v2-checkpoint-900_repair_ground_rows3.json`.
 
 - **All five conditions improve** (+5 to +8 points). None is significant alone, and **none gets worse**.
-- **Against SQLCoder-7B** (also grounded), the 1.7B model is now ahead in every condition:
-  - including 0 dB, where it was behind before (46 vs 45);
+- **Against SQLCoder-7B** (also grounded), the 1.7B model is now at or above it in every condition:
+  - at 0 dB it is tied (46 vs 45, 8 / 7), where it was behind before;
   - 20 dB reaches p=0.02. That is one of five tests, so read it as directional, not as a confirmed win.
 
 ## Cost: CPU demo path (Q8_0, 2 threads, 30 questions)

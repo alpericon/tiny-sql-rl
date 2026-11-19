@@ -62,8 +62,8 @@ SQLCoder's repair step is voice-to-sql's own (a different prompt and mechanism),
 
 - **The 1.7B model ties the 7B model from clean to 10 dB.** With a repair step on both sides it is level
   or ahead (55 vs 52 clean, 57 vs 50 at 20 dB). No per-condition difference is significant (n=100).
-- **With 3 example rows in the prompt** (week 7) it is ahead in all five conditions (65 vs 55 clean,
-  46 vs 45 at 0 dB). Only 20 dB reaches p<0.05, and that is one of five tests, so it is directional.
+- **With 3 example rows in the prompt** (week 7) it is at or above SQLCoder in all five conditions
+  (65 vs 55 clean; 46 vs 45 at 0 dB is a tie). Only 20 dB reaches p<0.05, and that is one of five tests, so it is directional.
 - **Without example rows it degrades more at 0 dB:** −14 points vs −8 for SQLCoder. That gap is
   directional and was not tested.
 - **Clean ASR used to cost ~5 points vs typed text.** Transcripts lose literal case (`"Aliens"` → `aliens`),
@@ -164,8 +164,8 @@ These are ordered by how directly the results above point to them.
 4. **Schema grounding: first step done** (week 7, [results/week7_results.md](results/week7_results.md)).
    - Showing 3 example rows per table in the prompt, at inference only, raised official EX from 60.9% to 63.4%
      (72 / 46, p=0.021; our metric +1.8, p=0.11).
-   - It improved every voice condition (none significantly alone) and put the 1.7B model ahead of
-     SQLCoder-7B in all five.
+   - It improved every voice condition (none significantly alone) and put the 1.7B model at or above
+     SQLCoder-7B in all five (0 dB tied).
    - The gain is mostly fewer `no such column` errors (74 → 60).
    - Cost: cold CPU latency roughly doubles (5.0 → 9.3 s).
    - Next step: train with example rows, since the model never saw them in training.
