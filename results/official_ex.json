@@ -181,6 +181,42 @@
      "ours_ex": 0.2891566265060241
     }
    }
+  },
+  "v3-400-repair": {
+   "n": 1034,
+   "official_ex": 0.6276595744680851,
+   "official_cli_all": 0.628,
+   "ours_ex": 0.6199226305609284,
+   "agree_both": 634,
+   "ours_only": 7,
+   "official_only": 15,
+   "capped_over_s": 120,
+   "capped_rows": [
+    459,
+    460
+   ],
+   "by_hardness": {
+    "easy": {
+     "n": 248,
+     "official_ex": 0.8548387096774194,
+     "ours_ex": 0.842741935483871
+    },
+    "medium": {
+     "n": 446,
+     "official_ex": 0.6838565022421524,
+     "ours_ex": 0.672645739910314
+    },
+    "hard": {
+     "n": 174,
+     "official_ex": 0.4425287356321839,
+     "ours_ex": 0.4425287356321839
+    },
+    "extra": {
+     "n": 166,
+     "official_ex": 0.3313253012048193,
+     "ours_ex": 0.3313253012048193
+    }
+   }
   }
  },
  "pairs_official": {
@@ -203,6 +239,11 @@
    "wins": 58,
    "losses": 16,
    "p": 9.674891137601899e-07
+  },
+  "v3-400-repair vs v2-900-repair": {
+   "wins": 39,
+   "losses": 19,
+   "p": 0.011928139715763175
   }
  }
 }

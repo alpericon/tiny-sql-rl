@@ -1,0 +1,10 @@
+{
+ "reference": "baseline_Qwen__Qwen3-1.7B_v2-checkpoint-900_repair.records.jsonl",
+ "adapter": "checkpoints/v3/checkpoint-400",
+ "inputs": 133,
+ "rescued": 23,
+ "reference_rescued": 19,
+ "now_executes_but_wrong": 26,
+ "still_failing": 84,
+ "repeated_identical_sql": 45
+}
