@@ -75,3 +75,30 @@ def test_score_sql_matches_evaluate_semantics(db_dir):
     assert wrong["exec_ok"] and not wrong["match"]
     bad = score_sql(db, "SELECT age FROM singer", "SELECT agee FROM singer")
     assert not bad["exec_ok"] and not bad["match"] and bad["error"]
+
+
+def test_sample_rows_reach_the_prompt(db_dir):
+    seen = []
+
+    def gen(batch):
+        seen.extend(m[-1]["content"] for m in batch)
+        return fake_generate(batch)
+
+    evaluate(EXAMPLES[:1], db_dir, gen, sample_rows=0)
+    evaluate(EXAMPLES[:1], db_dir, gen, sample_rows=3)
+    assert "Example rows" not in seen[0]
+    assert "-- Example rows from singer:" in seen[1] and "Ada" in seen[1]
+
+
+def test_demo_passes_sample_rows(db_dir):
+    from tinysql.demo import answer_question
+
+    seen = []
+
+    def gen(batch):
+        seen.append(batch[0][-1]["content"])
+        return ["```sql\nSELECT count(*) FROM singer\n```"]
+
+    answer_question("How many?", db_dir / "toy" / "toy.sqlite", gen, sample_rows=3)
+    answer_question("How many?", db_dir / "toy" / "toy.sqlite", gen)
+    assert "Example rows" in seen[0] and "Example rows" not in seen[1]
