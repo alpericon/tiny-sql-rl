@@ -22,10 +22,10 @@ to the later step. Steps 300 and 400 tie at 65.0, so the choice is **checkpoint-
 - On dev-200 the gain over v2-900 comes from **first attempts** (62.5 vs 60.0), not from repair.
   Rescued counts stay at 3–5 of ~20 retries at every checkpoint, the same as v2-900's 5 of 21.
 - No difference is significant; dev-200 selects, it does not test.
-- The training log agrees:
+- The training log is consistent with this:
   - repair-turn reward rose only from ~0.23 to ~0.29 per 100-step mean;
   - first-turn reward stayed at ~0.74;
-  - about 58% of groups had no reward variance.
+  - about 57% of groups had no reward variance (full-run mean).
 
 **Control for the paired repair-turn measure.** `scripts/eval_repair_turn.py` replays v2-900's 133
 failed first attempts from its full-dev repair run through v2-900's own repair turn. It gives 20

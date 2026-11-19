@@ -48,18 +48,28 @@ results and 80 still fail. 43 repeated the identical SQL, vs 53 of 133 for v2-90
 1. **The primary hypothesis is not supported.** On identical inputs, v3's repair turn rescues 23 vs 20
    (p=0.45). Repeats of the failed SQL drop (45 vs 54 on those inputs), but it does not turn into
    significantly more correct answers.
-   - The training log explains why: the repair reward stayed around 0.25–0.29 and most repair groups
-     had no reward variance.
-2. **v3-400 + repair is better than v2-900 + repair overall:** 62.8% vs 60.8% official (p=0.012). This
-   should not be attributed to repair training, for two reasons:
-   - most of the gain is on first attempts (+0.8) and on v3's own different failures (28 rescued);
+   - The training log is consistent with this:
+     - the repair-turn reward's 100-step means stayed between 0.23 and 0.31;
+     - about 57% of all groups had no reward variance.
+2. **v3-400 + repair is better than v2-900 + repair overall:** 62.8% vs 60.8% official (p=0.012). That
+   is +17 correct answers (641 vs 624).
+   - **This p-value is optimistic.** v3-400 was picked as the best of 5 checkpoints on dev-200, which
+     is part of full dev, and there are several measures (3 pre-registered, plus voice).
+   - On the 834 questions outside dev-200, the gain is 61.8% vs 60.1% (30 / 16, **p=0.054**).
+   - Either way it should not be attributed to repair training, for two reasons:
+   - about half of the gain is on first attempts (+8: 613 vs 605). The other half is repair on v3's own,
+     different failures (28 rescued vs 19);
    - v3 is v2-900 plus 500 more GRPO steps, half on first-turn prompts. No control run did those
      steps without repair data. "More training" explains the gain as well as "repair data" does.
    - With one seed, this is a single observation.
-3. **Hand read** of the 28 rescued repairs on dev, as a reward-hacking check:
-   - all are genuine fixes guided by the error message (adding the missing join, using the right
-     column or table, fixing syntax);
-   - no degenerate or trivially-true queries.
+3. **Hand read, deviating from the plan.** The plan asked for 20 top-reward repair samples from
+   *training*. The trainer does not log rollouts, so the 28 repairs v3 rescued on dev were read instead,
+   as a reward-hacking check (`results/repair_rescues_v3-400_dev.md`). This is a different sample.
+   - Most are fixes that act on the error: adding the missing join, using the right column or table,
+     fixing syntax.
+   - 2 were format-only (the first answer had no ```sql block). A few change more than the reported
+     error (e.g. rewriting a join, dropping a DISTINCT).
+   - No degenerate or trivially-true queries were seen.
 
 ## Voice with repair (100 SpokenSpider queries per condition)
 
@@ -75,8 +85,8 @@ Source: `results/voice_Qwen__Qwen3-1.7B_v3-checkpoint-400_repair.json`.
 
 - **On ASR transcripts v3 is directionally worse than v2-900 in all four conditions.** No condition is
   significant.
-  - Pooled, it is 10 / 22. The same 100 queries repeat across conditions, though, so a pooled test
-    overstates the evidence.
+  - Pooled, it is 10 / 22 (p=0.050). The same 100 queries repeat across conditions, though, so this
+    pooled test overstates the evidence.
   - On typed questions it is better, consistent with its Spider dev gain.
 - A possible reading, not tested: v3's extra training on clean Spider text (first-turn and repair
   prompts) traded some robustness to noisy input for accuracy on clean input.
@@ -86,6 +96,6 @@ Source: `results/voice_Qwen__Qwen3-1.7B_v3-checkpoint-400_repair.json`.
 - **Repair-turn GRPO, at this data size and step count, did not make the model measurably better at
   using error feedback.** This is the question the week was designed to answer, and the answer is a
   null result.
-- The resulting model is more accurate on Spider dev (official 62.8% with repair, p=0.012 vs v2-900),
-  but somewhat less robust on noisy speech (direction only). The cause of the gain is confounded with
-  extra training.
+- The resulting model is more accurate on Spider dev: official 62.8% with repair, p=0.012 vs v2-900,
+  though only p=0.054 outside the selection subset. It is somewhat less robust on noisy speech
+  (direction only). The cause of the gain is confounded with extra training.
