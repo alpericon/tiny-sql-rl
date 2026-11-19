@@ -1,6 +1,6 @@
 # Week 5 plan: teaching the model to use error feedback (multi-turn repair GRPO)
 
-**Status: APPROVED 2026-11-18.**
+**Status: APPROVED 2026-11-18. Done 2026-11-19: primary hypothesis not supported; v3 not released (user kept v2-900).**
 
 This extends the 4-week SPEC. It comes first in README "Future work".
 

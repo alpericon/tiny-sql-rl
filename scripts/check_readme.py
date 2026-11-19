@@ -80,6 +80,11 @@ def main():
     for c in ["text", "clean", "20db", "10db", "0db"]:
         checks.append(f"{round(100 * vrep[c]['ours_ex'])}%")
 
+    # Week 5 (v3 repair-turn GRPO), README "Future work"
+    rt3, rt2 = j("repair_turn_v3-checkpoint-400.json"), j("repair_turn_v2-checkpoint-900.json")
+    checks.append(f"v3 rescued {rt3['rescued']} vs {rt2['rescued']}")
+    checks.append(f"{100 * om['v3-400-repair']['official_ex']:.1f}% vs {100 * om['v2-900-repair']['official_ex']:.1f}% official")
+
     missing = [c for c in checks if c not in README]
     for c in checks:
         print(("OK   " if c not in missing else "MISS ") + c)
