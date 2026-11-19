@@ -24,7 +24,7 @@ Sources: `results/voice_Qwen__Qwen3-1.7B_v2-checkpoint-900_repair_ground.json` a
   - The fixes are `'aliens'` → `'Aliens'` (×2) and `'village'` → `'Village'` (×2).
   - As stated in the plan, 4 / 0 cannot reach significance at n=100 (p=0.125).
   - Across all ASR conditions it is 10 wins and 0 losses.
-- **On clean speech the model now matches typed text** (59% vs 58%). That case/quote gap is gone.
+- **On clean speech the model is now level with typed text** (59 vs 58, n=100). The case/quote gap is closed.
 - **All 24 replacements in the voice runs are case changes**, read by hand:
   - `fail/pass/yes` → `Fail/Pass/Yes`, `ALABAMA` → `Alabama`, `village` → `Village`, `aliens` → `Aliens`.
   - 10 of them changed the outcome. The rest were in queries that were wrong for another reason as well.

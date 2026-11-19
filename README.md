@@ -68,7 +68,7 @@ SQLCoder's repair step is voice-to-sql's own (a different prompt and mechanism),
     database's own value when exactly one value matches it ignoring case and whitespace
     ([results/week6_results.md](results/week6_results.md)).
   - On clean ASR it fixed exactly those 4 queries and broke none (4 / 0; n=100, so not significant on its own).
-    Clean speech now matches typed text.
+    Clean speech is now level with typed text (59 vs 58, n=100).
   - Applied to SQLCoder's SQL too, it gains about as much (52 → 55).
   - On typed Spider dev it is neutral (60.3% → 60.4%, 5 / 4). All 4 losses are a Spider quirk: flight_2
     stores city names with a trailing space, so those gold queries return no rows.

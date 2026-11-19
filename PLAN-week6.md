@@ -1,6 +1,6 @@
 # Week 6 plan: grounding SQL string literals in the database (ASR value normalisation)
 
-**Status: APPROVED 2026-11-19.**
+**Status: APPROVED 2026-11-19. Done 2026-11-19: clean ASR 55 -> 59 (4/0), dev guard rail held; demo grounds by default.**
 
 This is README "Future work" item 2. It needs no training: the released model (v2-900) stays as is.
 

@@ -6,6 +6,10 @@ single-quoted literal that does not occur exactly in the database, but whose nor
 (case-folded, whitespace collapsed) matches exactly one distinct database value, is replaced by that
 value. Nothing else is touched: exact matches, ambiguous or unmatched literals, LIKE-style literals
 containing % or _, numbers, and double-quoted identifiers.
+
+Known limitation: the scanner does not understand SQL comments. An apostrophe inside ``--`` or
+``/* */`` opens a phantom literal, so later literals may go ungrounded. This fails safe (nothing is
+wrongly replaced), and the model rarely writes comments.
 """
 
 from __future__ import annotations

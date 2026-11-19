@@ -49,10 +49,14 @@ def evaluate(
     repair: bool = False,
     ground: bool = False,
 ) -> tuple[list[dict], dict]:
-    """With ``ground=True``, string literals are grounded in the database's values before execution
-    (tinysql.ground); ``ungrounded_sql`` and ``grounding`` keep what changed. With ``repair=True``, an answer with no SQL block or with SQL that does not execute gets one
-    retry (tinysql.repair). The first attempt is kept in ``first_*`` fields, so the no-repair result
-    of the same run is recoverable."""
+    """Score ``generate``'s SQL on ``examples`` by execution.
+
+    With ``repair=True``, an answer with no SQL block or with SQL that does not execute gets one retry
+    (tinysql.repair). The first attempt is kept in ``first_*`` fields, so the no-repair result of the
+    same run is recoverable.
+
+    With ``ground=True``, string literals are grounded in the database's values before every execution,
+    first attempt and retry alike (tinysql.ground); ``ungrounded_sql`` and ``grounding`` keep what changed."""
     database_dir = Path(database_dir)
     schema_cache: dict[str, str] = {}
 
