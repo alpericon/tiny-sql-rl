@@ -89,6 +89,11 @@ answer as the assistant turn, then the user turn *"That SQL failed: `<error>`. W
 SQLite query that answers the question, in a ```sql block."*. This rescued 19 of 133 failures on
 Spider dev. In 53 of the 133 retries the model repeated the same SQL.
 
+**Spoken input:** ASR transcripts lose capitalisation, so the model may write `'aliens'` where the
+database holds `'Aliens'`. Before executing, replace a string literal with the database's value when
+exactly one value matches it, ignoring case and whitespace. On 100 spoken questions this fixed all 4
+clean-ASR cases of this kind (55% → 59%) and broke none. On typed Spider dev it was neutral.
+
 ## Limitations
 
 - **Single seed per run.** The McNemar tests cover question sampling, not training variance.

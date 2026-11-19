@@ -217,6 +217,42 @@
      "ours_ex": 0.3313253012048193
     }
    }
+  },
+  "v2-900-repair-ground": {
+   "n": 1034,
+   "official_ex": 0.6092843326885881,
+   "official_cli_all": 0.609,
+   "ours_ex": 0.6044487427466151,
+   "agree_both": 617,
+   "ours_only": 8,
+   "official_only": 13,
+   "capped_over_s": 120,
+   "capped_rows": [
+    459,
+    460
+   ],
+   "by_hardness": {
+    "easy": {
+     "n": 248,
+     "official_ex": 0.8508064516129032,
+     "ours_ex": 0.8346774193548387
+    },
+    "medium": {
+     "n": 446,
+     "official_ex": 0.6524663677130045,
+     "ours_ex": 0.647982062780269
+    },
+    "hard": {
+     "n": 174,
+     "official_ex": 0.45977011494252873,
+     "ours_ex": 0.46551724137931033
+    },
+    "extra": {
+     "n": 166,
+     "official_ex": 0.2891566265060241,
+     "ours_ex": 0.2891566265060241
+    }
+   }
   }
  },
  "pairs_official": {
@@ -244,6 +280,11 @@
    "wins": 39,
    "losses": 19,
    "p": 0.011928139715763175
+  },
+  "v2-900-repair-ground vs v2-900-repair": {
+   "wins": 5,
+   "losses": 4,
+   "p": 1.0
   }
  }
 }

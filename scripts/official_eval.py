@@ -50,10 +50,11 @@ MODELS = {
     "v2-binary-800": "_v2-binary-checkpoint-800",
     "v2-900-repair": "_v2-checkpoint-900_repair",  # PLAN-week4 Y9
     "v3-400-repair": "_v3-checkpoint-400_repair",  # PLAN-week5 Z4
+    "v2-900-repair-ground": "_v2-checkpoint-900_repair_ground",  # PLAN-week6
 }
 CAP_S = 120
 PAIRS = [("v2-900", "base"),("v2-900", "main-1000"), ("v2-900", "v2-binary-800"), ("main-1000", "base"),
-         ("v3-400-repair", "v2-900-repair")]
+         ("v3-400-repair", "v2-900-repair"), ("v2-900-repair-ground", "v2-900-repair")]
 # v2-900-repair vs v2-900 is deliberately not tested: repair can only rescue, never lose (Y9), so it
 # is reported as a count of rescued rows.
 

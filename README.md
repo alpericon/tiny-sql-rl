@@ -48,13 +48,13 @@ The test set is 100 SpokenSpider questions (3 databases, never trained on), each
 transcribed by ASR at four noise levels. SQLCoder's SQL is the voice-to-SQL project's stored output,
 re-scored with the same comparator.
 
-| Input | Qwen3-1.7B base | **GRPO model** | GRPO + repair | SQLCoder-7B (with its repair) |
-|---|---|---|---|---|
-| typed question | 46% | **57%** | 58% | (52%)¹ |
-| clean ASR | 43% | 52% | 55% | 52% |
-| 20 dB SNR | 43% | 55% | 57% | 50% |
-| 10 dB SNR | 43% | 52% | 54% | 48% |
-| 0 dB SNR | 27% | 38% | 39% | 44% |
+| Input | Qwen3-1.7B base | GRPO model | GRPO + repair | **GRPO + repair + grounding** | SQLCoder-7B (its repair; + grounding) |
+|---|---|---|---|---|---|
+| typed question | 46% | 57% | 58% | **58%** | (52%; 55%)¹ |
+| clean ASR | 43% | 52% | 55% | **59%** | 52%; 55% |
+| 20 dB SNR | 43% | 55% | 57% | **60%** | 50%; 53% |
+| 10 dB SNR | 43% | 52% | 54% | **56%** | 48%; 51% |
+| 0 dB SNR | 27% | 38% | 39% | **40%** | 44%; 45% |
 
 ¹ SQLCoder never saw typed text in that pipeline; its clean-transcript result is shown for reference.
 SQLCoder's repair step is voice-to-sql's own (a different prompt and mechanism), not this project's one-retry rule.
@@ -62,8 +62,16 @@ SQLCoder's repair step is voice-to-sql's own (a different prompt and mechanism),
 - **The 1.7B model ties the 7B model from clean to 10 dB.** With a repair step on both sides it is level
   or ahead (55 vs 52 clean, 57 vs 50 at 20 dB). No per-condition difference is significant (n=100).
 - **It degrades more at 0 dB**: −14 points vs −8 for SQLCoder. That gap is directional and was not tested.
-- **Even clean ASR costs ~5 points vs typed text.** Transcripts lose literal case and formatting
-  (`"Aliens"` → `aliens`, `1000` → `1,000`), so string filters stop matching.
+- **Clean ASR used to cost ~5 points vs typed text.** Transcripts lose literal case (`"Aliens"` → `aliens`),
+  so string filters stop matching.
+  - **Grounding** fixes this with no training. Before execution it replaces a string literal with the
+    database's own value when exactly one value matches it ignoring case and whitespace
+    ([results/week6_results.md](results/week6_results.md)).
+  - On clean ASR it fixed exactly those 4 queries and broke none (4 / 0; n=100, so not significant on its own).
+    Clean speech now matches typed text.
+  - Applied to SQLCoder's SQL too, it gains about as much (52 → 55).
+  - On typed Spider dev it is neutral (60.3% → 60.4%, 5 / 4). All 4 losses are a Spider quirk: flight_2
+    stores city names with a trailing space, so those gold queries return no rows.
 
 ![Voice EX by SNR](docs/figures/voice_by_snr.png)
 
@@ -145,9 +153,8 @@ These are ordered by how directly the results above point to them.
      was directionally worse on noisy speech.
    - So the released model stays v2-900. Better repair would likely need denser signal, e.g. repair
      prompts filtered to questions where retries sometimes succeed.
-2. **Normalise ASR literals.** Clean speech still costs ~5 points vs typed text, because transcripts
-   lose case and quotes (`'Aliens'` → `aliens`). Matching string literals against the database's actual
-   values is cheap and needs no training.
+2. **Normalise ASR literals: done** (week 6, grounding, see RQ2/RQ4 above). It covers case and whitespace
+   only. ASR word errors ("ID" heard as "it") and number formats ("1,000") remain.
 3. **More seeds.** Filtered vs unfiltered training is +1.5 points but not significant. Only 2–3 seeds
    per arm can separate a real effect from run-to-run variance.
 4. **Schema grounding.** Most remaining errors are wrong tables or columns (e.g. joining a table that

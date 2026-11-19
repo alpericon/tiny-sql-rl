@@ -89,6 +89,15 @@ def main():
     zero = sum(float(r["frac_reward_zero_std"]) for r in log) / len(log)
     checks.append(f"About {round(100 * zero)}% of all training groups")
 
+    # Week 6 grounding (voice table column + guard rail)
+    vg = j("voice_Qwen__Qwen3-1.7B_v2-checkpoint-900_repair_ground.json")["conditions"]
+    for c in ["text", "clean", "20db", "10db", "0db"]:
+        checks.append(f"**{round(100 * vg[c]['ours_ex'])}%**")
+        if c != "text":
+            checks.append(f"{round(100 * vrep[c]['sqlcoder_ex'])}%; {round(100 * vg[c]['sqlcoder_ex'])}%")
+    dg = j(f"{B}_v2-checkpoint-900_repair_ground.json")
+    checks.append(f"{pct(rep['execution_accuracy'])} → {pct(dg['execution_accuracy'])}, 5 / 4")
+
     missing = [c for c in checks if c not in README]
     for c in checks:
         print(("OK   " if c not in missing else "MISS ") + c)
