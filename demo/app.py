@@ -22,6 +22,7 @@ from tinysql.demo import answer_question  # noqa: E402
 
 DB_DIR = Path(os.environ.get("TINYSQL_DB_DIR", HERE / "databases"))
 VOICE = os.environ.get("TINYSQL_VOICE", "1") != "0"
+SAMPLE_ROWS = int(os.environ.get("TINYSQL_SAMPLE_ROWS", "3"))
 # Questions the released model answers correctly (checked by hand). It is wrong on roughly 4 in 10
 # Spider dev questions, so free-form questions will sometimes fail; that is shown, not hidden.
 EXAMPLES = {
@@ -45,7 +46,9 @@ def run(db_id, question, audio):
     if VOICE and audio:
         transcript, timings["speech-to-text"] = timed(load_transcriber(), audio)
         question = transcript
-    result, timings["text-to-SQL + query"] = timed(answer_question, question or "", db_path(db_id), load_generator())
+    # 3 example rows per table in the prompt (PLAN-week7: +2.5 official EX on Spider dev, better on voice).
+    result, timings["text-to-SQL + query"] = timed(
+        lambda q, p: answer_question(q, p, load_generator(), sample_rows=SAMPLE_ROWS), question or "", db_path(db_id))
     status = result.error and f"⚠ {result.error}" or result.answer
     timing = " · ".join(f"{k}: {v:.1f} s" for k, v in timings.items())
     if result.repaired:

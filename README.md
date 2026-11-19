@@ -28,6 +28,7 @@ Every training run uses **one seed**, so the tests cover question sampling, not 
 | **GRPO, pass-rate-filtered questions (released)** | **58.5%** | **59.0%** | 84 / 33, p<0.0001 |
 | GRPO, filtered, binary reward (ablation) | 58.2% | 58.8% | |
 | **released model + one retry on SQL errors** | **60.3%** | **60.8%** | 19 more rescued, 0 lost |
+| **+ grounding + 3 example rows per table in the prompt** (demo default) | **62.2%** | **63.4%** | vs retry + grounding: 72 / 46, p=0.021 (official) |
 
 - **Yes: +4.9 points** (official), significant.
 - **The difficulty filter** (train only on questions the base model solves 1–7 of 8 times) cut the
@@ -48,20 +49,23 @@ The test set is 100 SpokenSpider questions (3 databases, never trained on), each
 transcribed by ASR at four noise levels. SQLCoder's SQL is the voice-to-SQL project's stored output,
 re-scored with the same comparator.
 
-| Input | Qwen3-1.7B base | GRPO model | GRPO + repair | **GRPO + repair + grounding** | SQLCoder-7B (its repair; + grounding) |
-|---|---|---|---|---|---|
-| typed question | 46% | 57% | 58% | **58%** | (52%; 55%)¹ |
-| clean ASR | 43% | 52% | 55% | **59%** | 52%; 55% |
-| 20 dB SNR | 43% | 55% | 57% | **60%** | 50%; 53% |
-| 10 dB SNR | 43% | 52% | 54% | **56%** | 48%; 51% |
-| 0 dB SNR | 27% | 38% | 39% | **40%** | 44%; 45% |
+| Input | Qwen3-1.7B base | GRPO model | GRPO + repair | GRPO + repair + grounding | **+ 3 example rows** | SQLCoder-7B (its repair; + grounding) |
+|---|---|---|---|---|---|---|
+| typed question | 46% | 57% | 58% | 58% | **66%** | (52%; 55%)¹ |
+| clean ASR | 43% | 52% | 55% | 59% | **65%** | 52%; 55% |
+| 20 dB SNR | 43% | 55% | 57% | 60% | **65%** | 50%; 53% |
+| 10 dB SNR | 43% | 52% | 54% | 56% | **61%** | 48%; 51% |
+| 0 dB SNR | 27% | 38% | 39% | 40% | **46%** | 44%; 45% |
 
 ¹ SQLCoder never saw typed text in that pipeline; its clean-transcript result is shown for reference.
 SQLCoder's repair step is voice-to-sql's own (a different prompt and mechanism), not this project's one-retry rule.
 
 - **The 1.7B model ties the 7B model from clean to 10 dB.** With a repair step on both sides it is level
   or ahead (55 vs 52 clean, 57 vs 50 at 20 dB). No per-condition difference is significant (n=100).
-- **It degrades more at 0 dB**: −14 points vs −8 for SQLCoder. That gap is directional and was not tested.
+- **With 3 example rows in the prompt** (week 7) it is ahead in all five conditions (65 vs 55 clean,
+  46 vs 45 at 0 dB). Only 20 dB reaches p<0.05, and that is one of five tests, so it is directional.
+- **Without example rows it degrades more at 0 dB:** −14 points vs −8 for SQLCoder. That gap is
+  directional and was not tested.
 - **Clean ASR used to cost ~5 points vs typed text.** Transcripts lose literal case (`"Aliens"` → `aliens`),
   so string filters stop matching.
   - **Grounding** fixes this with no training. Before execution it replaces a string literal with the
@@ -157,8 +161,14 @@ These are ordered by how directly the results above point to them.
    only. ASR word errors ("ID" heard as "it") and number formats ("1,000") remain.
 3. **More seeds.** Filtered vs unfiltered training is +1.5 points but not significant. Only 2–3 seeds
    per arm can separate a real effect from run-to-run variance.
-4. **Schema grounding.** Most remaining errors are wrong tables or columns (e.g. joining a table that
-   lacks the column). Sample rows in the prompt, or training data chosen around these errors, could help.
+4. **Schema grounding: first step done** (week 7, [results/week7_results.md](results/week7_results.md)).
+   - Showing 3 example rows per table in the prompt, at inference only, raised official EX from 60.9% to 63.4%
+     (72 / 46, p=0.021; our metric +1.8, p=0.11).
+   - It improved every voice condition (none significantly alone) and put the 1.7B model ahead of
+     SQLCoder-7B in all five.
+   - The gain is mostly fewer `no such column` errors (74 → 60).
+   - Cost: cold CPU latency roughly doubles (5.0 → 9.3 s).
+   - Next step: train with example rows, since the model never saw them in training.
 5. **Another benchmark** (e.g. BIRD), to see whether the gains hold beyond Spider.
 
 ## License and attribution

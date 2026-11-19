@@ -92,11 +92,22 @@ def main():
     # Week 6 grounding (voice table column + guard rail)
     vg = j("voice_Qwen__Qwen3-1.7B_v2-checkpoint-900_repair_ground.json")["conditions"]
     for c in ["text", "clean", "20db", "10db", "0db"]:
-        checks.append(f"**{round(100 * vg[c]['ours_ex'])}%**")
+        checks.append(f"| {round(100 * vg[c]['ours_ex'])}% | **")  # grounding column, followed by the week-7 column
         if c != "text":
             checks.append(f"{round(100 * vrep[c]['sqlcoder_ex'])}%; {round(100 * vg[c]['sqlcoder_ex'])}%")
     dg = j(f"{B}_v2-checkpoint-900_repair_ground.json")
     checks.append(f"{pct(rep['execution_accuracy'])} → {pct(dg['execution_accuracy'])}, 5 / 4")
+
+    # Week 7 example rows
+    r3 = j(f"{B}_v2-checkpoint-900_repair_ground_rows3.json")
+    checks.append(f"**{pct(r3['execution_accuracy'])}**")
+    checks.append(f"**{pct(om['v2-900-repair-ground-rows3']['official_ex'])}**")
+    pr = off["pairs_official"]["v2-900-repair-ground-rows3 vs v2-900-repair-ground"]
+    checks.append(f"{pr['wins']} / {pr['losses']}, p={pr['p']:.3f}")
+    v3r = j("voice_Qwen__Qwen3-1.7B_v2-checkpoint-900_repair_ground_rows3.json")["conditions"]
+    for c in ["text", "clean", "20db", "10db", "0db"]:
+        checks.append(f"**{round(100 * v3r[c]['ours_ex'])}%**")
+    checks.append(f"{round(100 * v3r['clean']['ours_ex'])} vs {round(100 * v3r['clean']['sqlcoder_ex'])} clean")
 
     missing = [c for c in checks if c not in README]
     for c in checks:
