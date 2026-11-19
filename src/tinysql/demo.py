@@ -35,8 +35,8 @@ class DemoResult:
 
 
 @lru_cache(maxsize=32)
-def _schema(db_path: str) -> str:
-    return serialize_schema(db_path)
+def _schema(db_path: str, sample_rows: int = 0) -> str:
+    return serialize_schema(db_path, sample_rows=sample_rows)
 
 
 def _fmt(v) -> str:
@@ -69,13 +69,14 @@ def _attempt(messages, db_path, generate, max_rows, timeout_s, ground, grounding
 
 
 def answer_question(question: str, db_path: str | Path, generate: Callable, max_rows: int = 200,
-                    timeout_s: float = 10.0, repair: bool = True, ground: bool = True) -> DemoResult:
+                    timeout_s: float = 10.0, repair: bool = True, ground: bool = True,
+                    sample_rows: int = 0) -> DemoResult:
     """With ``repair`` (the default), an answer with no SQL block or SQL that does not run gets one
     retry with the error message, under the same rule as the evaluation (PLAN-week4 Y9)."""
     question = question.strip()
     if not question:
         return DemoResult(question, None, None, None, None, "empty question")
-    messages = build_messages(_schema(str(db_path)), question)
+    messages = build_messages(_schema(str(db_path), sample_rows), question)
     grounding: list = []
     completion, sql, res = _attempt(messages, db_path, generate, max_rows, timeout_s, ground, grounding)
     extra = {}

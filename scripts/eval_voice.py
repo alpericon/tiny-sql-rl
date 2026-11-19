@@ -31,6 +31,7 @@ def main():
     ap.add_argument("--max-new-tokens", type=int, default=256)
     ap.add_argument("--repair", action="store_true", help="one retry on exec error / missing SQL block (Y9)")
     ap.add_argument("--ground", action="store_true", help="ground string literals in DB values, for ours and SQLCoder (PLAN-week6)")
+    ap.add_argument("--sample-rows", type=int, default=0, help="example rows per table in the prompt (PLAN-week7)")
     ap.add_argument("--build-csv", type=Path, default=None, help="voice-to-sql metadata.csv -> " + str(VOICE_CSV))
     args = ap.parse_args()
 
@@ -54,12 +55,13 @@ def main():
     generate = HFGenerator(args.model, args.adapter, max_new_tokens=args.max_new_tokens)
 
     all_records, summary = [], {"model": args.model, "adapter": str(args.adapter) if args.adapter else None,
-                                "decoding": "greedy, nf4 4-bit, thinking off", "repair": args.repair, "ground": args.ground, "conditions": {}}
+                                "decoding": "greedy, nf4 4-bit, thinking off", "repair": args.repair, "ground": args.ground, "sample_rows": args.sample_rows, "conditions": {}}
     t0 = time.perf_counter()
     for cond in CONDITIONS:
         meta = voice_rows(rows, cond)
         records, s = evaluate(voice_examples(rows, cond), DATABASE, generate, batch_size=args.batch_size,
-                                      repair=args.repair, ground=args.ground)
+                                      repair=args.repair, ground=args.ground,
+                                      sample_rows=args.sample_rows)
         for r, m in zip(records, meta):
             db_file = DATABASE / m["db_id"] / f"{m['db_id']}.sqlite"
             coder_sql = m["sqlcoder_sql"]
@@ -87,7 +89,7 @@ def main():
     summary["hit_max_new_tokens_rate"] = sum(generate.hit_limit) / len(generate.hit_limit)
 
     tag = "voice_" + args.model.replace("/", "__") + (
-        f"_{args.adapter.parent.name}-{args.adapter.name}" if args.adapter else "") + ("_repair" if args.repair else "") + ("_ground" if args.ground else "")
+        f"_{args.adapter.parent.name}-{args.adapter.name}" if args.adapter else "") + ("_repair" if args.repair else "") + ("_ground" if args.ground else "") + (f"_rows{args.sample_rows}" if args.sample_rows else "")
     (ROOT / "results" / f"{tag}.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
     with (ROOT / "results" / f"{tag}.records.jsonl").open("w", encoding="utf-8") as f:
         for r in all_records:
