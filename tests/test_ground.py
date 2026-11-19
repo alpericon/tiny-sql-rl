@@ -65,3 +65,36 @@ def test_large_tables_are_skipped(db):
 def test_idempotent(db):
     once, _ = ground_sql("SELECT 1 FROM farm WHERE theme = 'aliens'", idx(db))
     assert ground_sql(once, idx(db)) == (once, [])
+
+
+def test_evaluate_grounds_before_execution_and_keeps_the_original(tmp_path, db):
+    from tinysql.data import Example
+    from tinysql.evaluate import evaluate
+
+    d = tmp_path / "database" / "toy"
+    d.mkdir(parents=True)
+    (d / "toy.sqlite").write_bytes(db.read_bytes())
+    ex = [Example("toy", "Hosts not aliens?", "SELECT host FROM farm WHERE theme != 'Aliens'"),
+          Example("toy", "Hosts?", "SELECT host FROM farm")]
+    answers = {"Hosts not aliens?": "```sql\nSELECT host FROM farm WHERE theme != 'aliens'\n```",
+               "Hosts?": "```sql\nSELECT host FROM farm\n```"}
+    gen = lambda b: [answers[m[-1]["content"].rsplit("Question: ", 1)[1]] for m in b]  # noqa: E731
+
+    plain, _ = evaluate(ex, tmp_path / "database", gen)
+    assert [r["match"] for r in plain] == [False, True] and "grounding" not in plain[0]
+    recs, summary = evaluate(ex, tmp_path / "database", gen, ground=True)
+    assert [r["match"] for r in recs] == [True, True]
+    assert recs[0]["pred_sql"] == "SELECT host FROM farm WHERE theme != 'Aliens'"
+    assert recs[0]["ungrounded_sql"] == "SELECT host FROM farm WHERE theme != 'aliens'"
+    assert recs[0]["grounding"] == [["aliens", "Aliens"]] and recs[1]["grounding"] == []
+    assert summary["grounded_queries"] == 1
+
+
+def test_demo_grounds_by_default(db):
+    from tinysql.demo import answer_question
+
+    gen = lambda b: ["```sql\nSELECT host FROM farm WHERE theme = 'aliens'\n```"]  # noqa: E731
+    r = answer_question("q", db, gen)
+    assert r.rows == [("O'Brien",)] and r.grounding == [("aliens", "Aliens")]
+    r = answer_question("q", db, gen, ground=False)
+    assert r.rows == [] and r.grounding == []
