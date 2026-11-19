@@ -46,5 +46,33 @@ def main():
     print(json.dumps(out, indent=1))
 
 
+def train_main():
+    """PLAN-week8 R2: token lengths of the v2 training prompts (pass-rate filtered) with 0 and 3 rows,
+    built exactly as scripts/train_grpo.py builds them. Written to results/prompt_lengths_train_rows3.json."""
+    from tinysql.data import load_exclusions
+    from tinysql.grpo_data import build_grpo_records, filter_by_pass_rate
+
+    tok = AutoTokenizer.from_pretrained("Qwen/Qwen3-1.7B")
+    rates = [json.loads(l) for l in open(ROOT / "data" / "train_pass_rate.jsonl", encoding="utf-8")]
+    out = {}
+    for k in (0, 3):
+        records = filter_by_pass_rate(build_grpo_records(
+            load_spider_split(ROOT / "data" / "train_filtered.json"),
+            ROOT / "data" / "spider" / "database",
+            load_exclusions(ROOT / "data" / "spokenspider_exclude.json"),
+            drop_empty_gold=True, sample_rows=k), rates)
+        lens = sorted((len(tok(tok.apply_chat_template(r["prompt"], tokenize=False, add_generation_prompt=True,
+                                                       enable_thinking=False), add_special_tokens=False)["input_ids"]),
+                       r["db_id"]) for r in records)
+        toks = [l for l, _ in lens]
+        out[f"rows{k}"] = {"n": len(toks), "median_tokens": statistics.median(toks), "max_tokens": toks[-1],
+                           "p99_tokens": toks[int(0.99 * (len(toks) - 1))],
+                           "over_2304": sum(t > 2304 for t in toks), "over_3000": sum(t > 3000 for t in toks),
+                           "longest_dbs": sorted({d for _, d in lens[-20:]})}
+    (ROOT / "results" / "prompt_lengths_train_rows3.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+    print(json.dumps(out, indent=1))
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    train_main() if "--train" in sys.argv else main()

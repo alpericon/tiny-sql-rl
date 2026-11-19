@@ -1,0 +1,26 @@
+{
+ "rows0": {
+  "n": 1688,
+  "median_tokens": 389.0,
+  "max_tokens": 2194,
+  "p99_tokens": 2172,
+  "over_2304": 0,
+  "over_3000": 0,
+  "longest_dbs": [
+   "baseball_1",
+   "cre_Drama_Workshop_Groups"
+  ]
+ },
+ "rows3": {
+  "n": 1688,
+  "median_tokens": 791.5,
+  "max_tokens": 6239,
+  "p99_tokens": 6217,
+  "over_2304": 192,
+  "over_3000": 58,
+  "longest_dbs": [
+   "baseball_1",
+   "cre_Drama_Workshop_Groups"
+  ]
+ }
+}
