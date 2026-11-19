@@ -60,6 +60,27 @@ def test_sample_rows_keep_the_same_question_set(db_dir):
     )
 
 
+def test_rows_fallback_uses_schema_only_prompt_when_too_long(db_dir):
+    # PLAN-week8 R2 decision: prompts with rows over the limit fall back to the schema-only prompt.
+    from tinysql.grpo_data import rows_or_schema_only
+
+    rows = build_grpo_records(EXAMPLES, db_dir, Exclusions(), sample_rows=3)
+    plain = build_grpo_records(EXAMPLES, db_dir, Exclusions())
+    n_tokens = lambda r: 100 if r["db_id"] == "toy" else 10  # toy's prompt is "too long"
+    out, n_fallback = rows_or_schema_only(rows, plain, n_tokens, max_tokens=50)
+    assert n_fallback == 1
+    assert out == [plain[0], rows[1]]
+
+
+def test_rows_fallback_refuses_mismatched_records(db_dir):
+    from tinysql.grpo_data import rows_or_schema_only
+
+    rows = build_grpo_records(EXAMPLES, db_dir, Exclusions(), sample_rows=3)
+    plain = build_grpo_records(EXAMPLES[::-1], db_dir, Exclusions())
+    with pytest.raises(ValueError):
+        rows_or_schema_only(rows, plain, lambda r: 0, max_tokens=50)
+
+
 def test_leaked_example_is_refused(db_dir):
     leaked = Exclusions(questions={("zoo", _norm("Names?"))})
     with pytest.raises(AssertionError):
