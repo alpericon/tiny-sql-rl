@@ -122,3 +122,53 @@ def evaluate(
             repair_rescued=sum(r["match"] and not r["first_match"] for r in records),
         )
     return records, summary
+
+
+def evaluate_repair_turn(
+    prior_records: Sequence[dict],
+    examples: Sequence[Example],
+    database_dir: str | Path,
+    generate: Generate,
+    batch_size: int = 8,
+    sample_rows: int = 0,
+    timeout_s: float = 30.0,
+) -> list[dict]:
+    """Replay the failed first attempts stored in ``prior_records`` (an ``evaluate(..., repair=True)``
+    run, aligned with ``examples``) through ``generate``'s repair turn only (PLAN-week5 Z4).
+
+    Every model then repairs the same inputs, so repair success is paired across models. Returns one
+    record per retried row, in order, with the new answer's score plus ``first_match`` (always False)
+    and ``prior_match`` (the prior model's repaired result)."""
+    if len(prior_records) != len(examples):
+        raise ValueError(f"{len(prior_records)} records for {len(examples)} examples")
+    database_dir = Path(database_dir)
+    schema_cache: dict[str, str] = {}
+    todo = []
+    for i, (r, e) in enumerate(zip(prior_records, examples)):
+        if (r["db_id"], r["question"], r["gold"]) != (e.db_id, e.question, e.query):
+            raise ValueError(f"record {i} does not match example {i} ({e.db_id}: {e.question!r})")
+        if r.get("repaired"):
+            todo.append((r, e))
+
+    out = []
+    for start in range(0, len(todo), batch_size):
+        batch = todo[start : start + batch_size]
+        prompts = []
+        for r, e in batch:
+            path = database_dir / e.db_id / f"{e.db_id}.sqlite"
+            if e.db_id not in schema_cache:
+                schema_cache[e.db_id] = serialize_schema(path, sample_rows=sample_rows)
+            error = None if r["first_error"] == NO_BLOCK else r["first_error"]
+            prompts.append(repair_messages(build_messages(schema_cache[e.db_id], e.question), r["first_completion"], error))
+        completions = generate(prompts)
+        if len(completions) != len(prompts):
+            raise ValueError(f"generate returned {len(completions)} completions for {len(prompts)} prompts")
+        for (r, e), completion in zip(batch, completions):
+            pred_sql = extract_sql(completion)
+            rec = {"db_id": e.db_id, "question": e.question, "gold": e.query, "first_error": r["first_error"],
+                   "first_match": False, "prior_match": r["match"], "completion": completion, "pred_sql": pred_sql,
+                   "format_ok": pred_sql is not None, "exec_ok": False, "match": False, "error": None}
+            if pred_sql is not None:
+                rec.update(score_sql(database_dir / e.db_id / f"{e.db_id}.sqlite", e.query, pred_sql, timeout_s=timeout_s))
+            out.append(rec)
+    return out
