@@ -52,6 +52,9 @@ def run(db_id, question, audio):
         first = f"\n\n`{result.first_sql}`" if result.first_sql else ""
         timing = (f"🔧 **Repaired:** the first answer failed (`{result.first_error}`), so the model was asked "
                   f"once to fix it.{first}\n\n{timing}")
+    if result.grounding:
+        fixes = ", ".join(f"`'{old}'` → `'{new}'`" for old, new in result.grounding)
+        timing = f"🔤 **Matched to the database's values:** {fixes}\n\n{timing}"
     if result.rows:
         table = gr.update(value={"data": [list(r) for r in result.rows], "headers": list(result.columns)}, visible=True)
     else:

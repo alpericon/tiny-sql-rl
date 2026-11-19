@@ -30,10 +30,12 @@ def main():
     ap.add_argument("--batch-size", type=int, default=8)
     ap.add_argument("--max-new-tokens", type=int, default=256)
     ap.add_argument("--repair", action="store_true", help="one retry on exec error / missing SQL block (Y9)")
+    ap.add_argument("--ground", action="store_true", help="ground string literals in DB values, for ours and SQLCoder (PLAN-week6)")
     ap.add_argument("--build-csv", type=Path, default=None, help="voice-to-sql metadata.csv -> " + str(VOICE_CSV))
     args = ap.parse_args()
 
     from tinysql.evaluate import score_sql
+    from tinysql.ground import cached_index, ground_sql
     from tinysql.stats import mcnemar_exact
     from tinysql.voice import CONDITIONS, load_voice, slim_metadata, voice_examples, voice_rows
 
@@ -52,16 +54,20 @@ def main():
     generate = HFGenerator(args.model, args.adapter, max_new_tokens=args.max_new_tokens)
 
     all_records, summary = [], {"model": args.model, "adapter": str(args.adapter) if args.adapter else None,
-                                "decoding": "greedy, nf4 4-bit, thinking off", "repair": args.repair, "conditions": {}}
+                                "decoding": "greedy, nf4 4-bit, thinking off", "repair": args.repair, "ground": args.ground, "conditions": {}}
     t0 = time.perf_counter()
     for cond in CONDITIONS:
         meta = voice_rows(rows, cond)
         records, s = evaluate(voice_examples(rows, cond), DATABASE, generate, batch_size=args.batch_size,
-                                      repair=args.repair)
+                                      repair=args.repair, ground=args.ground)
         for r, m in zip(records, meta):
-            sc = score_sql(DATABASE / m["db_id"] / f"{m['db_id']}.sqlite", m["gold"], m["sqlcoder_sql"])
+            db_file = DATABASE / m["db_id"] / f"{m['db_id']}.sqlite"
+            coder_sql = m["sqlcoder_sql"]
+            if args.ground:  # same post-processing for SQLCoder's stored SQL, so the comparison is model vs model
+                coder_sql, _ = ground_sql(coder_sql, cached_index(str(db_file)))
+            sc = score_sql(db_file, m["gold"], coder_sql)
             r.update(condition=cond, query_id=m["query_id"], wer=float(m["wer"]),
-                     sqlcoder_sql=m["sqlcoder_sql"], sqlcoder_exec_ok=sc["exec_ok"], sqlcoder_match=sc["match"])
+                     sqlcoder_sql=coder_sql, sqlcoder_exec_ok=sc["exec_ok"], sqlcoder_match=sc["match"])
         n = len(records)
         wins = sum(r["match"] and not r["sqlcoder_match"] for r in records)
         losses = sum(r["sqlcoder_match"] and not r["match"] for r in records)
@@ -81,7 +87,7 @@ def main():
     summary["hit_max_new_tokens_rate"] = sum(generate.hit_limit) / len(generate.hit_limit)
 
     tag = "voice_" + args.model.replace("/", "__") + (
-        f"_{args.adapter.parent.name}-{args.adapter.name}" if args.adapter else "") + ("_repair" if args.repair else "")
+        f"_{args.adapter.parent.name}-{args.adapter.name}" if args.adapter else "") + ("_repair" if args.repair else "") + ("_ground" if args.ground else "")
     (ROOT / "results" / f"{tag}.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
     with (ROOT / "results" / f"{tag}.records.jsonl").open("w", encoding="utf-8") as f:
         for r in all_records:
