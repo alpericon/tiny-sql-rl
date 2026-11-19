@@ -85,6 +85,15 @@ cause is table count, not long cells. **Decision: those prompts use the schema-o
 dev the longest prompt with rows is 1,897 tokens, so the same rule would change nothing there, and the
 comparison with v2-900's week-7 records stays valid.
 
+## Decision at the R3 stop rule (2026-11-19, user)
+
+The pre-flight (50 steps, longest prompts first) ran without OOM: 6.73 GiB allocated, 7.78 GiB
+reserved, 87 °C with software thermal slowdown. The median was 109 s/step, against 33 s for the
+schema-only pre-flight (`results/train_log_preflight-rows.csv`). Scaling by the old pre-flight/full-run
+ratio and the 2× longer typical prompt gives roughly 45–60 s/step, i.e. 12–17 h for 1,000 steps (an
+estimate; the first steps of R4 measure it). **Decision: keep the recipe unchanged (1,000 steps, G=8)
+and split the run over two nights with `--resume`.**
+
 ## Not in this plan
 
 More seeds, ASR word-error normalisation, repair-focused training and BIRD stay in "Future work".
