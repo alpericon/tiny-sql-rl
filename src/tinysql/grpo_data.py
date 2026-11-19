@@ -69,6 +69,26 @@ def filter_by_pass_rate(records: list[dict], rates: list[dict]) -> list[dict]:
     return kept
 
 
+def rows_or_schema_only(
+    with_rows: Sequence[dict], schema_only: Sequence[dict], n_tokens, max_tokens: int
+) -> tuple[list[dict], int]:
+    """Per question, the prompt with example rows, or the schema-only one if that is over ``max_tokens``
+    (PLAN-week8 R2: a few wide databases, e.g. baseball_1, reach ~6k tokens with rows).
+
+    Both lists must hold the same questions in the same order. Returns (records, number of fallbacks)."""
+    key = lambda r: (r["db_id"], r["question"], r["gold"])
+    if [key(r) for r in with_rows] != [key(r) for r in schema_only]:
+        raise ValueError("with_rows and schema_only records differ")
+    out, n_fallback = [], 0
+    for r, s in zip(with_rows, schema_only):
+        if n_tokens(r) > max_tokens:
+            out.append(s)
+            n_fallback += 1
+        else:
+            out.append(r)
+    return out, n_fallback
+
+
 def build_repair_records(samples: Sequence[dict], max_per_question: int = 2, timeout_s: float = 5.0) -> list[dict]:
     """Repair-turn GRPO records from sampled policy answers (PLAN-week5 Z1).
 

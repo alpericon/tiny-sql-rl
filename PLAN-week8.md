@@ -76,6 +76,15 @@ week 5's 28 s/step on similarly long repair prompts; R3 measures it), ~1 h check
 - **Loss without rows.** The demo can turn rows off. The schema-only secondary measures this; if it
   drops clearly, approach C becomes the follow-up.
 
+## Decision at the R2 stop rule (2026-11-19, user)
+
+With 3 rows, training prompts reach 6,239 tokens (median 792); 58 of 1,688 exceed 3,000, all from
+baseball_1, sakila_1 and cre_Drama_Workshop_Groups (`results/prompt_lengths_train_rows3.json`). The
+cause is table count, not long cells. **Decision: those prompts use the schema-only prompt**
+(`rows_or_schema_only`, threshold = `--max-prompt-length 3000`). The question set is unchanged. On
+dev the longest prompt with rows is 1,897 tokens, so the same rule would change nothing there, and the
+comparison with v2-900's week-7 records stays valid.
+
 ## Not in this plan
 
 More seeds, ASR word-error normalisation, repair-focused training and BIRD stay in "Future work".

@@ -30,7 +30,7 @@ from trl import GRPOConfig, GRPOTrainer
 from unsloth import FastLanguageModel
 
 from tinysql.data import load_exclusions, load_spider_split
-from tinysql.grpo_data import build_grpo_records, filter_by_pass_rate, kind_reward_logger, mix_records
+from tinysql.grpo_data import build_grpo_records, filter_by_pass_rate, kind_reward_logger, mix_records, rows_or_schema_only
 from tinysql.grpo_reward import make_reward_fn
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -141,13 +141,24 @@ def main():
             raise SystemExit(f"--init-adapter: {len(lora_missing)} LoRA weights not loaded, e.g. {lora_missing[:3]}")
         print(f"init adapter: loaded LoRA weights from {args.init_adapter}", flush=True)
 
-    records = build_grpo_records(
-        load_spider_split(ROOT / "data" / "train_filtered.json"),
-        ROOT / "data" / "spider" / "database",
-        load_exclusions(ROOT / "data" / "spokenspider_exclude.json"),
-        drop_empty_gold=not args.keep_empty_gold,
-        sample_rows=args.sample_rows,
-    )
+    def first_turn(sample_rows):
+        return build_grpo_records(
+            load_spider_split(ROOT / "data" / "train_filtered.json"),
+            ROOT / "data" / "spider" / "database",
+            load_exclusions(ROOT / "data" / "spokenspider_exclude.json"),
+            drop_empty_gold=not args.keep_empty_gold,
+            sample_rows=sample_rows,
+        )
+
+    def chat_tokens(r):
+        text = tok.apply_chat_template(r["prompt"], tokenize=False, add_generation_prompt=True, enable_thinking=False)
+        return len(tok(text, add_special_tokens=False)["input_ids"])
+
+    records = first_turn(0)
+    if args.sample_rows > 0:
+        # PLAN-week8 R2: a prompt with rows over --max-prompt-length falls back to the schema-only prompt.
+        records, n_fallback = rows_or_schema_only(first_turn(args.sample_rows), records, chat_tokens, args.max_prompt_length)
+        print(f"sample rows: {n_fallback} prompts over {args.max_prompt_length} tokens fell back to schema-only", flush=True)
     with_rows = sum("-- Example rows from " in r["prompt"][1]["content"] for r in records)
     print(f"sample rows: {args.sample_rows}; example rows in {with_rows} of {len(records)} first-turn prompts", flush=True)
     if args.pass_rate is not None:
