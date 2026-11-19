@@ -84,3 +84,36 @@ def test_evaluate_without_repair_is_unchanged(db_dir):
     assert len(calls) == 1
     assert [r["match"] for r in records] == [True, False, False, False, False]
     assert "repaired" not in records[0] and "repair_attempts" not in summary
+
+
+def test_repair_turn_from_fixed_first_attempts(db_dir):
+    """PLAN-week5 Z4: replay another model's failed first attempts through a new model's repair turn."""
+    from tinysql.evaluate import evaluate_repair_turn
+
+    prior, _ = evaluate(EXAMPLES, db_dir, make_generate([]), batch_size=5, repair=True)
+    calls = []
+
+    def new_model(batch):
+        calls.append(batch)
+        return ["```sql\nSELECT id FROM singer\n```" if "idd" in m[-2]["content"] else "```sql\nSELECT agee FROM singer\n```"
+                for m in batch]
+
+    out = evaluate_repair_turn(prior, EXAMPLES, db_dir, new_model, batch_size=2)
+    assert [r["question"] for r in out] == ["Ages?", "Names?", "Ids?"]  # only the retried rows, in order
+    assert [r["match"] for r in out] == [False, False, True]
+    assert sum(len(b) for b in calls) == 3 and max(len(b) for b in calls) == 2
+    # the repair prompt is rebuilt from the stored first attempt, identical to the original run's
+    from tinysql.prompt import build_messages, serialize_schema
+    from tinysql.repair import repair_messages
+    msgs = build_messages(serialize_schema(db_dir / "toy" / "toy.sqlite"), "Ages?")
+    assert calls[0][0] == repair_messages(msgs, FIRST["Ages?"], prior[2]["first_error"])
+    assert calls[0][1][-1]["content"] == REPAIR_FORMAT  # "Names?" had no block
+    assert out[0]["first_match"] is False and out[2]["prior_match"] is False
+
+
+def test_repair_turn_rejects_misaligned_records(db_dir):
+    from tinysql.evaluate import evaluate_repair_turn
+
+    prior, _ = evaluate(EXAMPLES, db_dir, make_generate([]), batch_size=5, repair=True)
+    with pytest.raises(ValueError):
+        evaluate_repair_turn(prior[::-1], EXAMPLES, db_dir, make_generate([]))
