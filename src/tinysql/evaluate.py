@@ -14,6 +14,7 @@ from pathlib import Path
 from tinysql.compare import gold_is_ordered, results_match
 from tinysql.data import Example
 from tinysql.executor import execute_readonly
+from tinysql.ground import cached_index, ground_sql
 from tinysql.prompt import build_messages, serialize_schema
 from tinysql.repair import NO_BLOCK, repair_messages
 from tinysql.reward import extract_sql
@@ -46,8 +47,10 @@ def evaluate(
     sample_rows: int = 0,
     timeout_s: float = 30.0,
     repair: bool = False,
+    ground: bool = False,
 ) -> tuple[list[dict], dict]:
-    """With ``repair=True``, an answer with no SQL block or with SQL that does not execute gets one
+    """With ``ground=True``, string literals are grounded in the database's values before execution
+    (tinysql.ground); ``ungrounded_sql`` and ``grounding`` keep what changed. With ``repair=True``, an answer with no SQL block or with SQL that does not execute gets one
     retry (tinysql.repair). The first attempt is kept in ``first_*`` fields, so the no-repair result
     of the same run is recoverable."""
     database_dir = Path(database_dir)
@@ -76,6 +79,11 @@ def evaluate(
             pred_sql = extract_sql(completion)
             out = {"completion": completion, "pred_sql": pred_sql, "format_ok": pred_sql is not None,
                    "exec_ok": False, "match": False, "error": None}
+            if ground:
+                reps = []
+                if pred_sql is not None:
+                    pred_sql, reps = ground_sql(pred_sql, cached_index(str(db_path(e.db_id))))
+                out.update(pred_sql=pred_sql, ungrounded_sql=extract_sql(completion), grounding=[list(r) for r in reps])
             if pred_sql is not None:
                 out.update(score_sql(db_path(e.db_id), e.query, pred_sql, timeout_s=timeout_s))
             return out
@@ -115,6 +123,8 @@ def evaluate(
         "median_prompt_chars": statistics.median([r["prompt_chars"] for r in records]) if records else 0,
         "generation_seconds_total": round(gen_seconds, 2),
     }
+    if ground:
+        summary["grounded_queries"] = sum(bool(r["grounding"]) for r in records)
     if repair:
         summary.update(
             first_attempt_execution_accuracy=sum(r["first_match"] for r in records) / n if n else 0.0,

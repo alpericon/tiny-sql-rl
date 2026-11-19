@@ -8,11 +8,12 @@ result, never as an exception, so the UI can always show something.
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 
 from tinysql.executor import execute_readonly
+from tinysql.ground import cached_index, ground_sql
 from tinysql.prompt import build_messages, serialize_schema
 from tinysql.repair import NO_BLOCK, repair_messages
 from tinysql.reward import extract_sql
@@ -30,6 +31,7 @@ class DemoResult:
     repaired: bool = False  # the first answer failed and this is the one retry (tinysql.repair)
     first_sql: str | None = None
     first_error: str | None = None
+    grounding: list = field(default_factory=list)  # (old, new) literal replacements (tinysql.ground)
 
 
 @lru_cache(maxsize=32)
@@ -55,29 +57,35 @@ def _answer(rows: list[tuple], truncated: bool) -> str:
     return f"Found {len(rows)} row{'s' if len(rows) != 1 else ''}."
 
 
-def _attempt(messages, db_path, generate, max_rows, timeout_s):
+def _attempt(messages, db_path, generate, max_rows, timeout_s, ground, grounding):
     completion = generate([messages])[0]
     sql = extract_sql(completion)
     if sql is None:
         return completion, None, None
+    if ground:
+        sql, reps = ground_sql(sql, cached_index(str(db_path)))
+        grounding.extend(reps)
     return completion, sql, execute_readonly(db_path, sql, timeout_s=timeout_s, max_rows=max_rows)
 
 
 def answer_question(question: str, db_path: str | Path, generate: Callable, max_rows: int = 200,
-                    timeout_s: float = 10.0, repair: bool = True) -> DemoResult:
+                    timeout_s: float = 10.0, repair: bool = True, ground: bool = True) -> DemoResult:
     """With ``repair`` (the default), an answer with no SQL block or SQL that does not run gets one
     retry with the error message, under the same rule as the evaluation (PLAN-week4 Y9)."""
     question = question.strip()
     if not question:
         return DemoResult(question, None, None, None, None, "empty question")
     messages = build_messages(_schema(str(db_path)), question)
-    completion, sql, res = _attempt(messages, db_path, generate, max_rows, timeout_s)
+    grounding: list = []
+    completion, sql, res = _attempt(messages, db_path, generate, max_rows, timeout_s, ground, grounding)
     extra = {}
     if repair and (sql is None or not res.ok):
         first_error = NO_BLOCK if sql is None else res.error
         extra = {"repaired": True, "first_sql": sql, "first_error": first_error}
         retry = repair_messages(messages, completion, None if sql is None else res.error)
-        completion, sql, res = _attempt(retry, db_path, generate, max_rows, timeout_s)
+        grounding.clear()  # report only the final answer's replacements
+        completion, sql, res = _attempt(retry, db_path, generate, max_rows, timeout_s, ground, grounding)
+    extra["grounding"] = grounding
     if sql is None:
         return DemoResult(question, None, None, None, None, "the model returned no SQL block", completion, **extra)
     if not res.ok:
