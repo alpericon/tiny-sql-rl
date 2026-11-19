@@ -139,9 +139,9 @@ These are ordered by how directly the results above point to them.
    - A follow-up run (v3) added 500 GRPO steps on a mix of first-turn prompts and "error message →
      corrected SQL" turns, built from the model's own failures on train.
    - On the same 133 failed first attempts, v3 rescued 23 vs 20: **not significant (p=0.45)**.
-     About half of the repair groups gave no learning signal.
+     About 57% of all training groups (first-turn and repair) had no reward variance, i.e. no learning signal.
    - v3 did score higher on Spider dev overall (62.8% vs 60.8% official with repair). But that is
-     confounded with the extra training steps, weaker outside the selection subset (p=0.054), and it
+     confounded with the extra training steps, smaller and not significant outside dev-200 (p=0.054), and it
      was directionally worse on noisy speech.
    - So the released model stays v2-900. Better repair would likely need denser signal, e.g. repair
      prompts filtered to questions where retries sometimes succeed.

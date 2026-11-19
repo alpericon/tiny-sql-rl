@@ -84,6 +84,10 @@ def main():
     rt3, rt2 = j("repair_turn_v3-checkpoint-400.json"), j("repair_turn_v2-checkpoint-900.json")
     checks.append(f"v3 rescued {rt3['rescued']} vs {rt2['rescued']}")
     checks.append(f"{100 * om['v3-400-repair']['official_ex']:.1f}% vs {100 * om['v2-900-repair']['official_ex']:.1f}% official")
+    import csv
+    log = [r for r in csv.DictReader(open(R / "train_log_v3.csv", encoding="utf-8")) if r["frac_reward_zero_std"]]
+    zero = sum(float(r["frac_reward_zero_std"]) for r in log) / len(log)
+    checks.append(f"About {round(100 * zero)}% of all training groups")
 
     missing = [c for c in checks if c not in README]
     for c in checks:
