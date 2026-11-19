@@ -37,6 +37,29 @@ def test_record_fields_and_prompt_match_eval(db_dir):
     assert r["db_id"] == "toy"
 
 
+def test_sample_rows_reach_training_prompts_like_eval(db_dir):
+    # PLAN-week8 R1: training with example rows must see exactly the inference prompt.
+    records = build_grpo_records(EXAMPLES, db_dir, Exclusions(), sample_rows=3)
+    for r, e in zip(records, EXAMPLES):
+        db_path = db_dir / e.db_id / f"{e.db_id}.sqlite"
+        assert r["prompt"] == build_messages(serialize_schema(db_path, sample_rows=3), e.question)
+        assert "-- Example rows from t:" in r["prompt"][1]["content"]
+
+
+def test_sample_rows_zero_reproduces_schema_only_records(db_dir):
+    default = build_grpo_records(EXAMPLES, db_dir, Exclusions())
+    assert build_grpo_records(EXAMPLES, db_dir, Exclusions(), sample_rows=0) == default
+    assert not any("Example rows" in r["prompt"][1]["content"] for r in default)
+
+
+def test_sample_rows_keep_the_same_question_set(db_dir):
+    # The pass-rate filter is keyed by (db_id, question), so it selects the same questions either way.
+    key = lambda rs: [(r["db_id"], r["question"], r["gold"], r["db_path"]) for r in rs]
+    assert key(build_grpo_records(EXAMPLES, db_dir, Exclusions(), sample_rows=3, drop_empty_gold=True)) == key(
+        build_grpo_records(EXAMPLES, db_dir, Exclusions(), drop_empty_gold=True)
+    )
+
+
 def test_leaked_example_is_refused(db_dir):
     leaked = Exclusions(questions={("zoo", _norm("Names?"))})
     with pytest.raises(AssertionError):

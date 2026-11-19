@@ -105,6 +105,8 @@ def main():
     ap.add_argument("--repair-data", type=Path, default=None,
                     help="data/train_repair.jsonl: repair-turn records mixed with the first-turn records (PLAN-week5)")
     ap.add_argument("--repair-frac", type=float, default=0.5, help="share of repair-turn records in the mix")
+    ap.add_argument("--sample-rows", type=int, default=0,
+                    help="example rows per table in first-turn prompts, as at inference (PLAN-week8)")
     args = ap.parse_args()
 
     assert torch.cuda.is_available(), "CUDA not available: is the CPU torch wheel installed?"
@@ -144,7 +146,10 @@ def main():
         ROOT / "data" / "spider" / "database",
         load_exclusions(ROOT / "data" / "spokenspider_exclude.json"),
         drop_empty_gold=not args.keep_empty_gold,
+        sample_rows=args.sample_rows,
     )
+    with_rows = sum("-- Example rows from " in r["prompt"][1]["content"] for r in records)
+    print(f"sample rows: {args.sample_rows}; example rows in {with_rows} of {len(records)} first-turn prompts", flush=True)
     if args.pass_rate is not None:
         with args.pass_rate.open(encoding="utf-8") as f:
             rates = [json.loads(line) for line in f]
