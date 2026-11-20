@@ -7,7 +7,7 @@ reward to zero. ``check_fits`` raises instead, so the problem shows up in the lo
 from __future__ import annotations
 
 import sqlite3
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from pathlib import Path
 
 SYSTEM_PROMPT = (
@@ -34,7 +34,9 @@ def _one_line(v) -> str:
     return str(v).replace("\\", "\\\\").replace("\r", "\\r").replace("\n", "\\n")
 
 
-def serialize_schema(db_path: str | Path, sample_rows: int = 0) -> str:
+def serialize_schema(db_path: str | Path, sample_rows: int = 0, tables: Iterable[str] | None = None) -> str:
+    """``tables``: keep only these tables (case-insensitive, PLAN-week10 pruning); None keeps everything."""
+    keep = None if tables is None else {t.lower() for t in tables}
     conn = _connect_ro(db_path)
     try:
         tables = conn.execute(
@@ -42,6 +44,8 @@ def serialize_schema(db_path: str | Path, sample_rows: int = 0) -> str:
             "WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite\\_%' ESCAPE '\\' AND sql IS NOT NULL "
             "ORDER BY type, name"
         ).fetchall()
+        if keep is not None:
+            tables = [t for t in tables if t[0].lower() in keep]
         parts = []
         for name, ddl, kind in tables:
             block = ddl.strip().rstrip(";") + ";"
