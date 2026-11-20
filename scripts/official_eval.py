@@ -54,12 +54,14 @@ MODELS = {
     "v2-900-repair-ground-rows3": "_v2-checkpoint-900_repair_ground_rows3",  # PLAN-week7
     "v4-900-repair-ground-rows3": "_v4-checkpoint-900_repair_ground_rows3",  # PLAN-week8 primary
     "v4-900-repair-ground": "_v4-checkpoint-900_repair_ground",  # PLAN-week8 secondary (no rows)
+    "v2-900-repair-ground-rows3-prune": "_v2-checkpoint-900_repair_ground_rows3_prune",  # PLAN-week10
 }
 CAP_S = 120
 PAIRS = [("v2-900", "base"),("v2-900", "main-1000"), ("v2-900", "v2-binary-800"), ("main-1000", "base"),
          ("v3-400-repair", "v2-900-repair"), ("v2-900-repair-ground", "v2-900-repair"),
          ("v2-900-repair-ground-rows3", "v2-900-repair-ground"),
-         ("v4-900-repair-ground-rows3", "v2-900-repair-ground-rows3"), ("v4-900-repair-ground", "v2-900-repair-ground")]
+         ("v4-900-repair-ground-rows3", "v2-900-repair-ground-rows3"), ("v4-900-repair-ground", "v2-900-repair-ground"),
+         ("v2-900-repair-ground-rows3-prune", "v2-900-repair-ground-rows3")]
 # v2-900-repair vs v2-900 is deliberately not tested: repair can only rescue, never lose (Y9), so it
 # is reported as a count of rescued rows.
 
