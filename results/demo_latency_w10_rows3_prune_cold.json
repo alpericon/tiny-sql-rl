@@ -1,0 +1,16 @@
+{
+ "gguf": "v2-900-merged-Q8_0.gguf",
+ "threads": 2,
+ "sample_rows": 3,
+ "prune": true,
+ "prefix_cache": "reset before every query (cold)",
+ "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+ "text_to_sql_and_query": {
+  "n": 30,
+  "median_s": 6.802369146500041,
+  "p95_s": 10.186015696999675,
+  "mean_s": 7.010707555399949,
+  "max_s": 10.919186860000082
+ },
+ "queries_without_error": 30
+}
