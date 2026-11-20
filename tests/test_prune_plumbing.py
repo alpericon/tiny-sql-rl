@@ -91,3 +91,21 @@ def test_demo_prunes_first_attempt_and_repairs_on_full_schema(db_dir):
     sent.clear()
     answer_question(Q, db_dir / "toy" / "toy.sqlite", gen)
     assert "CREATE TABLE pets" in sent[0][1]["content"]
+
+
+def test_demo_falls_back_to_full_schema_if_pruner_fails(db_dir, monkeypatch):
+    # The demo prunes by default (PLAN-week10 decision); a pruner error must not break a question.
+    import tinysql.demo as demo
+
+    def boom(*a, **k):
+        raise RuntimeError("pruner failed")
+
+    monkeypatch.setattr(demo, "select_tables", boom)
+    sent = []
+
+    def gen(batch):
+        sent.extend(batch)
+        return [GOOD]
+
+    res = demo.answer_question(Q, db_dir / "toy" / "toy.sqlite", gen, prune=True)
+    assert res.error is None and "CREATE TABLE pets" in sent[0][1]["content"]
