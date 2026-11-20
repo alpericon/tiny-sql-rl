@@ -1,0 +1,102 @@
+reward distribution: Counter({1.0: 506, 0.1: 253, 0.0: 41})
+reward-1.0 flag counts: Counter({'gold-empty': 26, 'tables-differ': 16}) of 506
+
+#1 [gold-empty, tables-differ] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT s.name FROM student s JOIN takes t ON s.ID = t.ID JOIN section sec ON t.course_id = sec.course_id AND t.sec_id = sec.sec_id AND t.semester = sec.semester AND t.year = sec.year JOIN course c ON sec.course_id = c.course_id WHERE c.title = 'International Finance' AND t.grade IS NOT NULL AND s.dept_name = ( SELECT dept_name FROM department WHERE dept_name = ( SELECT dept_name FROM instructor WHERE ID = ( SELECT ID FROM instructor WHERE dept_name = ( SELECT dept_name FROM department WHERE dept_name = ( SELECT dept_name FROM course WHERE title = 'International Finance' ) ) ) ) );
+  gold rows: []
+
+#2 [gold-empty, tables-differ] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT name FROM student WHERE ID IN ( SELECT ID FROM takes WHERE course_id IN ( SELECT course_id FROM course WHERE title = 'International Finance' ) AND sec_id IN ( SELECT sec_id FROM section WHERE course_id IN ( SELECT course_id FROM course WHERE title = 'International Finance' ) ) );
+  gold rows: []
+
+#3 [gold-empty, tables-differ] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT name FROM student WHERE ID IN ( SELECT ID FROM takes WHERE course_id IN ( SELECT course_id FROM course WHERE title = 'International Finance' ) AND sec_id IN ( SELECT sec_id FROM section WHERE course_id IN ( SELECT course_id FROM course WHERE title = 'International Finance' ) ) )
+  gold rows: []
+
+#4 [gold-empty, tables-differ] scientist_1 | Question: Find the name of the scientist who worked on both a project named 'Matter of Time' and a project named 'A Puzzling Parallax'.
+  gold: SELECT T3.name FROM assignedto AS T1 JOIN projects AS T2 ON T1.project = T2.code JOIN scientists AS T3 ON T1.scientist = T3.SSN WHERE T2.name = 'Matter of Time' INTERSECT SELECT T3.name FROM assignedto AS T1 JOIN projects AS T2 ON T1.project = T2.code JOIN scientists AS T3 ON T1.scientist = T3.SSN WHERE T2.name = 'A Puzzling Parallax'
+  pred: SELECT s.Name FROM Scientists s WHERE s.SSN IN ( SELECT a.Scientist FROM AssignedTo a WHERE a.Project = 'A Puzzling Parallax' ) AND s.SSN IN ( SELECT a.Scientist FROM AssignedTo a WHERE a.Project = 'Matter of Time' );
+  gold rows: []
+
+#5 [gold-empty, tables-differ] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT s.name FROM student s JOIN takes t ON s.ID = t.ID JOIN course c ON t.course_id = c.course_id WHERE c.title = 'International Finance' AND t.semester = 'Fall' AND t.year = 2010;
+  gold rows: []
+
+#6 [tables-differ] college_1 | Question: Find the name of the department that offers the largest number of credits of all classes.
+  gold: SELECT T3.dept_name FROM course AS T1 JOIN CLASS AS T2 ON T1.crs_code = T2.crs_code JOIN department AS T3 ON T1.dept_code = T3.dept_code GROUP BY T1.dept_code ORDER BY sum(T1.crs_credit) DESC LIMIT 1
+  pred: SELECT DEPT_NAME FROM DEPARTMENT WHERE DEPT_CODE = ( SELECT DEPT_CODE FROM DEPARTMENT WHERE DEPT_CODE IN ( SELECT DEPT_CODE FROM COURSE GROUP BY DEPT_CODE ORDER BY SUM(CRS_CREDIT) DESC LIMIT 1 ) );
+  gold rows: [('Computer Info. Systems',)]
+
+#7 [tables-differ] college_1 | Question: Find the name of the department that offers the largest number of credits of all classes.
+  gold: SELECT T3.dept_name FROM course AS T1 JOIN CLASS AS T2 ON T1.crs_code = T2.crs_code JOIN department AS T3 ON T1.dept_code = T3.dept_code GROUP BY T1.dept_code ORDER BY sum(T1.crs_credit) DESC LIMIT 1
+  pred: SELECT DEPT_NAME FROM DEPARTMENT WHERE DEPT_CODE IN ( SELECT DEPT_CODE FROM COURSE GROUP BY DEPT_CODE ORDER BY COUNT(*) DESC LIMIT 1 );
+  gold rows: [('Computer Info. Systems',)]
+
+#8 [tables-differ] college_1 | Question: Find the name of the department that offers the largest number of credits of all classes.
+  gold: SELECT T3.dept_name FROM course AS T1 JOIN CLASS AS T2 ON T1.crs_code = T2.crs_code JOIN department AS T3 ON T1.dept_code = T3.dept_code GROUP BY T1.dept_code ORDER BY sum(T1.crs_credit) DESC LIMIT 1
+  pred: SELECT DEPT_NAME FROM DEPARTMENT WHERE DEPT_CODE IN ( SELECT DEPT_CODE FROM COURSE GROUP BY DEPT_CODE ORDER BY SUM(CRS_CREDIT) DESC LIMIT 1 )
+  gold rows: [('Computer Info. Systems',)]
+
+#9 [gold-empty] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT s.name FROM student s JOIN takes t ON s.ID = t.ID JOIN course c ON t.course_id = c.course_id JOIN prereq pr ON t.course_id = pr.course_id WHERE c.title = 'International Finance';
+  gold rows: []
+
+#10 [gold-empty] store_product | Question: Find all the stores in the district with the most population.
+  gold: SELECT t1.store_name FROM store AS t1 JOIN store_district AS t2 ON t1.store_id = t2.store_id WHERE district_id = (SELECT district_id FROM district ORDER BY city_population DESC LIMIT 1)
+  pred: SELECT s.Store_Name FROM store s JOIN store_district sd ON s.Store_ID = sd.Store_ID JOIN district d ON sd.District_ID = d.District_ID WHERE d.District_ID IN (SELECT District_ID FROM district ORDER BY City_Population DESC LIMIT 1)
+  gold rows: []
+
+#11 [gold-empty] college_2 | Question: Find the name of students who have taken the prerequisite course of the course with title International Finance.
+  gold: SELECT T1.name FROM student AS T1 JOIN takes AS T2 ON T1.id = T2.id WHERE T2.course_id IN (SELECT T4.prereq_id FROM course AS T3 JOIN prereq AS T4 ON T3.course_id = T4.course_id WHERE T3.title = 'International Finance')
+  pred: SELECT s.name FROM student s JOIN takes t ON s.ID = t.ID JOIN course c ON t.course_id = c.course_id JOIN prereq p ON t.course_id = p.course_id AND p.prereq_id = c.course_id WHERE c.title = 'International Finance';
+  gold rows: []
+
+#12 [gold-empty] inn_1 | Question: Return the number of kids for the room reserved and checked in by DAMIEN TRACHSEL on  Sep 21, 2010.
+  gold: SELECT Kids FROM Reservations WHERE CheckIn = "2010-09-21" AND FirstName = "DAMIEN" AND LastName = "TRACHSEL";
+  pred: SELECT Kids FROM Reservations WHERE LastName = 'DAMIEN' AND FirstName = 'TRACHSEL' AND CheckIn = '21-SEP-10';
+  gold rows: []
+
+#13 [gold-empty] inn_1 | Question: Return the number of kids for the room reserved and checked in by DAMIEN TRACHSEL on  Sep 21, 2010.
+  gold: SELECT Kids FROM Reservations WHERE CheckIn = "2010-09-21" AND FirstName = "DAMIEN" AND LastName = "TRACHSEL";
+  pred: SELECT Kids FROM Reservations WHERE LastName = 'DAMIEN' AND FirstName = 'TRACHSEL' AND CheckIn = '21-SEP-10';
+  gold rows: []
+
+#14 [gold-empty] hr_1 | Question: What are the emails of employees with null commission, salary between 7000 and 12000, and who work in department 50?
+  gold: SELECT email FROM employees WHERE commission_pct = "null" AND salary BETWEEN 7000 AND 12000 AND department_id = 50
+  pred: SELECT EMAIL FROM employees WHERE COMMISSION_PCT IS NULL AND SALARY BETWEEN 7000 AND 12000 AND DEPARTMENT_ID = 50;
+  gold rows: []
+
+#15 [gold-empty] hr_1 | Question: What are the emails of employees with null commission, salary between 7000 and 12000, and who work in department 50?
+  gold: SELECT email FROM employees WHERE commission_pct = "null" AND salary BETWEEN 7000 AND 12000 AND department_id = 50
+  pred: SELECT EMAIL FROM employees WHERE COMMISSION_PCT IS NULL AND SALARY BETWEEN 7000 AND 12000 AND DEPARTMENT_ID = 50;
+  gold rows: []
+
+#16 [none] match_season | Question: Count the number of different official languages corresponding to countries that players who play Defender are from.
+  gold: SELECT count(DISTINCT T1.Official_native_language) FROM country AS T1 JOIN match_season AS T2 ON T1.Country_id = T2.Country WHERE T2.Position = "Defender"
+  pred: SELECT COUNT(DISTINCT Official_native_language) AS count FROM country WHERE Country_id IN ( SELECT Country FROM match_season WHERE Position = 'Defender' AND Team IN ( SELECT Team FROM match_season WHERE Position = 'Defender' ) )
+  gold rows: [(2,)]
+
+#17 [none] company_employee | Question: List the names of people that are not employed by any company
+  gold: SELECT Name FROM people WHERE People_ID NOT IN (SELECT People_ID FROM employment)
+  pred: SELECT "people"."Name" FROM "people" WHERE "people"."People_ID" NOT IN ( SELECT "People_ID" FROM "employment" GROUP BY "Company_ID" HAVING COUNT(*) > 0 );
+  gold rows: [('David Butler',), ('Tim Naegeli',)]
+
+#18 [none] movie_1 | Question: Find the names of reviewers who had given higher than 3 star ratings.
+  gold: SELECT T2.name FROM Rating AS T1 JOIN Reviewer AS T2 ON T1.rID = T2.rID WHERE T1.stars > 3
+  pred: SELECT name FROM Reviewer WHERE rID IN (SELECT rID FROM Rating WHERE stars > 3 AND mID IN (SELECT mID FROM Rating WHERE stars > 3))
+  gold rows: [('Sarah Martinez',), ('Daniel Lewis',), ('Brittany Harris',)]
+
+#19 [none] company_employee | Question: List the names of people that are not employed by any company
+  gold: SELECT Name FROM people WHERE People_ID NOT IN (SELECT People_ID FROM employment)
+  pred: SELECT "people"."Name" FROM "people" WHERE "People_ID" NOT IN ( SELECT "People_ID" FROM "employment" GROUP BY "Company_ID" HAVING COUNT(*) > 0 );
+  gold rows: [('David Butler',), ('Tim Naegeli',)]
+
+#20 [none] company_employee | Question: List the names of people that are not employed by any company
+  gold: SELECT Name FROM people WHERE People_ID NOT IN (SELECT People_ID FROM employment)
+  pred: SELECT "people"."Name" FROM "people" WHERE "People_ID" NOT IN ( SELECT "People_ID" FROM "employment" GROUP BY "Company_ID" );
+  gold rows: [('David Butler',), ('Tim Naegeli',)]

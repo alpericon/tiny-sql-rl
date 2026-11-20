@@ -29,6 +29,7 @@ Every training run uses **one seed**, so the tests cover question sampling, not 
 | GRPO, filtered, binary reward (ablation) | 58.2% | 58.8% | |
 | **released model + one retry on SQL errors** | **60.3%** | **60.8%** | 19 more rescued, 0 lost |
 | **+ grounding + 3 example rows per table in the prompt** (demo default) | **62.2%** | **63.4%** | vs retry + grounding: 72 / 46, p=0.021 (official) |
+| same, model trained with example rows (week 8, not released) | 62.8% | 63.9% | vs the row above: 29 / 24, p=0.58 (official) |
 
 - **Yes: +4.9 points** (official), significant.
 - **The difficulty filter** (train only on questions the base model solves 1–7 of 8 times) cut the
@@ -168,7 +169,11 @@ These are ordered by how directly the results above point to them.
      SQLCoder-7B in all five (0 dB tied).
    - The gain is mostly fewer `no such column` errors (74 → 60).
    - Cost: cold CPU latency roughly doubles (5.0 → 9.3 s).
-   - Next step: train with example rows, since the model never saw them in training.
+   - **Training with example rows: tried, null result** (week 8, [results/week8_results.md](results/week8_results.md)).
+     The v2 recipe re-run with rows in the prompt (v4) scores 63.9% official vs 63.4% for the released
+     model with rows (29 / 24, p=0.58). Voice is higher in all five conditions (+3 to +9, none
+     significant after correction), and it keeps the schema-only skill (62.0% vs 60.9%). The release
+     stays v2-900. The pass-rate filter was computed without rows, so v4 had less learning signal.
 5. **Another benchmark** (e.g. BIRD), to see whether the gains hold beyond Spider.
 
 ## License and attribution

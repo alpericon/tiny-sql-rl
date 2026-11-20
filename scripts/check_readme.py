@@ -109,6 +109,14 @@ def main():
         checks.append(f"**{round(100 * v3r[c]['ours_ex'])}%**")
     checks.append(f"{round(100 * v3r['clean']['ours_ex'])} vs {round(100 * v3r['clean']['sqlcoder_ex'])} clean")
 
+    # Week 8 training with example rows (v4)
+    r4 = j(f"{B}_v4-checkpoint-900_repair_ground_rows3.json")
+    o4 = om["v4-900-repair-ground-rows3"]
+    p4 = off["pairs_official"]["v4-900-repair-ground-rows3 vs v2-900-repair-ground-rows3"]
+    checks.append(f"| {pct(r4['execution_accuracy'])} | {pct(o4['official_ex'])} | vs the row above: {p4['wins']} / {p4['losses']}, p={p4['p']:.2f}")
+    checks.append(f"{pct(o4['official_ex'])} official vs {pct(om['v2-900-repair-ground-rows3']['official_ex'])}")
+    checks.append(f"({pct(om['v4-900-repair-ground']['official_ex'])} vs {pct(om['v2-900-repair-ground']['official_ex'])})")
+
     missing = [c for c in checks if c not in README]
     for c in checks:
         print(("OK   " if c not in missing else "MISS ") + c)

@@ -1,6 +1,6 @@
 # Week 8 plan: training with example rows in the prompt
 
-**Status: APPROVED 2026-11-19 (approach A).**
+**Status: APPROVED 2026-11-19 (approach A). Done 2026-11-20: primary null (official 63.4 -> 63.9, p=0.58); v2-900 stays the release.**
 
 This is README "Future work" item 4, next step after week 7.
 
