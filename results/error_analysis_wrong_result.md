@@ -20,9 +20,9 @@ primary labels agree on 17 of 20**, above the plan's threshold of 15.
 | 28 | join (airline name vs uid) | schema-link |
 | 33 | aggregation (groups by the wrong id) | schema-link |
 
-All three disagreements lie on the boundary between schema-link, join and aggregation. With
-schema-link and join merged, agreement is 18 of 20. Fine distinctions inside the
-schema-link/join/aggregation area are therefore less reliable than the merged shares.
+All three disagreements lie on the boundaries between schema-link, join, aggregation and condition.
+With schema-link and join merged, agreement is 18 of 20 (it rescues #28). Fine distinctions between
+these labels are therefore less reliable than the merged shares.
 
 ## Shares (primary label, n = 100, Wilson 95% intervals)
 
@@ -54,9 +54,11 @@ schema-link/join/aggregation area are therefore less reliable than the merged sh
   - it groups visitors instead of museums.
   Most of these are medium and hard questions on databases with several similar tables (car_1,
   cre_Doc_Template_Mgt, network_1).
-- **Foreign keys are already in the prompt.** All 17 sampled databases declare them in their
-  `CREATE TABLE` statements, and all 45 schema-link and join errors happen with those keys visible.
-  "Foreign-key hints", listed in the plan as a candidate, would add nothing new.
+- **Foreign keys are mostly already in the prompt.** All 17 sampled databases declare foreign keys in
+  their `CREATE TABLE` statements. Of the 45 schema-link and join errors, 29 have a gold query with
+  joins. In 27 of those, every table pair the gold joins is linked by a declared key. The 2 exceptions
+  are #28 and #29: flight_2's `flights.Airline` → `airlines.uid` is not declared.
+  "Foreign-key hints", listed in the plan as a candidate, would therefore add little on this sample.
 - **Invented conditions** (12, plus 5 as a secondary label). The model adds filters the question
   never mentions: `Sex = 'F'`, `grade = 9`, `Continent = 'america'`, `abandoned_yn = '1'`.
 - **Literal errors are nearly gone** (2). Grounding (week 6) and example rows (week 7) cover this class.
@@ -74,18 +76,21 @@ schema-link/join/aggregation area are therefore less reliable than the merged sh
   - `SUM(cost)` vs `COUNT(*)` for "spent the most".
 - In the other 3 (#21, #84, #85) the question is ambiguous or garbled, and the prediction is not clearly
   right either.
-- **Rough extrapolation:** 15% of the 301 is about 45 questions (95% CI ~27–69). If ~12/15 of them are
-  correct predictions, roughly 30–40 questions, or 3–4 points of dev EX, are scored wrong though the
-  answer is right. This is an estimate from 15 rows. It does not change any reported number, but it
+- **Only 7 of the 12 are clearly correct** (#23, 25, 43, 55, 56, 96, 97). The other 5 are defensible
+  but arguable readings (#40 and #87 use `LEFT JOIN` for "each", #61 column order, #78 countries with no
+  language rows, #81 ties).
+- **Rough extrapolation:** 15% of the 301 is about 45 questions (95% CI ~27–69). Counting 7 to 12 of
+  every 15 as right answers gives **roughly 20–40 questions, or about 2–4 points of dev EX**, scored
+  wrong though the answer is right or defensible. This is an estimate from 15 rows. It does not change any reported number, but it
   means the measurable ceiling on Spider dev is lower than 100%.
 
 ## What this points to (the plan's table, applied)
 
 - **The largest fixable share is schema-link + join (45%).** The plan names two candidates for this:
-  - "foreign-key hints": ruled out above, the keys are already in the prompt;
-  - "schema pruning": showing only the relevant tables and columns. This remains the direct candidate.
-- **Gold issues are 15%**, under the plan's 25% threshold. A second benchmark is not urgent on this
-  evidence alone.
+  - "foreign-key hints": little room, since the needed keys are declared in 27 of 29 cases;
+  - "schema pruning": showing only the relevant tables and columns. This remains a candidate.
+- **Gold issues are 15%**, under the plan's 25% threshold, so the plan's table does not point to a
+  second benchmark on this evidence.
 - No single other class dominates. Condition, aggregation, nesting and output-shape together are 37%.
 
 The next experiment is chosen in a separate plan. Two candidates follow from these numbers:
@@ -96,8 +101,8 @@ The next experiment is chosen in a separate plan. Two candidates follow from the
 
 ## Caveats
 
-- **One main labeller (Claude), checked on 20 rows by the user.** Boundaries between schema-link, join
-  and aggregation are fuzzy (3 of 3 disagreements).
+- **One main labeller (Claude), checked on 20 rows by the user.** Boundaries between schema-link, join,
+  aggregation and condition are fuzzy (all 3 disagreements).
 - **n = 100.** The intervals are wide; the order of classes below the top three is not reliable.
 - **Only failures were labelled.** The shares say what the model gets wrong, not how often it gets the
   same kind of thing right.

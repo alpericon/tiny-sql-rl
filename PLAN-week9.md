@@ -1,6 +1,6 @@
 # Week 9 plan: what are the remaining "wrong result" errors? (error analysis, no training)
 
-**Status: APPROVED 2026-11-20.**
+**Status: APPROVED 2026-11-20. Done 2026-11-20: schema-link + join 45%, gold issues 15%; spot check 17/20.**
 
 ## Why
 
