@@ -1,6 +1,6 @@
 # Week 10 plan: schema pruning (inference-only)
 
-**Status: APPROVED 2026-11-20 (approach A).**
+**Status: APPROVED 2026-11-20 (approach A). Done 2026-11-20: official EX 63.4 -> 65.9 (42/17, p=0.0015), decision rule met, demo prunes by default.**
 
 ## Why
 

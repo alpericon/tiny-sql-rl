@@ -28,8 +28,9 @@ Every training run uses **one seed**, so the tests cover question sampling, not 
 | **GRPO, pass-rate-filtered questions (released)** | **58.5%** | **59.0%** | 84 / 33, p<0.0001 |
 | GRPO, filtered, binary reward (ablation) | 58.2% | 58.8% | |
 | **released model + one retry on SQL errors** | **60.3%** | **60.8%** | 19 more rescued, 0 lost |
-| **+ grounding + 3 example rows per table in the prompt** (demo default) | **62.2%** | **63.4%** | vs retry + grounding: 72 / 46, p=0.021 (official) |
+| **+ grounding + 3 example rows per table in the prompt** | **62.2%** | **63.4%** | vs retry + grounding: 72 / 46, p=0.021 (official) |
 | same, model trained with example rows (week 8, not released) | 62.8% | 63.9% | vs the row above: 29 / 24, p=0.58 (official) |
+| **released model + rows + schema pruning** (week 10, demo default) | **64.1%** | **65.9%** | vs rows without pruning: 42 / 17, p=0.002 (official) |
 
 - **Yes: +4.9 points** (official), significant.
 - **The difficulty filter** (train only on questions the base model solves 1–7 of 8 times) cut the
@@ -65,6 +66,8 @@ SQLCoder's repair step is voice-to-sql's own (a different prompt and mechanism),
   or ahead (55 vs 52 clean, 57 vs 50 at 20 dB). No per-condition difference is significant (n=100).
 - **With 3 example rows in the prompt** (week 7) it is at or above SQLCoder in all five conditions
   (65 vs 55 clean; 46 vs 45 at 0 dB is a tie). Only 20 dB reaches p<0.05, and that is one of five tests, so it is directional.
+- **With schema pruning added** (week 10) no condition gets worse: 70 / 68 / 67 / 65 / 46
+  (typed, clean, 20, 10, 0 dB), none significantly different alone.
 - **Without example rows it degrades more at 0 dB:** −14 points vs −8 for SQLCoder. That gap is
   directional and was not tested.
 - **Clean ASR used to cost ~5 points vs typed text.** Transcripts lose literal case (`"Aliens"` → `aliens`),
@@ -169,6 +172,12 @@ These are ordered by how directly the results above point to them.
      SQLCoder-7B in all five (0 dB tied).
    - The gain is mostly fewer `no such column` errors (74 → 60).
    - Cost: cold CPU latency roughly doubles (5.0 → 9.3 s).
+   - **Schema pruning: done** (week 10, [results/week10_results.md](results/week10_results.md)). The first
+     attempt shows only the tables a lexical pruner keeps (tuned on train; 98.9% gold-table recall on
+     dev). Official EX 63.4% → 65.9% (42 / 17, p=0.002), no voice condition worse, and cold CPU
+     latency 9.1 → 6.8 s. The demo prunes by default. A week-9 error analysis
+     ([results/error_analysis_wrong_result.md](results/error_analysis_wrong_result.md)) had found 45% of
+     wrong results to be schema-linking or join errors.
    - **Training with example rows: tried, null result** (week 8, [results/week8_results.md](results/week8_results.md)).
      The v2 recipe re-run with rows in the prompt (v4) scores 63.9% official vs 63.4% for the released
      model with rows (29 / 24, p=0.58). Voice is higher in all five conditions (+3 to +9, none

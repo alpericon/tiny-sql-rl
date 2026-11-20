@@ -117,6 +117,19 @@ def main():
     checks.append(f"{pct(o4['official_ex'])} official vs {pct(om['v2-900-repair-ground-rows3']['official_ex'])}")
     checks.append(f"({pct(om['v4-900-repair-ground']['official_ex'])} vs {pct(om['v2-900-repair-ground']['official_ex'])})")
 
+    # Week 10 schema pruning
+    rp = j(f"{B}_v2-checkpoint-900_repair_ground_rows3_prune.json")
+    op = om["v2-900-repair-ground-rows3-prune"]
+    pp = off["pairs_official"]["v2-900-repair-ground-rows3-prune vs v2-900-repair-ground-rows3"]
+    checks.append(f"| **{pct(rp['execution_accuracy'])}** | **{pct(op['official_ex'])}** | vs rows without pruning: {pp['wins']} / {pp['losses']}, p={pp['p']:.3f}")
+    checks.append(f"Official EX {pct(om['v2-900-repair-ground-rows3']['official_ex'])} → {pct(op['official_ex'])} ({pp['wins']} / {pp['losses']}, p={pp['p']:.3f})")
+    vp = j("voice_Qwen__Qwen3-1.7B_v2-checkpoint-900_repair_ground_rows3_prune.json")["conditions"]
+    checks.append(" / ".join(str(round(100 * vp[c]["ours_ex"])) for c in ["text", "clean", "20db", "10db", "0db"]))
+    rec = json.loads((R / "prune_recall_dev.json").read_text(encoding="utf-8"))
+    checks.append(f"{100 * rec['recall']:.1f}% gold-table recall")
+    lat = {k: j(f"demo_latency_w10_{k}.json")["text_to_sql_and_query"]["median_s"] for k in ("rows3_cold_now", "rows3_prune_cold")}
+    checks.append(f"latency {lat['rows3_cold_now']:.1f} → {lat['rows3_prune_cold']:.1f} s")
+
     missing = [c for c in checks if c not in README]
     for c in checks:
         print(("OK   " if c not in missing else "MISS ") + c)
