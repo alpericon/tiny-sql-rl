@@ -1,0 +1,171 @@
+{
+ "n": 1034,
+ "recall": 0.9894,
+ "mean_share_of_tables": 0.8049,
+ "fallback_rate": 0.117,
+ "misses_example": [
+  {
+   "db_id": "car_1",
+   "question": "What is the name of the different car makers who produced a car in 1970?",
+   "gold_tables": [
+    "car_makers",
+    "car_names",
+    "cars_data",
+    "model_list"
+   ],
+   "kept": [
+    "car_makers",
+    "car_names",
+    "countries",
+    "model_list"
+   ]
+  },
+  {
+   "db_id": "car_1",
+   "question": "Which distinct car models are the produced after 1980?",
+   "gold_tables": [
+    "car_names",
+    "cars_data",
+    "model_list"
+   ],
+   "kept": [
+    "car_names",
+    "model_list"
+   ]
+  },
+  {
+   "db_id": "car_1",
+   "question": "What are the different models for the cards produced after 1980?",
+   "gold_tables": [
+    "car_names",
+    "cars_data",
+    "model_list"
+   ],
+   "kept": [
+    "car_names",
+    "model_list"
+   ]
+  },
+  {
+   "db_id": "car_1",
+   "question": "What are the names of all European countries with at least 3 manufacturers?",
+   "gold_tables": [
+    "car_makers",
+    "continents",
+    "countries"
+   ],
+   "kept": [
+    "car_makers",
+    "countries"
+   ]
+  },
+  {
+   "db_id": "car_1",
+   "question": "Which model saves the most gasoline? That is to say, have the maximum miles per gallon.",
+   "gold_tables": [
+    "car_names",
+    "cars_data"
+   ],
+   "kept": [
+    "car_names",
+    "model_list"
+   ]
+  },
+  {
+   "db_id": "car_1",
+   "question": "Which distinctive models are produced by maker with the full name General Motors or weighing more than 3500?",
+   "gold_tables": [
+    "car_makers",
+    "car_names",
+    "cars_data",
+    "model_list"
+   ],
+   "kept": [
+    "car_makers",
+    "car_names",
+    "countries",
+    "model_list"
+   ]
+  },
+  {
+   "db_id": "car_1",
+   "question": "What are the different models created by either the car maker General Motors or weighed more than 3500?",
+   "gold_tables": [
+    "car_makers",
+    "car_names",
+    "cars_data",
+    "model_list"
+   ],
+   "kept": [
+    "car_makers",
+    "car_names",
+    "model_list"
+   ]
+  },
+  {
+   "db_id": "car_1",
+   "question": "Which models are lighter than 3500 but not built by the 'Ford Motor Company'?",
+   "gold_tables": [
+    "car_makers",
+    "car_names",
+    "cars_data",
+    "model_list"
+   ],
+   "kept": [
+    "car_makers",
+    "car_names",
+    "model_list"
+   ]
+  },
+  {
+   "db_id": "car_1",
+   "question": "What are the different models wthat are lighter than 3500 but were not built by the Ford Motor Company?",
+   "gold_tables": [
+    "car_makers",
+    "car_names",
+    "cars_data",
+    "model_list"
+   ],
+   "kept": [
+    "car_makers",
+    "car_names",
+    "model_list"
+   ]
+  },
+  {
+   "db_id": "student_transcripts_tracking",
+   "question": "What are the last name of the students who live in North Carolina but have not registered in any degree programs?",
+   "gold_tables": [
+    "addresses",
+    "student_enrolment",
+    "students"
+   ],
+   "kept": [
+    "Degree_Programs",
+    "Student_Enrolment",
+    "Students"
+   ]
+  },
+  {
+   "db_id": "student_transcripts_tracking",
+   "question": "What is the id of the semester that had both Masters and Bachelors students enrolled?",
+   "gold_tables": [
+    "degree_programs",
+    "student_enrolment"
+   ],
+   "kept": [
+    "Semesters",
+    "Student_Enrolment",
+    "Students"
+   ]
+  }
+ ],
+ "prompt_tokens_rows3": {
+  "full_median": 646.5,
+  "pruned_median": 529.0,
+  "full_max": 1897,
+  "pruned_max": 1819
+ },
+ "questions_with_fewer_tables": 480,
+ "of_which_on_5plus_table_dbs": 210
+}
