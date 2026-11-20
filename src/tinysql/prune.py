@@ -9,6 +9,10 @@ A table is kept when the question mentions it:
 Tables on the shortest foreign-key path between kept tables are added as bridges. When fewer than
 ``min_tables`` tables match, the result is ``None``: use the full schema.
 
+Defaults frozen in P2 by the rule fixed before the grid: among settings with train recall >= 98%,
+the one showing the fewest tables (results/prune_recall_train.json: recall 98.3%, 72.5% of tables
+shown, full-schema fallback 13%).
+
 Words are lower-cased, split on non-letters and camelCase, and singularised crudely (so "singers"
 matches ``singer``). The defaults are fixed on train questions (P2), never on dev.
 """
@@ -107,22 +111,33 @@ def _path(fk: dict[str, set[str]], a: str, b: str) -> list[str]:
     return []
 
 
-def select_tables(question: str, db_path: str | Path, min_tables: int = 1, max_col_df: int = 1) -> list[str] | None:
+def _hit(w: str, q_words: set[str], prefix: bool) -> bool:
+    if w in q_words:
+        return True
+    return prefix and len(w) >= 4 and any(len(q) >= 4 and (q.startswith(w) or w.startswith(q)) for q in q_words)
+
+
+def select_tables(question: str, db_path: str | Path, min_tables: int = 2, max_col_df: int = 3,
+                  prefix: bool = True, neighbours: bool = False) -> list[str] | None:
+    """prefix: a word also matches when one is a prefix of the other (>= 4 letters: "prereq" /
+    "prerequisites"). neighbours: also keep the tables one foreign key away from a matched table."""
     p = profile(str(db_path))
-    q_words, q_phrase = set(words(question)), _phrase(question)
+    q_words, q_phrase = set(words(question)) - STOPWORDS, _phrase(question)
     df: dict[str, int] = {}
     for cw in p.col_words.values():
         for w in cw:
             df[w] = df.get(w, 0) + 1
     kept = set()
     for k in p.names:
-        by_name = bool(p.name_words[k]) and p.name_words[k] <= q_words
-        by_col = any(w in q_words and df[w] <= max_col_df for w in p.col_words[k] if w not in STOPWORDS)
+        by_name = bool(p.name_words[k]) and all(_hit(w, q_words, prefix) for w in p.name_words[k])
+        by_col = any(df[w] <= max_col_df and _hit(w, q_words, prefix) for w in p.col_words[k] if w not in STOPWORDS)
         by_value = any(v in q_phrase for v in p.values[k])
         if by_name or by_col or by_value:
             kept.add(k)
     if len(kept) < min_tables:
         return None
+    if neighbours:
+        kept |= {n for k in kept for n in p.fk.get(k, ())}
     for a in sorted(kept):
         for b in sorted(kept):
             if a < b:

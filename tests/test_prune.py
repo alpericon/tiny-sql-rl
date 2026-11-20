@@ -34,7 +34,7 @@ def db(tmp_path):
 
 def test_table_name_match_keeps_that_table_only(db):
     # "singers" matches singer; singer_in_concert needs both of its words.
-    assert select_tables("How many singers are there?", db, min_tables=1) == ["singer"]
+    assert select_tables("How many singers are there?", db, min_tables=1, max_col_df=1) == ["singer"]
 
 
 def test_column_name_match_keeps_the_table(db):
@@ -52,7 +52,7 @@ def test_foreign_key_bridge_tables_are_added(db):
 
 def test_too_few_matches_fall_back_to_the_full_schema(db):
     assert select_tables("What is the answer?", db, min_tables=1) is None
-    assert select_tables("How many singers are there?", db, min_tables=2) is None
+    assert select_tables("How many singers are there?", db, min_tables=2, max_col_df=1) is None
 
 
 def test_pruned_schema_has_only_kept_tables_and_none_is_unchanged(db):
@@ -67,3 +67,19 @@ def test_gold_tables_reads_from_and_join_case_insensitively():
     sql = ("SELECT T1.name FROM Singer AS T1 JOIN singer_in_concert AS T2 ON T1.singer_id = T2.singer_id "
            "WHERE T2.concert_id IN (SELECT concert_id FROM concert WHERE year = 2014)")
     assert gold_tables(sql) == {"singer", "singer_in_concert", "concert"}
+
+
+def test_frozen_defaults_from_train_tuning():
+    import inspect
+
+    d = {k: v.default for k, v in inspect.signature(select_tables).parameters.items() if k not in ("question", "db_path")}
+    assert d == {"min_tables": 2, "max_col_df": 3, "prefix": True, "neighbours": False}
+
+
+def test_prefix_and_neighbour_options(db):
+    assert select_tables("List the stadiums.", db, min_tables=1, max_col_df=1, prefix=False) == ["stadium"]
+    # "concerts" keeps concert; one-hop FK neighbours add stadium and singer_in_concert.
+    assert select_tables("List the concerts.", db, min_tables=1, max_col_df=1, neighbours=True) == [
+        "concert", "singer_in_concert", "stadium"]
+    # Prefix: "locat" (5 letters) is a prefix of the column word "location".
+    assert select_tables("Any locat?", db, min_tables=1, max_col_df=1, prefix=True) == ["stadium"]
