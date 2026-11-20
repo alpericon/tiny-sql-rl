@@ -1,0 +1,44 @@
+== checkpoints/v2/checkpoint-900
+ "max_new_tokens": 256,
+ "limit": null
+}
+== checkpoints/v4/checkpoint-100
+ "max_new_tokens": 256,
+ "limit": null
+}
+== checkpoints/v4/checkpoint-200
+ "max_new_tokens": 256,
+ "limit": null
+}
+== checkpoints/v4/checkpoint-300
+ "max_new_tokens": 256,
+ "limit": null
+}
+== checkpoints/v4/checkpoint-400
+ "max_new_tokens": 256,
+ "limit": null
+}
+== checkpoints/v4/checkpoint-500
+ "max_new_tokens": 256,
+ "limit": null
+}
+== checkpoints/v4/checkpoint-600
+ "max_new_tokens": 256,
+ "limit": null
+}
+== checkpoints/v4/checkpoint-700
+ "max_new_tokens": 256,
+ "limit": null
+}
+== checkpoints/v4/checkpoint-800
+ "max_new_tokens": 256,
+ "limit": null
+}
+== checkpoints/v4/checkpoint-900
+ "max_new_tokens": 256,
+ "limit": null
+}
+== checkpoints/v4/checkpoint-1000
+ "max_new_tokens": 256,
+ "limit": null
+}

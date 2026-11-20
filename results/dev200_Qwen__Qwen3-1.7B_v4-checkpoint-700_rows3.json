@@ -1,0 +1,23 @@
+{
+ "n": 200,
+ "execution_accuracy": 0.6,
+ "format_failure_rate": 0.015,
+ "execution_error_rate": 0.095,
+ "max_prompt_chars": 5267,
+ "median_prompt_chars": 1881.0,
+ "generation_seconds_total": 188.67,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 3,
+ "hit_max_new_tokens_rate": 0.0,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v4/checkpoint-700",
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 204.1,
+ "max_prompt_tokens": 1887,
+ "peak_vram_gib": 4.42,
+ "max_new_tokens": 256,
+ "limit": null
+}
