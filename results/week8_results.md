@@ -37,8 +37,8 @@ against 24 is well within chance.
 
 - Small changes everywhere. `no such column` drops a little further (60 → 55).
 - Repair: 112 retries, 21 rescued (v2-900: 111 and 24). Grounding fires on 18 queries (v2-900: 16).
-- **Churn is lower than in week 7.** 50 questions change outcome between v2-900 and v4-900 (both with
-  rows). Adding rows to v2-900 changed 112.
+- 50 questions change outcome between v2-900 and v4-900 (both with rows; 59 without rows). Week 7's 112
+  is a different pair (v2-900 with vs without rows), so the two counts are not directly comparable.
 
 ## Secondary: schema-only prompt (rows turned off)
 
@@ -50,7 +50,8 @@ against 24 is well within chance.
 - **v4 does not lose the schema-only skill.** Without rows it is directionally better than v2-900 (not
   significant), so `TINYSQL_SAMPLE_ROWS=0` would still work with v4.
 - **The gain from rows at inference is smaller for v4:** 62.0 → 63.9 official, against 60.9 → 63.4 for
-  v2-900. Training with rows did not make the model use them more.
+  v2-900. So training with rows did not make the model gain more from them (descriptive; the two
+  effects are not tested against each other and both are within noise).
 
 ## Guard rail: voice (100 SpokenSpider queries per condition, rows + repair + grounding)
 
@@ -89,8 +90,8 @@ condition is significantly worse.
 
 ## Caveats
 
-- **Less learning signal than v2.** Zero-variance groups ran at 0.43–0.51 against v2's 0.25–0.41
-  (`results/checkpoint_eval_v4.md`). The pass-rate filter was computed on schema-only prompts and was
+- **Less learning signal than v2.** Zero-variance groups ran at 0.37–0.53 against v2's 0.25–0.43
+  (means per 100-step block, all ten blocks; `results/train_log_v4.csv`, `train_log_v2.csv`). The pass-rate filter was computed on schema-only prompts and was
   kept so that the data stayed the same. A filter recomputed with rows might give a stronger run, but
   that changes the data as well as the prompt.
 - **Single seed.** McNemar covers question sampling, not training variance. Week 3 showed that two

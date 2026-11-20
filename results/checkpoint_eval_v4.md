@@ -27,8 +27,8 @@ Produced by `python scripts/compare_checkpoints.py v4 --suffix _rows3 --base dev
 | 401–500 | 0.689 | 0.690 | 0.51 | 0.37 | 0.040 | 0.043 |
 | 901–1000 | 0.685 | 0.710 | 0.49 | 0.41 | 0.045 | 0.049 |
 
-- **Less learning signal than v2.** Groups with zero reward variance are higher throughout (0.43–0.51
-  vs 0.25–0.41). The pass-rate filter was computed on schema-only prompts (kept on purpose, see the
+- **Less learning signal than v2.** Groups with zero reward variance are higher throughout: 0.37–0.53
+  vs 0.25–0.43 over all ten 100-step blocks (the table shows three). The pass-rate filter was computed on schema-only prompts (kept on purpose, see the
   plan), so with rows more of the 1,688 questions are all-solved or all-failed.
 - Run: 1,000 steps in 10.75 h, median 38 s/step, peak reserved VRAM 8.04 GiB, no OOM.
 
