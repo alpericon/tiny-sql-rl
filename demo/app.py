@@ -23,7 +23,7 @@ from tinysql.demo import answer_question  # noqa: E402
 DB_DIR = Path(os.environ.get("TINYSQL_DB_DIR", HERE / "databases"))
 VOICE = os.environ.get("TINYSQL_VOICE", "1") != "0"
 SAMPLE_ROWS = int(os.environ.get("TINYSQL_SAMPLE_ROWS", "3"))
-PRUNE = os.environ.get("TINYSQL_PRUNE", "0") == "1"  # PLAN-week10, off by default
+PRUNE = os.environ.get("TINYSQL_PRUNE", "1") != "0"  # PLAN-week10: on by default (decision rule met); 0 turns it off
 # Questions the released model answers correctly (checked by hand). It is wrong on roughly 4 in 10
 # Spider dev questions, so free-form questions will sometimes fail; that is shown, not hidden.
 EXAMPLES = {

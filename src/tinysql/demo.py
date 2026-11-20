@@ -80,7 +80,12 @@ def answer_question(question: str, db_path: str | Path, generate: Callable, max_
     if not question:
         return DemoResult(question, None, None, None, None, "empty question")
     full = build_messages(_schema(str(db_path), sample_rows), question)
-    tables = select_tables(question, db_path) if prune else None
+    tables = None
+    if prune:
+        try:
+            tables = select_tables(question, db_path)
+        except Exception:  # never let pruning break a question: show the full schema instead
+            tables = None
     messages = full if tables is None else build_messages(_schema(str(db_path), sample_rows, tuple(tables)), question)
     grounding: list = []
     completion, sql, res = _attempt(messages, db_path, generate, max_rows, timeout_s, ground, grounding)
