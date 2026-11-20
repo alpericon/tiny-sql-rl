@@ -15,6 +15,7 @@ from pathlib import Path
 from tinysql.executor import execute_readonly
 from tinysql.ground import cached_index, ground_sql
 from tinysql.prompt import build_messages, serialize_schema
+from tinysql.prune import select_tables
 from tinysql.repair import NO_BLOCK, repair_messages
 from tinysql.reward import extract_sql
 
@@ -35,8 +36,8 @@ class DemoResult:
 
 
 @lru_cache(maxsize=32)
-def _schema(db_path: str, sample_rows: int = 0) -> str:
-    return serialize_schema(db_path, sample_rows=sample_rows)
+def _schema(db_path: str, sample_rows: int = 0, tables: tuple[str, ...] | None = None) -> str:
+    return serialize_schema(db_path, sample_rows=sample_rows, tables=tables)
 
 
 def _fmt(v) -> str:
@@ -70,20 +71,24 @@ def _attempt(messages, db_path, generate, max_rows, timeout_s, ground, grounding
 
 def answer_question(question: str, db_path: str | Path, generate: Callable, max_rows: int = 200,
                     timeout_s: float = 10.0, repair: bool = True, ground: bool = True,
-                    sample_rows: int = 0) -> DemoResult:
+                    sample_rows: int = 0, prune: bool = False) -> DemoResult:
     """With ``repair`` (the default), an answer with no SQL block or SQL that does not run gets one
-    retry with the error message, under the same rule as the evaluation (PLAN-week4 Y9)."""
+    retry with the error message, under the same rule as the evaluation (PLAN-week4 Y9).
+    With ``prune``, the first attempt shows only the tables the pruner keeps; the retry uses the full
+    schema (PLAN-week10)."""
     question = question.strip()
     if not question:
         return DemoResult(question, None, None, None, None, "empty question")
-    messages = build_messages(_schema(str(db_path), sample_rows), question)
+    full = build_messages(_schema(str(db_path), sample_rows), question)
+    tables = select_tables(question, db_path) if prune else None
+    messages = full if tables is None else build_messages(_schema(str(db_path), sample_rows, tuple(tables)), question)
     grounding: list = []
     completion, sql, res = _attempt(messages, db_path, generate, max_rows, timeout_s, ground, grounding)
     extra = {}
     if repair and (sql is None or not res.ok):
         first_error = NO_BLOCK if sql is None else res.error
         extra = {"repaired": True, "first_sql": sql, "first_error": first_error}
-        retry = repair_messages(messages, completion, None if sql is None else res.error)
+        retry = repair_messages(full, completion, None if sql is None else res.error)
         grounding.clear()  # report only the final answer's replacements
         completion, sql, res = _attempt(retry, db_path, generate, max_rows, timeout_s, ground, grounding)
     extra["grounding"] = grounding

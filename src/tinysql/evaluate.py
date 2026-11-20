@@ -15,6 +15,7 @@ from tinysql.compare import gold_is_ordered, results_match
 from tinysql.data import Example
 from tinysql.executor import execute_readonly
 from tinysql.ground import cached_index, ground_sql
+from tinysql.prune import select_tables
 from tinysql.prompt import build_messages, serialize_schema
 from tinysql.repair import NO_BLOCK, repair_messages
 from tinysql.reward import extract_sql
@@ -48,6 +49,7 @@ def evaluate(
     timeout_s: float = 30.0,
     repair: bool = False,
     ground: bool = False,
+    prune: bool = False,
 ) -> tuple[list[dict], dict]:
     """Score ``generate``'s SQL on ``examples`` by execution.
 
@@ -56,23 +58,36 @@ def evaluate(
     same run is recoverable.
 
     With ``ground=True``, string literals are grounded in the database's values before every execution,
-    first attempt and retry alike (tinysql.ground); ``ungrounded_sql`` and ``grounding`` keep what changed."""
+    first attempt and retry alike (tinysql.ground); ``ungrounded_sql`` and ``grounding`` keep what changed.
+
+    With ``prune=True``, the first attempt shows only the tables ``tinysql.prune.select_tables`` keeps
+    (``pruned_tables``; None means the full schema). The repair turn is built on the full schema, so a
+    table pruned by mistake is visible on the retry (PLAN-week10)."""
     database_dir = Path(database_dir)
-    schema_cache: dict[str, str] = {}
+    schema_cache: dict[tuple, str] = {}
 
     def db_path(db_id: str) -> Path:
         return database_dir / db_id / f"{db_id}.sqlite"
 
-    def messages_for(e: Example) -> Messages:
-        if e.db_id not in schema_cache:
-            schema_cache[e.db_id] = serialize_schema(db_path(e.db_id), sample_rows=sample_rows)
-        return build_messages(schema_cache[e.db_id], e.question)
+    def messages_for(e: Example, tables: list[str] | None = None) -> Messages:
+        key = (e.db_id, None if tables is None else tuple(tables))
+        if key not in schema_cache:
+            schema_cache[key] = serialize_schema(db_path(e.db_id), sample_rows=sample_rows, tables=tables)
+        return build_messages(schema_cache[key], e.question)
+
+    pruned: dict[int, list[str] | None] = {}
+
+    def first_messages(e: Example) -> Messages:
+        if not prune:
+            return messages_for(e)
+        pruned[id(e)] = select_tables(e.question, db_path(e.db_id))
+        return messages_for(e, pruned[id(e)])
 
     records: list[dict] = []
     gen_seconds = 0.0
     for start in range(0, len(examples), batch_size):
         batch = list(examples[start : start + batch_size])
-        prompts = [messages_for(e) for e in batch]
+        prompts = [first_messages(e) for e in batch]
         t0 = time.perf_counter()
         completions = generate(prompts)
         gen_seconds += time.perf_counter() - t0
@@ -96,6 +111,8 @@ def evaluate(
         for e, msgs, completion in zip(batch, prompts, completions):
             rec = {"db_id": e.db_id, "question": e.question, "gold": e.query,
                    "prompt_chars": sum(len(m["content"]) for m in msgs), **scored(e, completion)}
+            if prune:
+                rec["pruned_tables"] = pruned[id(e)]
             batch_records.append(rec)
 
         if repair:
@@ -105,7 +122,7 @@ def evaluate(
                          first_match=r["match"],
                          first_error=None if r["format_ok"] and r["exec_ok"] else (r["error"] if r["format_ok"] else NO_BLOCK))
             if failed:
-                retry = [repair_messages(prompts[i], batch_records[i]["completion"],
+                retry = [repair_messages(messages_for(batch[i]) if prune else prompts[i], batch_records[i]["completion"],
                                          batch_records[i]["error"] if batch_records[i]["format_ok"] else None)
                          for i in failed]
                 t0 = time.perf_counter()
@@ -127,6 +144,8 @@ def evaluate(
         "median_prompt_chars": statistics.median([r["prompt_chars"] for r in records]) if records else 0,
         "generation_seconds_total": round(gen_seconds, 2),
     }
+    if prune:
+        summary["pruned_queries"] = sum(r["pruned_tables"] is not None for r in records)
     if ground:
         summary["grounded_queries"] = sum(bool(r["grounding"]) for r in records)
     if repair:

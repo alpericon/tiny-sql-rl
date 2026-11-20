@@ -30,6 +30,7 @@ def main():
     ap.add_argument("--tag", default=None)
     ap.add_argument("--cold", action="store_true", help="forget the cached schema prefix before every query")
     ap.add_argument("--sample-rows", type=int, default=0, help="example rows per table in the prompt (PLAN-week7)")
+    ap.add_argument("--prune", action="store_true", help="first attempt shows only the tables tinysql.prune keeps (PLAN-week10)")
     args = ap.parse_args()
     os.environ["TINYSQL_THREADS"] = str(args.threads)
 
@@ -42,18 +43,19 @@ def main():
     rows = voice_rows(load_voice(ROOT / "data" / "spokenspider_transcripts.csv"), "clean")[: args.n]
     gen = load_generator()
     db = lambda r: ROOT / "data" / "spider" / "database" / r["db_id"] / f"{r['db_id']}.sqlite"  # noqa: E731
-    answer_question(rows[0]["transcript"], db(rows[0]), gen, sample_rows=args.sample_rows)  # warm-up, untimed
+    answer_question(rows[0]["transcript"], db(rows[0]), gen, sample_rows=args.sample_rows, prune=args.prune)  # warm-up, untimed
     sql_times, ok = [], 0
     for r in rows:
         if args.cold:
             gen.reset()
-        res, dt = timed(lambda q, p: answer_question(q, p, gen, sample_rows=args.sample_rows), r["transcript"], db(r))
+        res, dt = timed(lambda q, p: answer_question(q, p, gen, sample_rows=args.sample_rows, prune=args.prune), r["transcript"], db(r))
         sql_times.append(dt)
         ok += res.error is None
     summary = {
         "gguf": Path(os.environ["TINYSQL_GGUF"]).name,
         "threads": args.threads,
         "sample_rows": args.sample_rows,
+        "prune": args.prune,
         "prefix_cache": "reset before every query (cold)" if args.cold else "reused across consecutive same-database queries",
         "cpu": open("/proc/cpuinfo").read().split("model name")[1].split("\n")[0].strip(": \t"),
         "text_to_sql_and_query": latency_summary(sql_times),
@@ -65,7 +67,7 @@ def main():
         stt = [timed(tr, w)[1] for w in args.wav for _ in range(3)]
         summary["speech_to_text"] = latency_summary(stt)
         summary["end_to_end_median_s"] = summary["speech_to_text"]["median_s"] + summary["text_to_sql_and_query"]["median_s"]
-    tag = args.tag or f"{Path(os.environ['TINYSQL_GGUF']).stem}_t{args.threads}" + ("_cold" if args.cold else "") + (f"_rows{args.sample_rows}" if args.sample_rows else "")
+    tag = args.tag or f"{Path(os.environ['TINYSQL_GGUF']).stem}_t{args.threads}" + ("_cold" if args.cold else "") + (f"_rows{args.sample_rows}" if args.sample_rows else "") + ("_prune" if args.prune else "")
     (ROOT / "results" / f"demo_latency_{tag}.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
     print(json.dumps(summary, indent=1))
 

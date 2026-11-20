@@ -39,6 +39,7 @@ def main():
     ap.add_argument("--repair", action="store_true", help="one retry on exec error / missing SQL block (PLAN-week4 Y9)")
     ap.add_argument("--ground", action="store_true", help="ground string literals in DB values before execution (PLAN-week6)")
     ap.add_argument("--sample-rows", type=int, default=0, help="example rows per table in the prompt (PLAN-week7)")
+    ap.add_argument("--prune", action="store_true", help="first attempt shows only the tables tinysql.prune keeps (PLAN-week10)")
     args = ap.parse_args()
 
     assert torch.cuda.is_available(), "CUDA not available: is the CPU torch wheel installed?"
@@ -53,7 +54,7 @@ def main():
     torch.cuda.reset_peak_memory_stats()
     t0 = time.perf_counter()
     records, summary = evaluate(dev, SPIDER / "database", generate, batch_size=args.batch_size, repair=args.repair,
-                                ground=args.ground, sample_rows=args.sample_rows)
+                                ground=args.ground, sample_rows=args.sample_rows, prune=args.prune)
     if not args.repair:  # with repair, retries interleave with first attempts; only the overall rate is kept
         assert len(hit_limit) == len(records)
         for r, cut in zip(records, hit_limit):
@@ -63,6 +64,7 @@ def main():
         repair=args.repair,
         ground=args.ground,
         sample_rows=args.sample_rows,
+        prune=args.prune,
         hit_max_new_tokens_rate=sum(hit_limit) / len(hit_limit),
         model=args.model,
         adapter=str(args.adapter) if args.adapter else None,
@@ -83,6 +85,7 @@ def main():
         + ("_repair" if args.repair else "")
         + ("_ground" if args.ground else "")
         + (f"_rows{args.sample_rows}" if args.sample_rows else "")
+        + ("_prune" if args.prune else "")
         + (f"_limit{args.limit}" if args.limit else "")
     )
     out_dir = ROOT / "results"
