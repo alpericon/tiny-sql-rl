@@ -81,7 +81,7 @@ Sources: `results/demo_latency_w10_rows3*_now.json` (full schema) and `results/d
   prompt prefix is reused less.
 - **All 30 questions answered without error** in every run.
 - **Unexplained:** on the GPU evaluation (HF generate, batch 8), total generation time roughly doubled
-  (2,577 s vs ~1,234 s for comparable runs). The cause was not investigated. It does not show up on the
+  (2,577 s vs 1,118 s for the same model and configuration without pruning, about 2.3×). The cause was not investigated. It does not show up on the
   CPU demo path, which runs one question at a time.
 
 ## Decision (rule fixed in the plan)
