@@ -1,0 +1,100 @@
+{"k": 0, "primary": "schema-link", "secondary": null, "note": "singer Name instead of Song_Name for 'name of the song'"}
+{"k": 1, "primary": "join", "secondary": null, "note": "joins singer_in_concert on Stadium_ID = concert_ID instead of concert.stadium_id"}
+{"k": 2, "primary": "schema-link", "secondary": null, "note": "uses singer_in_concert (no Stadium_ID; resolves to the outer column) instead of concert"}
+{"k": 3, "primary": "join", "secondary": null, "note": "compares Stadium_ID with Concert_ID"}
+{"k": 4, "primary": "condition", "secondary": "nesting-setop", "note": "invents Sex='F' filters; the 'not a cat owner' part is dropped"}
+{"k": 5, "primary": "nesting-setop", "secondary": "condition", "note": "'dog but not cat' as PetType='dog' AND PetType!='cat' on one row; invents Sex='F'. Gold also returns age, which the question does not ask"}
+{"k": 6, "primary": "schema-link", "secondary": null, "note": "counts car_names (versions) instead of model_list (models)"}
+{"k": 7, "primary": "join", "secondary": "output-shape", "note": "no join to model_list, counts makers themselves; extra Maker column"}
+{"k": 8, "primary": "join", "secondary": null, "note": "groups countries by continent id, no join to car_makers or continents"}
+{"k": 9, "primary": "schema-link", "secondary": "literal", "note": "joins car_makers instead of car_names.Make; filters Maker = 1"}
+{"k": 10, "primary": "schema-link", "secondary": "condition", "note": "never filters CountryName='france'; nested continent filter and a hard-coded Country = 2"}
+{"k": 11, "primary": "schema-link", "secondary": "condition", "note": "same prediction as #10"}
+{"k": 12, "primary": "join", "secondary": "schema-link", "note": "joins Country = CountryName and filters Continent = 1 instead of usa; counts makers, not models"}
+{"k": 13, "primary": "schema-link", "secondary": null, "note": "joins car_makers and car_names instead of reading model_list"}
+{"k": 14, "primary": "condition", "secondary": null, "note": "invents a continent = 'america' filter instead of requiring a car maker"}
+{"k": 15, "primary": "schema-link", "secondary": "output-shape", "note": "groups model_list (one row per model) instead of car_names (versions); extra count column"}
+{"k": 16, "primary": "join", "secondary": "literal", "note": "no join to model_list; Maker = full name"}
+{"k": 17, "primary": "schema-link", "secondary": null, "note": "Maker = 'American Motor Company' (Maker holds 'amc'; FullName is the right column)"}
+{"k": 18, "primary": "literal", "secondary": "output-shape", "note": "volvo becomes volkswagen; returns COUNT(*) instead of Cylinders"}
+{"k": 19, "primary": "aggregation", "secondary": "gold-issue", "note": "groups car_makers by Maker, not by country. Gold returns per-country counts instead of the number of countries"}
+{"k": 20, "primary": "join", "secondary": null, "note": "never uses car_makers; inner query on countries alone"}
+{"k": 21, "primary": "gold-issue", "secondary": "aggregation", "note": "the question is garbled ('more than 3 car makers' for a maker); the prediction's second condition is trivially empty"}
+{"k": 22, "primary": "condition", "secondary": "aggregation", "note": "invents continent = 'america'; HAVING COUNT(DISTINCT Maker) > 3 per maker; 'fiat' matched against country names"}
+{"k": 23, "primary": "gold-issue", "secondary": null, "note": "prediction is correct: city stored as 'Anthony ' (trailing space); gold returns no rows"}
+{"k": 24, "primary": "schema-link", "secondary": "gold-issue", "note": "filters an invented AirportCode = 'ACV' instead of AirportName; gold returns no rows (trailing-space name)"}
+{"k": 25, "primary": "gold-issue", "secondary": null, "note": "prediction is correct: city stored as 'Aberdeen ' (trailing space); gold returns no rows"}
+{"k": 26, "primary": "join", "secondary": "gold-issue", "note": "groups airports by city with no join to flights. Gold returns no rows (flight codes carry a leading space)"}
+{"k": 27, "primary": "condition", "secondary": "gold-issue", "note": "counts arrivals only (DestAirport), not departures too. Gold returns no rows (leading-space codes)"}
+{"k": 28, "primary": "join", "secondary": null, "note": "airlines.Airline (name) IN flights.Airline (uid)"}
+{"k": 29, "primary": "join", "secondary": null, "note": "same name-vs-uid mismatch as #28"}
+{"k": 30, "primary": "nesting-setop", "secondary": "output-shape", "note": "inverted: flight source codes not in airports, instead of airports not in flights; returns codes, not names"}
+{"k": 31, "primary": "schema-link", "secondary": null, "note": "counts Templates instead of templates referenced by Documents"}
+{"k": 32, "primary": "join", "secondary": null, "note": "joins Template_ID = Paragraphs.Document_ID"}
+{"k": 33, "primary": "aggregation", "secondary": null, "note": "groups Documents by Document_ID instead of Template_ID"}
+{"k": 34, "primary": "schema-link", "secondary": "output-shape", "note": "counts Ref_Template_Types (one row per type) instead of Templates; extra count column"}
+{"k": 35, "primary": "schema-link", "secondary": null, "note": "same table error as #34"}
+{"k": 36, "primary": "join", "secondary": null, "note": "detour through Paragraphs keeps only documents that have paragraphs"}
+{"k": 37, "primary": "schema-link", "secondary": "join", "note": "counts Ref_Template_Types instead of Templates joined to Documents"}
+{"k": 38, "primary": "join", "secondary": null, "note": "checks codes unused by Templates, never joins Documents"}
+{"k": 39, "primary": "join", "secondary": "aggregation", "note": "no join to Documents (all templates, not used ones) and no DISTINCT"}
+{"k": 40, "primary": "gold-issue", "secondary": null, "note": "LEFT JOIN lists documents with 0 paragraphs; 'each document' supports this reading, gold uses an inner join"}
+{"k": 41, "primary": "nesting-setop", "secondary": "output-shape", "note": "IN ('Brazil','Ireland') instead of INTERSECT; extra text column"}
+{"k": 42, "primary": "output-shape", "secondary": null, "note": "adds Teacher_ID and Name to the two asked columns"}
+{"k": 43, "primary": "gold-issue", "secondary": null, "note": "prediction is correct: the gold compares with a lowercase literal that matches no row, so it excludes nobody"}
+{"k": 44, "primary": "output-shape", "secondary": null, "note": "extra count column; the hometown is right"}
+{"k": 45, "primary": "schema-link", "secondary": null, "note": "groups by visitor instead of museum"}
+{"k": 46, "primary": "schema-link", "secondary": null, "note": "sums Num_of_Ticket instead of Total_spent for 'ticket expense'"}
+{"k": 47, "primary": "nesting-setop", "secondary": null, "note": "both year conditions on the same museum row; needs INTERSECT over visitors"}
+{"k": 48, "primary": "aggregation", "secondary": null, "note": "'highest rank' as MAX(rank) instead of MIN"}
+{"k": 49, "primary": "aggregation", "secondary": null, "note": "lists DISTINCT ranks, no MIN"}
+{"k": 50, "primary": "schema-link", "secondary": null, "note": "counts player rows instead of rankings.tours"}
+{"k": 51, "primary": "order-limit", "secondary": null, "note": "ORDER BY year instead of COUNT(*)"}
+{"k": 52, "primary": "schema-link", "secondary": null, "note": "players/rankings with birth_date and an invented ranking_date filter, instead of matches.winner_*"}
+{"k": 53, "primary": "condition", "secondary": "literal", "note": "drops the WTA Championships filter; hand 'R' instead of 'L'"}
+{"k": 54, "primary": "schema-link", "secondary": null, "note": "lost_in_battle = 1 instead of disposition_of_ship = 'Captured'"}
+{"k": 55, "primary": "gold-issue", "secondary": null, "note": "prediction is correct: the question asks for the result, the gold omits it"}
+{"k": 56, "primary": "gold-issue", "secondary": null, "note": "'most total injuries': the prediction sums injured, the gold counts death rows"}
+{"k": 57, "primary": "nesting-setop", "secondary": null, "note": "OR instead of INTERSECT (both ships lost in the same battle); duplicate rows"}
+{"k": 58, "primary": "nesting-setop", "secondary": "output-shape", "note": "returns battles that did lose ships there (no EXCEPT); ship name instead of battle name"}
+{"k": 59, "primary": "aggregation", "secondary": "gold-issue", "note": "section_id IS NULL instead of counting sections. Gold uses <= 2 for 'less than 2'"}
+{"k": 60, "primary": "output-shape", "secondary": null, "note": "extra count column; the answer is right"}
+{"k": 61, "primary": "gold-issue", "secondary": "output-shape", "note": "prediction follows the question's column order; the gold puts student_id first and repeats it"}
+{"k": 62, "primary": "literal", "secondary": "schema-link", "note": "'North Carolina' (DB has 'NorthCarolina'); permanent instead of current address"}
+{"k": 63, "primary": "condition", "secondary": null, "note": "correlated subqueries make the condition compare each id with itself; never true"}
+{"k": 64, "primary": "output-shape", "secondary": null, "note": "extra Rating column"}
+{"k": 65, "primary": "schema-link", "secondary": "join", "note": "joins Cartoon and returns Title instead of TV_Channel.series_name"}
+{"k": 66, "primary": "join", "secondary": "aggregation", "note": "subquery matches channels by a non-existent TV_Channel.Channel instead of id = Cartoon.Channel; no DISTINCT"}
+{"k": 67, "primary": "output-shape", "secondary": null, "note": "extra Earnings column"}
+{"k": 68, "primary": "schema-link", "secondary": "join", "note": "joins city and returns city populations instead of the country's"}
+{"k": 69, "primary": "schema-link", "secondary": null, "note": "Region instead of Continent = 'Africa'"}
+{"k": 70, "primary": "output-shape", "secondary": null, "note": "extra count column"}
+{"k": 71, "primary": "nesting-setop", "secondary": "condition", "note": "Language = 'English' AND Language = 'French' on one row; invents IsOfficial = 'T'"}
+{"k": 72, "primary": "schema-link", "secondary": "aggregation", "note": "LocalName instead of Region; no DISTINCT"}
+{"k": 73, "primary": "condition", "secondary": "gold-issue", "note": "drops the 'official language' condition. Gold returns no rows (lowercase 'english'/'t' literals)"}
+{"k": 74, "primary": "output-shape", "secondary": null, "note": "extra count column"}
+{"k": 75, "primary": "condition", "secondary": null, "note": "drops IsOfficial = 'T'"}
+{"k": 76, "primary": "condition", "secondary": null, "note": "drops IsOfficial = 'T'"}
+{"k": 77, "primary": "aggregation", "secondary": null, "note": "'smaller than any country in Asia' as < MAX instead of < MIN"}
+{"k": 78, "primary": "gold-issue", "secondary": null, "note": "both are valid readings: the prediction also lists countries with no language rows (179 vs 173)"}
+{"k": 79, "primary": "schema-link", "secondary": "condition", "note": "selects Code from countrylanguage (no such column; resolves to the outer country code); invents IsOfficial = 'E'"}
+{"k": 80, "primary": "schema-link", "secondary": "nesting-setop", "note": "Region = 'Europe' instead of Continent; 'English not official' as IsOfficial = 'F' on any language"}
+{"k": 81, "primary": "gold-issue", "secondary": null, "note": "prediction returns all 7 countries tied at population 0, in the question's column order; gold takes LIMIT 1 and reorders columns"}
+{"k": 82, "primary": "aggregation", "secondary": null, "note": "no GROUP BY continent, no SUM/AVG; filters rows instead of HAVING"}
+{"k": 83, "primary": "aggregation", "secondary": null, "note": "no per-country max; returns every language row"}
+{"k": 84, "primary": "gold-issue", "secondary": "output-shape", "note": "question is ambiguous and the gold returns a count per country; the prediction returns one country's name and population"}
+{"k": 85, "primary": "gold-issue", "secondary": "order-limit", "note": "ambiguous question; gold lists all Spanish-speaking countries with a max column, the prediction the single top one"}
+{"k": 86, "primary": "output-shape", "secondary": null, "note": "returns Orchestra_ID instead of the orchestra name"}
+{"k": 87, "primary": "gold-issue", "secondary": null, "note": "LEFT JOIN includes students with 0 friends, a valid reading of 'each'; gold uses an inner join"}
+{"k": 88, "primary": "schema-link", "secondary": null, "note": "highest grade instead of most friends"}
+{"k": 89, "primary": "join", "secondary": null, "note": "no join to Friend; counts Highschooler rows per id"}
+{"k": 90, "primary": "aggregation", "secondary": null, "note": "missing GROUP BY ... HAVING COUNT(*) >= 3"}
+{"k": 91, "primary": "condition", "secondary": null, "note": "invents grade = 9"}
+{"k": 92, "primary": "nesting-setop", "secondary": "schema-link", "note": "NOT IN instead of IN; Likes.student_id (liker) instead of liked_id"}
+{"k": 93, "primary": "schema-link", "secondary": null, "note": "Likes.student_id (the liker) instead of liked_id"}
+{"k": 94, "primary": "condition", "secondary": "schema-link", "note": "adds extra cross-conditions (the friend must like someone, the liked one must be someone's friend_id)"}
+{"k": 95, "primary": "schema-link", "secondary": "nesting-setop", "note": "never uses Professionals; filters owners through Dogs"}
+{"k": 96, "primary": "gold-issue", "secondary": null, "note": "'spent the most' as SUM(cost) is right; the gold counts treatments"}
+{"k": 97, "primary": "gold-issue", "secondary": null, "note": "prediction is correct; the gold joins with no ON condition (cross join), so it lists every professional"}
+{"k": 98, "primary": "condition", "secondary": null, "note": "invents abandoned_yn = '1' in the subquery"}
+{"k": 99, "primary": "schema-link", "secondary": null, "note": "Net_Worth_Millions > 30 instead of song.Sales > 300000"}
