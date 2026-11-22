@@ -73,3 +73,15 @@ def test_paraphrase_with_same_sql_is_also_excluded(tmp_path):
     para = ex("concert", "What is the total number of singers?", "SELECT  COUNT(*)  FROM singer")
     kept, removed = filter_leakage([para], exclusions)
     assert not kept and removed == [para]
+
+
+def test_spider_split_paths(tmp_path):
+    # PLAN-week11 H2: dev keeps today's paths; test uses the held-out files and databases.
+    from tinysql.data import spider_split
+
+    assert spider_split(tmp_path, "dev") == (tmp_path / "dev.json", tmp_path / "database")
+    assert spider_split(tmp_path, "test") == (tmp_path / "test.json", tmp_path / "test_database")
+    import pytest
+
+    with pytest.raises(ValueError):
+        spider_split(tmp_path, "train")
