@@ -1,0 +1,21 @@
+{
+ "A_schema_only": {
+  "median": 968.0,
+  "p95": 2085,
+  "max": 2199,
+  "over_3072": 0,
+  "share_over_3072": 0.0
+ },
+ "E_rows3_pruned": {
+  "median": 1550.0,
+  "p95": 4270,
+  "max": 4547,
+  "over_3072": 305,
+  "share_over_3072": 0.1988
+ },
+ "pruner": {
+  "recall": 0.955,
+  "fallback_rate": 0.0235,
+  "questions_with_fewer_tables": 1158
+ }
+}
