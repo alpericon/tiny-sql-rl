@@ -195,8 +195,10 @@ def main():
     if names[:2] == ["--split", "test"]:
         use_test_split()
         names = names[2:]
-    elif names[:1] == ["--split"]:
-        names = names[2:]  # --split dev: the default
+    elif names[:2] == ["--split", "dev"]:
+        names = names[2:]  # the default
+    elif "--split" in names:
+        raise SystemExit("usage: official_eval.py [--split dev|test] [model ...] (--split must come first)")
     OUT.mkdir(parents=True, exist_ok=True)
     dev = load_spider_split(QUESTIONS)
     for name in names or list(MODELS):
