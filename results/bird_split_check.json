@@ -1,0 +1,41 @@
+{
+ "n_questions": 1534,
+ "n_databases": 11,
+ "databases": [
+  "california_schools",
+  "card_games",
+  "codebase_community",
+  "debit_card_specializing",
+  "european_football_2",
+  "financial",
+  "formula_1",
+  "student_club",
+  "superhero",
+  "thrombosis_prediction",
+  "toxicology"
+ ],
+ "difficulty": {
+  "simple": 925,
+  "moderate": 464,
+  "challenging": 145
+ },
+ "with_evidence": 1386,
+ "databases_shared_with_spider": [
+  "formula_1"
+ ],
+ "databases_missing": [],
+ "gold_failing_within_30s": [
+  {
+   "question_id": 518,
+   "db_id": "card_games",
+   "error": "timeout"
+  },
+  {
+   "question_id": 701,
+   "db_id": "codebase_community",
+   "error": "timeout"
+  }
+ ],
+ "gold_slower_than_10s": [],
+ "dev_zip_sha256": "cdd6d19faeb45a23970b98d3ef6c40a87987c95459c2cf12076897a60cf5a630"
+}
