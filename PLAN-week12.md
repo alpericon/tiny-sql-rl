@@ -121,6 +121,23 @@ This is a secondary analysis, registered here before any BIRD generation.
 Also from B1: 2 gold queries (question_id 518, 701) do not finish within 30 s on the WSL filesystem.
 They count as wrong for every configuration and are listed in the write-up.
 
+## Decision at the B3 stop rule (2026-11-22, user, before any generation)
+
+19.9% of the full-configuration prompts exceed 3,072 tokens (longest 4,547), all on card_games and
+european_football_2. The cause is wide tables, not long cells (`results/bird_prompt_report.json`).
+**Decision: raise the prompt guard to 5,000 tokens for all three configurations.**
+- The extra room is for repair prompts, which add the failed answer and the error message.
+- Configuration E stays exactly the demo configuration.
+- A and B are unaffected: their longest prompt is 2,199.
+- GPU memory at batch 8 is checked first with synthetic prompts. If it does not fit, only the batch size
+  is lowered, and that is reported.
+- **Memory check** (8 synthetic prompts of 4,757 tokens, v2-900, nf4; no BIRD data):
+  - batch 8 needs 8.96 GiB allocated (10.77 reserved), more than the 8 GiB card;
+  - batch 4 needs 5.18 GiB (6.13 reserved);
+  - batch 2 needs 3.28 GiB.
+- **All three configurations therefore run at batch 4** (`--batch-size 4 --max-prompt-tokens 5000`).
+  Using the same batch size everywhere avoids batch-size effects between them. Spider runs used batch 8.
+
 ## Not in this plan
 
 Training on BIRD, runs without evidence, the newer dev split, Mini-Dev, leaderboard submission, and
