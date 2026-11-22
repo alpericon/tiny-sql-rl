@@ -1,0 +1,9 @@
+{
+ "n_questions": 2147,
+ "n_databases": 40,
+ "databases_shared_with_train": [],
+ "databases_shared_with_dev": [],
+ "questions_shared_with_train_or_dev": 0,
+ "databases_missing_on_disk": [],
+ "gold_queries_failing": 2
+}
