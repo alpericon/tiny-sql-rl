@@ -16,7 +16,7 @@ from pathlib import Path
 
 import torch
 
-from tinysql.data import load_spider_split
+from tinysql.data import load_spider_split, spider_split
 from tinysql.evaluate import evaluate
 from tinysql.hf import HFGenerator
 from tinysql.subset import load_subset
@@ -39,21 +39,25 @@ def main():
     ap.add_argument("--repair", action="store_true", help="one retry on exec error / missing SQL block (PLAN-week4 Y9)")
     ap.add_argument("--ground", action="store_true", help="ground string literals in DB values before execution (PLAN-week6)")
     ap.add_argument("--sample-rows", type=int, default=0, help="example rows per table in the prompt (PLAN-week7)")
+    ap.add_argument("--split", choices=["dev", "test"], default="dev", help="test = held-out Spider test (PLAN-week11)")
     ap.add_argument("--prune", action="store_true", help="first attempt shows only the tables tinysql.prune keeps (PLAN-week10)")
     args = ap.parse_args()
+    if args.split == "test" and args.subset is not None:
+        raise SystemExit("--subset ids index dev.json; it cannot be combined with --split test")
 
     assert torch.cuda.is_available(), "CUDA not available: is the CPU torch wheel installed?"
 
     generate = HFGenerator(args.model, args.adapter, args.no_4bit, args.max_new_tokens, args.max_prompt_tokens)
     prompt_tokens, hit_limit = generate.prompt_tokens, generate.hit_limit
 
-    dev = load_spider_split(SPIDER / "dev.json")
+    questions, db_dir = spider_split(SPIDER, args.split)
+    dev = load_spider_split(questions)
     if args.subset is not None:
         dev = load_subset(dev, json.loads(args.subset.read_text(encoding="utf-8")))
     dev = dev[: args.limit]
     torch.cuda.reset_peak_memory_stats()
     t0 = time.perf_counter()
-    records, summary = evaluate(dev, SPIDER / "database", generate, batch_size=args.batch_size, repair=args.repair,
+    records, summary = evaluate(dev, db_dir, generate, batch_size=args.batch_size, repair=args.repair,
                                 ground=args.ground, sample_rows=args.sample_rows, prune=args.prune)
     if not args.repair:  # with repair, retries interleave with first attempts; only the overall rate is kept
         assert len(hit_limit) == len(records)
@@ -75,10 +79,11 @@ def main():
         peak_vram_gib=round(torch.cuda.max_memory_allocated() / 2**30, 2),
         max_new_tokens=args.max_new_tokens,
         limit=args.limit,
+        split=args.split,
     )
 
     tag = args.tag or (
-        ("dev200" if args.subset else "baseline")
+        ("test" if args.split == "test" else "dev200" if args.subset else "baseline")
         + "_"
         + args.model.replace("/", "__")
         + (f"_{args.adapter.parent.name}-{args.adapter.name}" if args.adapter else "")

@@ -46,6 +46,17 @@ def load_spider_split(path: str | Path) -> list[Example]:
     return [Example(r["db_id"], r["question"], r["query"]) for r in rows]
 
 
+def spider_split(spider_dir: str | Path, split: str) -> tuple[Path, Path]:
+    """(questions file, databases directory) of an evaluation split: dev, or the held-out test split
+    released 02/05/2024 (PLAN-week11)."""
+    d = Path(spider_dir)
+    if split == "dev":
+        return d / "dev.json", d / "database"
+    if split == "test":
+        return d / "test.json", d / "test_database"
+    raise ValueError(f"unknown evaluation split {split!r}; expected dev or test")
+
+
 def load_exclusions(path: str | Path) -> Exclusions:
     rows = json.loads(Path(path).read_text(encoding="utf-8"))
     return Exclusions(

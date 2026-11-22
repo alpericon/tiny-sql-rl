@@ -43,6 +43,31 @@ OFFICIAL = ROOT / "third_party" / "test-suite-sql-eval"
 # Same files as data/spider/database/<db_id>/ (copied, not modified).
 DB_DIR = Path(os.environ.get("SPIDER_DEV_DB", Path.home() / "spider_dev_db"))
 OUT = ROOT / "results" / "official"
+QUESTIONS = ROOT / "data" / "spider" / "dev.json"
+RECORD_PREFIX = "baseline"
+SUMMARY = ROOT / "results" / "official_ex.json"
+# PLAN-week11: the held-out test split, scored with `official_eval.py --split test [name ...]`.
+# Its own databases (copied to the WSL filesystem like the dev ones), records, outputs and summary.
+TEST_MODELS = {
+    "A-base": "",
+    "B-v2-900": "_v2-checkpoint-900",
+    "C-v2-900-repair-ground": "_v2-checkpoint-900_repair_ground",
+    "D-v2-900-repair-ground-rows3": "_v2-checkpoint-900_repair_ground_rows3",
+    "E-v2-900-repair-ground-rows3-prune": "_v2-checkpoint-900_repair_ground_rows3_prune",
+}
+TEST_PAIRS = [("B-v2-900", "A-base"), ("D-v2-900-repair-ground-rows3", "C-v2-900-repair-ground"),
+              ("E-v2-900-repair-ground-rows3-prune", "D-v2-900-repair-ground-rows3"),
+              ("E-v2-900-repair-ground-rows3-prune", "A-base")]
+
+
+def use_test_split():
+    global DB_DIR, OUT, QUESTIONS, RECORD_PREFIX, SUMMARY, MODELS, PAIRS
+    DB_DIR = Path(os.environ.get("SPIDER_TEST_DB", Path.home() / "spider_test_db"))
+    OUT = ROOT / "results" / "official_test"
+    QUESTIONS = ROOT / "data" / "spider" / "test.json"
+    RECORD_PREFIX = "test"
+    SUMMARY = ROOT / "results" / "official_ex_test.json"
+    MODELS, PAIRS = TEST_MODELS, TEST_PAIRS
 MODELS = {
     "base": "",
     "main-1000": "_main-checkpoint-1000",
@@ -99,7 +124,7 @@ def per_row(gold_lines: list[str], pred_lines: list[str]) -> list[dict]:
 
 
 def score_model(name: str, dev) -> dict:
-    recs = [json.loads(l) for l in open(ROOT / "results" / f"baseline_Qwen__Qwen3-1.7B{MODELS[name]}.records.jsonl", encoding="utf-8")]
+    recs = [json.loads(l) for l in open(ROOT / "results" / f"{RECORD_PREFIX}_Qwen__Qwen3-1.7B{MODELS[name]}.records.jsonl", encoding="utf-8")]
     gold_lines, pred_lines = eval_lines(recs, dev)
     capped = []
     for i, (g, p) in enumerate(zip(gold_lines, pred_lines)):
@@ -158,7 +183,7 @@ def summarize():
         "models": results,
         "pairs_official": pairs,
     }
-    (ROOT / "results" / "official_ex.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
+    SUMMARY.write_text(json.dumps(summary, indent=1), encoding="utf-8")
     print(json.dumps(pairs, indent=1))
 
 
@@ -166,9 +191,15 @@ def main():
     """Usage: official_eval.py [model ...]   (scores the named models, skipping finished ones;
     with no names, scores any unfinished model sequentially; always summarizes when all are done).
     Models can run in parallel processes, one name each."""
+    names = sys.argv[1:]
+    if names[:2] == ["--split", "test"]:
+        use_test_split()
+        names = names[2:]
+    elif names[:1] == ["--split"]:
+        names = names[2:]  # --split dev: the default
     OUT.mkdir(parents=True, exist_ok=True)
-    dev = load_spider_split(ROOT / "data" / "spider" / "dev.json")
-    for name in sys.argv[1:] or list(MODELS):
+    dev = load_spider_split(QUESTIONS)
+    for name in names or list(MODELS):
         if name not in MODELS:
             raise SystemExit(f"unknown model {name!r}; expected one of {list(MODELS)}")
         if not (OUT / f"{name}.json").exists():
