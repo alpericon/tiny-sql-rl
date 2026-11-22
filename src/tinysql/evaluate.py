@@ -50,6 +50,7 @@ def evaluate(
     repair: bool = False,
     ground: bool = False,
     prune: bool = False,
+    scorer: Callable[..., dict] | None = None,
 ) -> tuple[list[dict], dict]:
     """Score ``generate``'s SQL on ``examples`` by execution.
 
@@ -62,7 +63,10 @@ def evaluate(
 
     With ``prune=True``, the first attempt shows only the tables ``tinysql.prune.select_tables`` keeps
     (``pruned_tables``; None means the full schema). The repair turn is built on the full schema, so a
-    table pruned by mistake is visible on the retry (PLAN-week10)."""
+    table pruned by mistake is visible on the retry (PLAN-week10).
+
+    ``scorer(db_path, gold_sql, pred_sql, timeout_s=...)`` replaces ``score_sql`` (e.g. BIRD's
+    set-based EX, ``tinysql.bird.bird_ex``, PLAN-week12)."""
     database_dir = Path(database_dir)
     schema_cache: dict[tuple, str] = {}
 
@@ -104,7 +108,7 @@ def evaluate(
                     pred_sql, reps = ground_sql(pred_sql, cached_index(str(db_path(e.db_id))))
                 out.update(pred_sql=pred_sql, ungrounded_sql=extract_sql(completion), grounding=[list(r) for r in reps])
             if pred_sql is not None:
-                out.update(score_sql(db_path(e.db_id), e.query, pred_sql, timeout_s=timeout_s))
+                out.update((scorer or score_sql)(db_path(e.db_id), e.query, pred_sql, timeout_s=timeout_s))
             return out
 
         batch_records = []
