@@ -19,6 +19,24 @@ unless stated. "Official" is Spider's official evaluation script; "ours" is this
 column-order-tolerant comparator. Comparisons are paired (exact McNemar on the same questions).
 Every training run uses **one seed**, so the tests cover question sampling, not training variance.
 
+### Held-out confirmation: Spider test (week 11)
+
+Every step after GRPO was chosen on Spider dev. So the final configuration was run **once** on the
+Spider test set: 2,147 questions on 40 databases that are not in train or dev, released in 2024.
+Nothing was tuned on it ([results/week11_results.md](results/week11_results.md)).
+
+| Configuration | Official EX, test | Official EX, dev |
+|---|---|---|
+| Qwen3-1.7B zero-shot | 56.3% | 54.1% |
+| GRPO (released model) | 61.7% | 59.0% |
+| + retry on SQL errors + grounding | 64.2% | 60.9% |
+| + 3 example rows | 65.7% | 63.4% |
+| **+ schema pruning (demo)** | **66.3%** | 65.9% |
+
+- **Confirmed on test:** GRPO (+5.4, 160 / 44) and the whole stack (+10.0 over zero-shot, 308 / 92), both p<0.0001.
+- **Same direction but smaller, not significant:** example rows (+1.5, p=0.073) and schema pruning (+0.6,
+  p=0.28). Both were chosen because they were significant on dev, and dev overstated them.
+
 ### RQ1: does GRPO help?
 
 | Model | EX (ours) | EX (official) | vs zero-shot (wins / losses) |

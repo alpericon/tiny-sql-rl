@@ -1,0 +1,192 @@
+{
+ "script": "taoyds/test-suite-sql-eval@e97acc5 evaluation.py --etype exec (standard Spider DBs, values predicted, DISTINCT removed)",
+ "models": {
+  "A-base": {
+   "n": 2147,
+   "official_ex": 0.5626455519329296,
+   "official_cli_all": 0.563,
+   "ours_ex": 0.5533302282254309,
+   "agree_both": 1171,
+   "ours_only": 17,
+   "official_only": 37,
+   "capped_over_s": 120,
+   "capped_rows": [],
+   "by_hardness": {
+    "easy": {
+     "n": 470,
+     "official_ex": 0.7319148936170212,
+     "ours_ex": 0.7106382978723405
+    },
+    "medium": {
+     "n": 857,
+     "official_ex": 0.6522753792298717,
+     "ours_ex": 0.6441073512252042
+    },
+    "hard": {
+     "n": 463,
+     "official_ex": 0.408207343412527,
+     "ours_ex": 0.4060475161987041
+    },
+    "extra": {
+     "n": 357,
+     "official_ex": 0.32492997198879553,
+     "ours_ex": 0.31932773109243695
+    }
+   }
+  },
+  "B-v2-900": {
+   "n": 2147,
+   "official_ex": 0.6166744294364229,
+   "official_cli_all": 0.617,
+   "ours_ex": 0.6059618071727992,
+   "agree_both": 1284,
+   "ours_only": 17,
+   "official_only": 40,
+   "capped_over_s": 120,
+   "capped_rows": [],
+   "by_hardness": {
+    "easy": {
+     "n": 470,
+     "official_ex": 0.8063829787234043,
+     "ours_ex": 0.7914893617021277
+    },
+    "medium": {
+     "n": 857,
+     "official_ex": 0.6814469078179697,
+     "ours_ex": 0.6732788798133023
+    },
+    "hard": {
+     "n": 463,
+     "official_ex": 0.48596112311015116,
+     "ours_ex": 0.47300215982721383
+    },
+    "extra": {
+     "n": 357,
+     "official_ex": 0.38095238095238093,
+     "ours_ex": 0.37254901960784315
+    }
+   }
+  },
+  "C-v2-900-repair-ground": {
+   "n": 2147,
+   "official_ex": 0.6422915696320447,
+   "official_cli_all": 0.642,
+   "ours_ex": 0.6306474149976712,
+   "agree_both": 1336,
+   "ours_only": 18,
+   "official_only": 43,
+   "capped_over_s": 120,
+   "capped_rows": [],
+   "by_hardness": {
+    "easy": {
+     "n": 470,
+     "official_ex": 0.8297872340425532,
+     "ours_ex": 0.8170212765957446
+    },
+    "medium": {
+     "n": 857,
+     "official_ex": 0.7094515752625438,
+     "ours_ex": 0.7012835472578763
+    },
+    "hard": {
+     "n": 463,
+     "official_ex": 0.5140388768898488,
+     "ours_ex": 0.49676025917926564
+    },
+    "extra": {
+     "n": 357,
+     "official_ex": 0.4005602240896359,
+     "ours_ex": 0.38935574229691877
+    }
+   }
+  },
+  "D-v2-900-repair-ground-rows3": {
+   "n": 2147,
+   "official_ex": 0.6571960875640428,
+   "official_cli_all": 0.657,
+   "ours_ex": 0.6516068933395436,
+   "agree_both": 1369,
+   "ours_only": 30,
+   "official_only": 42,
+   "capped_over_s": 120,
+   "capped_rows": [],
+   "by_hardness": {
+    "easy": {
+     "n": 470,
+     "official_ex": 0.8319148936170213,
+     "ours_ex": 0.8127659574468085
+    },
+    "medium": {
+     "n": 857,
+     "official_ex": 0.7409568261376897,
+     "ours_ex": 0.7386231038506418
+    },
+    "hard": {
+     "n": 463,
+     "official_ex": 0.49892008639308855,
+     "ours_ex": 0.4946004319654428
+    },
+    "extra": {
+     "n": 357,
+     "official_ex": 0.43137254901960786,
+     "ours_ex": 0.4341736694677871
+    }
+   }
+  },
+  "E-v2-900-repair-ground-rows3-prune": {
+   "n": 2147,
+   "official_ex": 0.6632510479739171,
+   "official_cli_all": 0.663,
+   "ours_ex": 0.6618537494177923,
+   "agree_both": 1388,
+   "ours_only": 33,
+   "official_only": 36,
+   "capped_over_s": 120,
+   "capped_rows": [],
+   "by_hardness": {
+    "easy": {
+     "n": 470,
+     "official_ex": 0.8425531914893617,
+     "ours_ex": 0.825531914893617
+    },
+    "medium": {
+     "n": 857,
+     "official_ex": 0.751458576429405,
+     "ours_ex": 0.7537922987164527
+    },
+    "hard": {
+     "n": 463,
+     "official_ex": 0.509719222462203,
+     "ours_ex": 0.509719222462203
+    },
+    "extra": {
+     "n": 357,
+     "official_ex": 0.41456582633053224,
+     "ours_ex": 0.42296918767507
+    }
+   }
+  }
+ },
+ "pairs_official": {
+  "B-v2-900 vs A-base": {
+   "wins": 160,
+   "losses": 44,
+   "p": 1.1281099734141455e-16
+  },
+  "D-v2-900-repair-ground-rows3 vs C-v2-900-repair-ground": {
+   "wins": 166,
+   "losses": 134,
+   "p": 0.0733119525988468
+  },
+  "E-v2-900-repair-ground-rows3-prune vs D-v2-900-repair-ground-rows3": {
+   "wins": 67,
+   "losses": 54,
+   "p": 0.27525333440239125
+  },
+  "E-v2-900-repair-ground-rows3-prune vs A-base": {
+   "wins": 308,
+   "losses": 92,
+   "p": 2.504385450996332e-28
+  }
+ }
+}

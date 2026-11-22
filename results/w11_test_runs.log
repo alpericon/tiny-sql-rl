@@ -1,0 +1,164 @@
+Sun Nov 22 18:54:36 +03 2026
+== A
+W1122 18:54:46.394000 429 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1122 18:54:46.430000 429 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<03:12,  1.61it/s]Loading weights:   1%|          | 2/311 [00:01<03:01,  1.70it/s]Loading weights:   2%|▏         | 5/311 [00:01<00:59,  5.13it/s]Loading weights:   5%|▌         | 17/311 [00:01<00:13, 21.58it/s]Loading weights:   9%|▉         | 28/311 [00:01<00:07, 36.54it/s]Loading weights:  14%|█▎        | 42/311 [00:01<00:04, 56.78it/s]Loading weights:  17%|█▋        | 52/311 [00:01<00:03, 66.22it/s]Loading weights:  20%|█▉        | 62/311 [00:01<00:03, 72.35it/s]Loading weights:  23%|██▎       | 72/311 [00:01<00:03, 78.97it/s]Loading weights:  27%|██▋       | 83/311 [00:02<00:02, 83.95it/s]Loading weights:  32%|███▏      | 98/311 [00:02<00:02, 99.57it/s]Loading weights:  36%|███▌      | 111/311 [00:02<00:01, 106.47it/s]Loading weights:  40%|████      | 125/311 [00:02<00:01, 110.89it/s]Loading weights:  44%|████▍     | 137/311 [00:02<00:01, 107.31it/s]Loading weights:  48%|████▊     | 149/311 [00:02<00:01, 103.40it/s]Loading weights:  53%|█████▎    | 164/311 [00:02<00:01, 114.29it/s]Loading weights:  57%|█████▋    | 178/311 [00:02<00:01, 120.40it/s]Loading weights:  61%|██████▏   | 191/311 [00:02<00:01, 117.87it/s]Loading weights:  65%|██████▌   | 203/311 [00:03<00:00, 112.86it/s]Loading weights:  69%|██████▉   | 215/311 [00:03<00:00, 107.91it/s]Loading weights:  73%|███████▎  | 226/311 [00:03<00:00, 107.74it/s]Loading weights:  77%|███████▋  | 240/311 [00:03<00:00, 116.22it/s]Loading weights:  82%|████████▏ | 254/311 [00:03<00:00, 120.44it/s]Loading weights:  86%|████████▌ | 268/311 [00:03<00:00, 121.25it/s]Loading weights:  90%|█████████ | 281/311 [00:03<00:00, 110.51it/s]Loading weights:  95%|█████████▍| 295/311 [00:03<00:00, 117.34it/s]Loading weights:  99%|█████████▊| 307/311 [00:03<00:00, 116.10it/s]Loading weights: 100%|██████████| 311/311 [00:03<00:00, 78.13it/s] 
+{
+ "n": 2147,
+ "execution_accuracy": 0.5533302282254309,
+ "format_failure_rate": 0.016301816488122962,
+ "execution_error_rate": 0.10200279459711226,
+ "max_prompt_chars": 4223,
+ "median_prompt_chars": 1028,
+ "generation_seconds_total": 1082.76,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.0032603632976245926,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": null,
+ "subset": null,
+ "quantization": "nf4-4bit",
+ "wall_seconds": 1270.8,
+ "max_prompt_tokens": 1084,
+ "peak_vram_gib": 2.7,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "test"
+}
+Sun Nov 22 19:16:04 +03 2026
+== B
+W1122 19:16:10.717000 469 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1122 19:16:10.747000 469 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<00:48,  6.41it/s]Loading weights:   1%|          | 2/311 [00:00<00:41,  7.42it/s]Loading weights:   5%|▍         | 15/311 [00:00<00:05, 53.38it/s]Loading weights:  17%|█▋        | 54/311 [00:00<00:01, 169.91it/s]Loading weights:  30%|██▉       | 93/311 [00:00<00:00, 238.12it/s]Loading weights:  42%|████▏     | 130/311 [00:00<00:00, 278.02it/s]Loading weights:  51%|█████     | 159/311 [00:00<00:00, 279.06it/s]Loading weights:  60%|██████    | 188/311 [00:00<00:00, 279.40it/s]Loading weights:  70%|██████▉   | 217/311 [00:01<00:00, 251.34it/s]Loading weights:  81%|████████▏ | 253/311 [00:01<00:00, 281.32it/s]Loading weights:  94%|█████████▎| 291/311 [00:01<00:00, 305.69it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 240.10it/s]
+{
+ "n": 2147,
+ "execution_accuracy": 0.6059618071727992,
+ "format_failure_rate": 0.0027945971122496508,
+ "execution_error_rate": 0.08942710759198882,
+ "max_prompt_chars": 4223,
+ "median_prompt_chars": 1028,
+ "generation_seconds_total": 1884.95,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.0013972985561248254,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2/checkpoint-900",
+ "subset": null,
+ "quantization": "nf4-4bit",
+ "wall_seconds": 2061.2,
+ "max_prompt_tokens": 1084,
+ "peak_vram_gib": 3.13,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "test"
+}
+Sun Nov 22 19:50:38 +03 2026
+== C
+W1122 19:50:46.326000 674 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1122 19:50:46.381000 674 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<01:00,  5.16it/s]Loading weights:   1%|          | 2/311 [00:00<00:58,  5.30it/s]Loading weights:   2%|▏         | 6/311 [00:00<00:19, 15.74it/s]Loading weights:  11%|█         | 34/311 [00:00<00:02, 95.34it/s]Loading weights:  18%|█▊        | 56/311 [00:00<00:01, 131.26it/s]Loading weights:  25%|██▌       | 79/311 [00:00<00:01, 159.51it/s]Loading weights:  32%|███▏      | 98/311 [00:00<00:01, 168.07it/s]Loading weights:  38%|███▊      | 119/311 [00:00<00:01, 179.17it/s]Loading weights:  44%|████▍     | 138/311 [00:01<00:00, 178.54it/s]Loading weights:  51%|█████▏    | 160/311 [00:01<00:00, 183.35it/s]Loading weights:  58%|█████▊    | 181/311 [00:01<00:00, 183.80it/s]Loading weights:  64%|██████▍   | 200/311 [00:01<00:00, 182.13it/s]Loading weights:  70%|███████   | 219/311 [00:01<00:00, 165.28it/s]Loading weights:  76%|███████▌  | 237/311 [00:01<00:00, 168.10it/s]Loading weights:  85%|████████▍ | 263/311 [00:01<00:00, 192.72it/s]Loading weights:  92%|█████████▏| 287/311 [00:01<00:00, 205.24it/s]Loading weights:  99%|█████████▉| 308/311 [00:01<00:00, 200.62it/s]Loading weights: 100%|██████████| 311/311 [00:02<00:00, 155.22it/s]
+{
+ "n": 2147,
+ "execution_accuracy": 0.6306474149976712,
+ "format_failure_rate": 0.0018630647414997672,
+ "execution_error_rate": 0.050768514205868656,
+ "max_prompt_chars": 4223,
+ "median_prompt_chars": 1028,
+ "generation_seconds_total": 3274.29,
+ "grounded_queries": 30,
+ "first_attempt_execution_accuracy": 0.6096879366557988,
+ "repair_attempts": 198,
+ "repair_rescued": 45,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": true,
+ "ground": true,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.0029850746268656717,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2/checkpoint-900",
+ "subset": null,
+ "quantization": "nf4-4bit",
+ "wall_seconds": 3618.7,
+ "max_prompt_tokens": 1215,
+ "peak_vram_gib": 3.13,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "test"
+}
+Sun Nov 22 20:51:14 +03 2026
+== D
+W1122 20:51:25.106000 764 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1122 20:51:25.164000 764 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:02<10:55,  2.11s/it]Loading weights:   1%|          | 2/311 [00:04<11:05,  2.16s/it]Loading weights:   1%|▏         | 4/311 [00:04<04:23,  1.16it/s]Loading weights:   2%|▏         | 6/311 [00:04<02:32,  2.00it/s]Loading weights:   4%|▍         | 13/311 [00:04<00:47,  6.29it/s]Loading weights:   5%|▌         | 16/311 [00:04<00:38,  7.66it/s]Loading weights:   6%|▋         | 20/311 [00:05<00:27, 10.75it/s]Loading weights:   8%|▊         | 26/311 [00:05<00:18, 15.35it/s]Loading weights:  10%|▉         | 30/311 [00:05<00:16, 16.81it/s]Loading weights:  12%|█▏        | 37/311 [00:05<00:12, 22.01it/s]Loading weights:  13%|█▎        | 41/311 [00:05<00:12, 22.09it/s]Loading weights:  15%|█▌        | 48/311 [00:05<00:10, 26.26it/s]Loading weights:  17%|█▋        | 52/311 [00:06<00:10, 24.77it/s]Loading weights:  19%|█▉        | 59/311 [00:06<00:08, 28.97it/s]Loading weights:  20%|██        | 63/311 [00:06<00:09, 27.23it/s]Loading weights:  23%|██▎       | 70/311 [00:06<00:07, 31.45it/s]Loading weights:  24%|██▍       | 74/311 [00:06<00:07, 30.01it/s]Loading weights:  26%|██▌       | 81/311 [00:06<00:06, 34.67it/s]Loading weights:  27%|██▋       | 85/311 [00:07<00:06, 32.59it/s]Loading weights:  30%|██▉       | 92/311 [00:07<00:06, 35.96it/s]Loading weights:  31%|███       | 96/311 [00:07<00:06, 33.12it/s]Loading weights:  33%|███▎      | 103/311 [00:07<00:05, 36.77it/s]Loading weights:  34%|███▍      | 107/311 [00:07<00:06, 33.46it/s]Loading weights:  37%|███▋      | 114/311 [00:07<00:05, 36.18it/s]Loading weights:  38%|███▊      | 118/311 [00:08<00:05, 32.75it/s]Loading weights:  40%|████      | 125/311 [00:08<00:05, 35.71it/s]Loading weights:  41%|████▏     | 129/311 [00:08<00:05, 32.81it/s]Loading weights:  44%|████▎     | 136/311 [00:08<00:04, 35.05it/s]Loading weights:  45%|████▌     | 140/311 [00:08<00:05, 31.98it/s]Loading weights:  47%|████▋     | 147/311 [00:08<00:04, 34.86it/s]Loading weights:  49%|████▊     | 151/311 [00:09<00:05, 31.56it/s]Loading weights:  51%|█████     | 158/311 [00:09<00:04, 34.33it/s]Loading weights:  52%|█████▏    | 162/311 [00:09<00:04, 30.86it/s]Loading weights:  54%|█████▍    | 169/311 [00:09<00:04, 33.49it/s]Loading weights:  56%|█████▌    | 173/311 [00:09<00:04, 30.40it/s]Loading weights:  58%|█████▊    | 180/311 [00:09<00:03, 33.84it/s]Loading weights:  59%|█████▉    | 184/311 [00:10<00:04, 31.32it/s]Loading weights:  61%|██████▏   | 191/311 [00:10<00:03, 35.48it/s]Loading weights:  63%|██████▎   | 195/311 [00:10<00:03, 32.01it/s]Loading weights:  65%|██████▍   | 202/311 [00:10<00:03, 34.66it/s]Loading weights:  66%|██████▌   | 206/311 [00:10<00:03, 31.86it/s]Loading weights:  68%|██████▊   | 213/311 [00:10<00:02, 34.68it/s]Loading weights:  70%|██████▉   | 217/311 [00:11<00:02, 31.85it/s]Loading weights:  72%|███████▏  | 224/311 [00:11<00:02, 34.86it/s]Loading weights:  73%|███████▎  | 228/311 [00:11<00:02, 32.25it/s]Loading weights:  76%|███████▌  | 235/311 [00:11<00:02, 35.19it/s]Loading weights:  77%|███████▋  | 239/311 [00:11<00:02, 32.07it/s]Loading weights:  79%|███████▉  | 246/311 [00:11<00:01, 34.17it/s]Loading weights:  80%|████████  | 250/311 [00:12<00:02, 30.49it/s]Loading weights:  83%|████████▎ | 257/311 [00:12<00:01, 32.91it/s]Loading weights:  84%|████████▍ | 261/311 [00:12<00:01, 29.72it/s]Loading weights:  86%|████████▌ | 268/311 [00:12<00:01, 32.30it/s]Loading weights:  87%|████████▋ | 272/311 [00:12<00:01, 29.13it/s]Loading weights:  90%|████████▉ | 279/311 [00:13<00:00, 32.05it/s]Loading weights:  91%|█████████ | 283/311 [00:13<00:00, 28.43it/s]Loading weights:  93%|█████████▎| 288/311 [00:13<00:00, 32.27it/s]Loading weights:  94%|█████████▍| 292/311 [00:13<00:00, 24.63it/s]Loading weights:  97%|█████████▋| 301/311 [00:13<00:00, 31.47it/s]Loading weights:  98%|█████████▊| 305/311 [00:13<00:00, 28.60it/s]Loading weights: 100%|█████████▉| 310/311 [00:14<00:00, 32.43it/s]Loading weights: 100%|██████████| 311/311 [00:14<00:00, 22.12it/s]
+{
+ "n": 2147,
+ "execution_accuracy": 0.6516068933395436,
+ "format_failure_rate": 0.0032603632976245926,
+ "execution_error_rate": 0.05170004657661854,
+ "max_prompt_chars": 6485,
+ "median_prompt_chars": 1649,
+ "generation_seconds_total": 3382.87,
+ "grounded_queries": 7,
+ "first_attempt_execution_accuracy": 0.63996273870517,
+ "repair_attempts": 183,
+ "repair_rescued": 25,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": true,
+ "ground": true,
+ "sample_rows": 3,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.0068669527896995704,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2/checkpoint-900",
+ "subset": null,
+ "quantization": "nf4-4bit",
+ "wall_seconds": 3715.8,
+ "max_prompt_tokens": 2616,
+ "peak_vram_gib": 5.17,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "test"
+}
+Sun Nov 22 21:53:41 +03 2026
+== E
+W1122 21:53:50.095000 853 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1122 21:53:50.129000 853 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:01<07:02,  1.36s/it]Loading weights:   1%|          | 2/311 [00:02<07:01,  1.36s/it]Loading weights:   1%|▏         | 4/311 [00:02<02:48,  1.83it/s]Loading weights:   2%|▏         | 6/311 [00:02<01:36,  3.16it/s]Loading weights:   5%|▍         | 15/311 [00:03<00:25, 11.45it/s]Loading weights:   6%|▌         | 19/311 [00:03<00:19, 14.63it/s]Loading weights:   8%|▊         | 26/311 [00:03<00:12, 22.12it/s]Loading weights:  10%|▉         | 31/311 [00:03<00:10, 25.73it/s]Loading weights:  12%|█▏        | 37/311 [00:03<00:08, 32.04it/s]Loading weights:  14%|█▎        | 42/311 [00:03<00:07, 34.18it/s]Loading weights:  15%|█▌        | 48/311 [00:03<00:06, 39.91it/s]Loading weights:  17%|█▋        | 54/311 [00:03<00:06, 40.78it/s]Loading weights:  19%|█▉        | 60/311 [00:04<00:06, 41.56it/s]Loading weights:  22%|██▏       | 67/311 [00:04<00:05, 47.85it/s]Loading weights:  23%|██▎       | 73/311 [00:04<00:05, 41.85it/s]Loading weights:  26%|██▌       | 81/311 [00:04<00:04, 48.99it/s]Loading weights:  28%|██▊       | 87/311 [00:04<00:04, 46.15it/s]Loading weights:  30%|██▉       | 93/311 [00:04<00:04, 44.96it/s]Loading weights:  32%|███▏      | 100/311 [00:04<00:04, 49.90it/s]Loading weights:  34%|███▍      | 106/311 [00:05<00:04, 43.80it/s]Loading weights:  37%|███▋      | 114/311 [00:05<00:03, 50.63it/s]Loading weights:  39%|███▊      | 120/311 [00:05<00:03, 47.86it/s]Loading weights:  41%|████      | 126/311 [00:05<00:04, 45.90it/s]Loading weights:  43%|████▎     | 133/311 [00:05<00:03, 51.28it/s]Loading weights:  45%|████▍     | 139/311 [00:05<00:03, 44.19it/s]Loading weights:  47%|████▋     | 147/311 [00:05<00:03, 49.84it/s]Loading weights:  49%|████▉     | 153/311 [00:05<00:03, 47.63it/s]Loading weights:  51%|█████     | 159/311 [00:06<00:03, 45.98it/s]Loading weights:  53%|█████▎    | 166/311 [00:06<00:02, 50.24it/s]Loading weights:  55%|█████▌    | 172/311 [00:06<00:03, 43.47it/s]Loading weights:  58%|█████▊    | 180/311 [00:06<00:02, 50.56it/s]Loading weights:  60%|█████▉    | 186/311 [00:06<00:02, 47.51it/s]Loading weights:  62%|██████▏   | 192/311 [00:06<00:02, 45.66it/s]Loading weights:  64%|██████▍   | 199/311 [00:06<00:02, 50.03it/s]Loading weights:  66%|██████▌   | 205/311 [00:07<00:02, 43.35it/s]Loading weights:  68%|██████▊   | 213/311 [00:07<00:01, 49.57it/s]Loading weights:  70%|███████   | 219/311 [00:07<00:01, 47.31it/s]Loading weights:  72%|███████▏  | 225/311 [00:07<00:01, 46.73it/s]Loading weights:  75%|███████▍  | 232/311 [00:07<00:01, 51.41it/s]Loading weights:  77%|███████▋  | 238/311 [00:07<00:01, 41.74it/s]Loading weights:  79%|███████▉  | 246/311 [00:07<00:01, 45.71it/s]Loading weights:  81%|████████  | 251/311 [00:08<00:01, 41.72it/s]Loading weights:  83%|████████▎ | 257/311 [00:08<00:01, 43.56it/s]Loading weights:  84%|████████▍ | 262/311 [00:08<00:01, 40.53it/s]Loading weights:  86%|████████▌ | 268/311 [00:08<00:00, 43.40it/s]Loading weights:  88%|████████▊ | 273/311 [00:08<00:00, 40.38it/s]Loading weights:  90%|████████▉ | 279/311 [00:08<00:00, 42.91it/s]Loading weights:  91%|█████████▏| 284/311 [00:08<00:00, 39.41it/s]Loading weights:  93%|█████████▎| 290/311 [00:09<00:00, 41.22it/s]Loading weights:  95%|█████████▍| 295/311 [00:09<00:00, 38.40it/s]Loading weights:  97%|█████████▋| 301/311 [00:09<00:00, 41.05it/s]Loading weights:  98%|█████████▊| 306/311 [00:09<00:00, 39.02it/s]Loading weights: 100%|██████████| 311/311 [00:09<00:00, 32.61it/s]
+{
+ "n": 2147,
+ "execution_accuracy": 0.6618537494177923,
+ "format_failure_rate": 0.0013972985561248254,
+ "execution_error_rate": 0.040987424312994875,
+ "max_prompt_chars": 6433,
+ "median_prompt_chars": 1397,
+ "generation_seconds_total": 2062.12,
+ "pruned_queries": 1855,
+ "grounded_queries": 10,
+ "first_attempt_execution_accuracy": 0.6506753609687936,
+ "repair_attempts": 153,
+ "repair_rescued": 24,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": true,
+ "ground": true,
+ "sample_rows": 3,
+ "prune": true,
+ "hit_max_new_tokens_rate": 0.003043478260869565,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2/checkpoint-900",
+ "subset": null,
+ "quantization": "nf4-4bit",
+ "wall_seconds": 2245.3,
+ "max_prompt_tokens": 2458,
+ "peak_vram_gib": 5.15,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "test"
+}
+Sun Nov 22 22:31:29 +03 2026

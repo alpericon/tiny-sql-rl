@@ -1,6 +1,6 @@
 # Week 11 plan: one-shot confirmation on the Spider test set
 
-**Status: APPROVED 2026-11-22.**
+**Status: APPROVED 2026-11-22. Done 2026-11-22: GRPO and the whole stack confirmed on test (66.3% vs 56.3%); example rows and pruning directionally consistent but not significant.**
 
 ## Why
 

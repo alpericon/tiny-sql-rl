@@ -130,6 +130,20 @@ def main():
     lat = {k: j(f"demo_latency_w10_{k}.json")["text_to_sql_and_query"]["median_s"] for k in ("rows3_cold_now", "rows3_prune_cold")}
     checks.append(f"latency {lat['rows3_cold_now']:.1f} → {lat['rows3_prune_cold']:.1f} s")
 
+    # Week 11 held-out test
+    ot = j("official_ex_test.json")
+    for m, d in [("A-base", "base"), ("B-v2-900", "v2-900"), ("C-v2-900-repair-ground", "v2-900-repair-ground"),
+                 ("D-v2-900-repair-ground-rows3", "v2-900-repair-ground-rows3")]:
+        checks.append(f"| {pct(ot['models'][m]['official_ex'])} | {pct(om[d]['official_ex'])} |")
+    checks.append(f"| **{pct(ot['models']['E-v2-900-repair-ground-rows3-prune']['official_ex'])}** | {pct(op['official_ex'])} |")
+    tp = ot["pairs_official"]
+    t1, t4 = tp["B-v2-900 vs A-base"], tp["E-v2-900-repair-ground-rows3-prune vs A-base"]
+    t2, t3 = tp["D-v2-900-repair-ground-rows3 vs C-v2-900-repair-ground"], tp["E-v2-900-repair-ground-rows3-prune vs D-v2-900-repair-ground-rows3"]
+    checks.append(f"{t1['wins']} / {t1['losses']}")
+    checks.append(f"{t4['wins']} / {t4['losses']}")
+    checks.append(f"p={t2['p']:.3f}")
+    checks.append(f"p={t3['p']:.2f}")
+
     missing = [c for c in checks if c not in README]
     for c in checks:
         print(("OK   " if c not in missing else "MISS ") + c)
