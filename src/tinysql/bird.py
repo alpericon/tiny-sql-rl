@@ -9,7 +9,8 @@ SQL and scores 1 iff ``set(predicted_rows) == set(gold_rows)``:
 
 Differences from the official script, kept on purpose: queries run through our read-only executor
 (``execute_readonly``), and each query gets its own 30 s, where the official script gives 30 s to
-both together.
+both together. The executor also rejects a single value over 1 MB, a result over 64 MB and any
+statement other than a read (its authorizer); none of the gold queries is affected.
 """
 
 from __future__ import annotations

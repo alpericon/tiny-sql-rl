@@ -138,6 +138,14 @@ european_football_2. The cause is wide tables, not long cells (`results/bird_pro
 - **All three configurations therefore run at batch 4** (`--batch-size 4 --max-prompt-tokens 5000`).
   Using the same batch size everywhere avoids batch-size effects between them. Spider runs used batch 8.
 
+## Change after the B1–B3 review (before any generation)
+
+The guard is raised again, from 5,000 to **5,500 tokens**, for all three configurations.
+- E's repair turn uses the full schema with rows, plus the failed answer and the error. That reaches
+  about 4,900 tokens, which left only ~100 tokens of margin, and a breach would stop the whole run.
+- The guard only refuses prompts; it changes no prompt.
+- Memory at batch 4 extrapolates to ~6 GiB.
+
 ## Not in this plan
 
 Training on BIRD, runs without evidence, the newer dev split, Mini-Dev, leaderboard submission, and

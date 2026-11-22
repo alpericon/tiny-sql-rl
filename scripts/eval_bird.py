@@ -23,7 +23,8 @@ from tinysql.bird import bird_ex, load_bird
 
 ROOT = Path(__file__).resolve().parents[1]
 BIRD = Path(os.environ.get("BIRD_DIR", Path.home() / "bird" / "dev"))
-GUARD = 3072
+GUARD = 3072  # the report counts prompts over the Spider-era guard (the B3 stop rule)
+RUN_GUARD = 5500  # PLAN-week12 decision: room for E's full-schema repair prompts (~4,900 tokens)
 
 
 def report(examples, db_dir):
@@ -64,9 +65,9 @@ def main():
     ap.add_argument("--model", default="Qwen/Qwen3-1.7B")
     ap.add_argument("--adapter", type=Path, default=None)
     ap.add_argument("--tag", default=None)
-    ap.add_argument("--batch-size", type=int, default=8)
+    ap.add_argument("--batch-size", type=int, default=4)  # batch 8 does not fit 4.8k-token prompts in 8 GiB
     ap.add_argument("--max-new-tokens", type=int, default=256)
-    ap.add_argument("--max-prompt-tokens", type=int, default=GUARD)
+    ap.add_argument("--max-prompt-tokens", type=int, default=RUN_GUARD)
     ap.add_argument("--repair", action="store_true")
     ap.add_argument("--ground", action="store_true")
     ap.add_argument("--sample-rows", type=int, default=0)
@@ -102,7 +103,8 @@ def main():
         benchmark="BIRD dev", metric="BIRD EX (set of result rows)", model=args.model,
         adapter=str(args.adapter) if args.adapter else None, repair=args.repair, ground=args.ground,
         sample_rows=args.sample_rows, prune=args.prune, decoding="greedy, nf4, thinking off",
-        max_new_tokens=args.max_new_tokens, limit=args.limit,
+        max_new_tokens=args.max_new_tokens, limit=args.limit, batch_size=args.batch_size,
+        prompt_guard_tokens=args.max_prompt_tokens,
         by_difficulty={k: {"n": len(v), "ex": sum(v) / len(v)} for k, v in sorted(by.items())},
         max_prompt_tokens=max(generate.prompt_tokens), wall_seconds=round(time.perf_counter() - t0, 1),
         peak_vram_gib=round(torch.cuda.max_memory_allocated() / 2**30, 2),
