@@ -1,0 +1,468 @@
+{
+ "n": 2147,
+ "recall": 0.9846,
+ "mean_share_of_tables": 0.8004,
+ "fallback_rate": 0.136,
+ "questions_with_fewer_tables": 964,
+ "n_misses": 33,
+ "misses_by_db": {
+  "aan_1": 2,
+  "address_1": 3,
+  "advertising_agencies": 1,
+  "bakery_1": 16,
+  "boat_1": 1,
+  "e_commerce": 6,
+  "real_estate_rentals": 4
+ },
+ "misses_example": [
+  {
+   "db_id": "e_commerce",
+   "question": "What are the names of the products tht have been shipped, and on what days were they shipped?",
+   "gold_tables": [
+    "order_items",
+    "products",
+    "shipment_items",
+    "shipments"
+   ],
+   "kept": [
+    "Customers",
+    "Order_Items",
+    "Orders",
+    "Products"
+   ]
+  },
+  {
+   "db_id": "e_commerce",
+   "question": "What is the product name and the color of the ordered items which have been shipped?",
+   "gold_tables": [
+    "order_items",
+    "products",
+    "shipment_items",
+    "shipments"
+   ],
+   "kept": [
+    "Customers",
+    "Order_Items",
+    "Orders",
+    "Products",
+    "Shipment_Items"
+   ]
+  },
+  {
+   "db_id": "e_commerce",
+   "question": "What are the names and colors of all products that have been shipped?",
+   "gold_tables": [
+    "order_items",
+    "products",
+    "shipment_items",
+    "shipments"
+   ],
+   "kept": [
+    "Customers",
+    "Order_Items",
+    "Orders",
+    "Products"
+   ]
+  },
+  {
+   "db_id": "e_commerce",
+   "question": "What are the total cost of all the orders ? List the order id , date , and total cost .",
+   "gold_tables": [
+    "order_items",
+    "orders",
+    "products"
+   ],
+   "kept": [
+    "Invoices",
+    "Orders",
+    "Shipments"
+   ]
+  },
+  {
+   "db_id": "e_commerce",
+   "question": "For each order, what is its id, date, and total amount paid?",
+   "gold_tables": [
+    "order_items",
+    "orders",
+    "products"
+   ],
+   "kept": [
+    "Invoices",
+    "Orders",
+    "Shipments"
+   ]
+  },
+  {
+   "db_id": "e_commerce",
+   "question": "How many products have been shipped?",
+   "gold_tables": [
+    "shipment_items"
+   ],
+   "kept": [
+    "Order_Items",
+    "Products"
+   ]
+  },
+  {
+   "db_id": "address_1",
+   "question": "How far do Linda (first name) Smith (last name) and Tracy (first name) Kim (last name) live?",
+   "gold_tables": [
+    "direct_distance",
+    "student"
+   ],
+   "kept": [
+    "City",
+    "Student"
+   ]
+  },
+  {
+   "db_id": "address_1",
+   "question": "What is the first name and last name of the student living furthest to Linda Smith?",
+   "gold_tables": [
+    "direct_distance",
+    "student"
+   ],
+   "kept": [
+    "City",
+    "Student"
+   ]
+  },
+  {
+   "db_id": "address_1",
+   "question": "What is the full name of the student who lives furthest from Linda Smith?",
+   "gold_tables": [
+    "direct_distance",
+    "student"
+   ],
+   "kept": [
+    "City",
+    "Student"
+   ]
+  },
+  {
+   "db_id": "boat_1",
+   "question": "Who reserved boat 102?",
+   "gold_tables": [
+    "reserves",
+    "sailors"
+   ],
+   "kept": [
+    "Boats",
+    "Reserves"
+   ]
+  },
+  {
+   "db_id": "aan_1",
+   "question": "Find all papers with titles and paper IDs written by Mckeown.",
+   "gold_tables": [
+    "author",
+    "author_list",
+    "paper"
+   ],
+   "kept": [
+    "Author_list",
+    "Citation",
+    "Paper"
+   ]
+  },
+  {
+   "db_id": "aan_1",
+   "question": "What are the titles and paper ids for papers written by Mckeown?",
+   "gold_tables": [
+    "author",
+    "author_list",
+    "paper"
+   ],
+   "kept": [
+    "Author_list",
+    "Citation",
+    "Paper"
+   ]
+  },
+  {
+   "db_id": "real_estate_rentals",
+   "question": "List the average room count of the properties with gardens.",
+   "gold_tables": [
+    "features",
+    "properties",
+    "property_features"
+   ],
+   "kept": [
+    "Addresses",
+    "Properties",
+    "Ref_Room_Types",
+    "Rooms"
+   ]
+  },
+  {
+   "db_id": "real_estate_rentals",
+   "question": "Return the cities in which there exist properties that have swimming pools.",
+   "gold_tables": [
+    "addresses",
+    "features",
+    "properties",
+    "property_features"
+   ],
+   "kept": [
+    "Addresses",
+    "Properties"
+   ]
+  },
+  {
+   "db_id": "real_estate_rentals",
+   "question": "What is the description of the most common property type? List the description and code.",
+   "gold_tables": [
+    "properties",
+    "ref_property_types"
+   ],
+   "kept": [
+    "Properties",
+    "Users"
+   ]
+  },
+  {
+   "db_id": "real_estate_rentals",
+   "question": "What is the most common property type, and what is its description.",
+   "gold_tables": [
+    "properties",
+    "ref_property_types"
+   ],
+   "kept": [
+    "Properties",
+    "Users"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "List the distinct ids of all customers who bought a cake with lemon flavor?",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "goods",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "What are the distinct ids of customers who bought lemon flavored cake?",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "goods",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "For each type of food, tell me how many customers have ever bought it.",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "goods",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "How many customers have bought each food?",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "goods",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "What are the receipt numbers for instances where both cakes and cookies were purchased?",
+   "gold_tables": [
+    "goods",
+    "items"
+   ],
+   "kept": [
+    "items",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "What is the receipt number and date of the receipt in which the most expensive item was bought?",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "items",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "What is the receipt number and date corresponding to the receipt for which the most expensive item was purchased?",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "items",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "On which date did some customer buy a good that costs more than 15 dollars?",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "goods",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "Which date corresponds to when a customer purchased a good costing over 15 dollars?",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "goods",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "Give me the first name and last name of customers who have bought apple flavor Tart.",
+   "gold_tables": [
+    "customers",
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "goods",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "What are the full names of customers who bought apple flavored Tarts?",
+   "gold_tables": [
+    "customers",
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "goods",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "Find the ids of customers who have spent more than 150 dollars in total.",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "What are the ids of customers who have spent over 150 dollars in total?",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "Find the ids of customers whose average spending for each good is above 5.",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "goods",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "What are the ids of customers who spend more than 5 on average for each good?",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "customers",
+    "goods",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "bakery_1",
+   "question": "On what dates did the bakery sell more than 100 dollars worth of goods in total?",
+   "gold_tables": [
+    "goods",
+    "items",
+    "receipts"
+   ],
+   "kept": [
+    "goods",
+    "receipts"
+   ]
+  },
+  {
+   "db_id": "advertising_agencies",
+   "question": "Show details for all clients and the details of their corresponding agents.",
+   "gold_tables": [
+    "agencies",
+    "clients"
+   ],
+   "kept": [
+    "Clients",
+    "Invoices",
+    "Meetings"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,17 @@
+{
+ "A_schema_only": {
+  "median": 264,
+  "max": 1084,
+  "over_3072": 0
+ },
+ "D_rows3": {
+  "median": 553,
+  "max": 2348,
+  "over_3072": 0
+ },
+ "E_rows3_pruned": {
+  "median": 472,
+  "max": 2337,
+  "over_3072": 0
+ }
+}
