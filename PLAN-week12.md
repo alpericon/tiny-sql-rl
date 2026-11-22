@@ -110,6 +110,17 @@ measured for A and E.
   tables are larger, so these steps see fewer values there.
 - **Single run, single seed.**
 
+## Decision after B1 (2026-11-22, user, before any generation)
+
+BIRD's `formula_1` database (174 dev questions) has the same 13-table schema as Spider's `formula_1`.
+Spider train has 80 questions on it, and 11 of them are in v2's training set. No question text is
+shared (`results/bird_split_check.json`). **Decision: the primary analysis stays the full 1,534
+questions.** T1–T3 are also reported, with the same labels, on the 1,360 questions outside `formula_1`.
+This is a secondary analysis, registered here before any BIRD generation.
+
+Also from B1: 2 gold queries (question_id 518, 701) do not finish within 30 s on the WSL filesystem.
+They count as wrong for every configuration and are listed in the write-up.
+
 ## Not in this plan
 
 Training on BIRD, runs without evidence, the newer dev split, Mini-Dev, leaderboard submission, and
