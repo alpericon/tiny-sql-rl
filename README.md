@@ -33,9 +33,9 @@ Nothing was tuned on it ([results/week11_results.md](results/week11_results.md))
 | + 3 example rows | 65.7% | 63.4% |
 | **+ schema pruning (demo)** | **66.3%** | 65.9% |
 
-- **Confirmed on test:** GRPO (+5.4, 160 / 44) and the whole stack (+10.0 over zero-shot, 308 / 92), both p<0.0001.
+- **Confirmed on test:** GRPO (+5.4, 160 / 44) and the whole stack (+10.1 over zero-shot, 308 / 92), both p<0.0001.
 - **Same direction but smaller, not significant:** example rows (+1.5, p=0.073) and schema pruning (+0.6,
-  p=0.28). Both were chosen because they were significant on dev, and dev overstated them.
+  p=0.28). Both were chosen because they were significant on dev, and both gain less on test.
 
 ### RQ1: does GRPO help?
 

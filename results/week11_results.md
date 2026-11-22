@@ -32,8 +32,8 @@ Four comparisons were registered before the runs. Their labels:
 |---|---|---|---|---|
 | T1 | GRPO (B vs A) | +5.4, 160 / 44, p<0.0001 | +4.9, 84 / 33, p<0.0001 | **confirmed** |
 | T2 | example rows (D vs C) | +1.5, 166 / 134, p=0.073 | +2.5, 72 / 46, p=0.021 | **directionally consistent** |
-| T3 | schema pruning (E vs D) | +0.6, 67 / 54, p=0.28 | +2.5, 42 / 17, p=0.0015 | **directionally consistent** |
-| T4 | whole stack (E vs A) | +10.0, 308 / 92, p<0.0001 | +11.8 | **confirmed** |
+| T3 | schema pruning (E vs D) | +0.6, 67 / 54, p=0.28 | +2.4, 42 / 17, p=0.0015 | **directionally consistent** |
+| T4 | whole stack (E vs A) | +10.1, 308 / 92, p<0.0001 | +11.8 | **confirmed** |
 
 On our own metric the signs are the same: T1 158 / 45, T2 173 / 128 (p=0.011), T3 76 / 54 (p=0.065),
 T4 324 / 91. The labels follow the pre-registered official metric.
@@ -42,15 +42,16 @@ T4 324 / 91. The labels follow the pre-registered official metric.
 
 - **The main claims hold on unseen databases.**
   - GRPO gains 5.4 points on test, against 4.9 on dev.
-  - The full configuration is 10 points above zero-shot (66.3% vs 56.3%).
+  - The full configuration is 10.1 points above zero-shot (66.3% vs 56.3%).
   - Every individual step has the same sign as on dev.
 - **The two latest inference steps gain less on test than on dev.**
   - **Example rows:** +1.5 instead of +2.5. Official p is 0.073. Our metric happens to fall under the
     Bonferroni line (p=0.011), but the label follows the official metric.
-  - **Schema pruning:** +0.6 instead of +2.5, not significant.
+  - **Schema pruning:** +0.6 instead of +2.4, not significant.
   - Each step was adopted because it was significant on dev, so dev overstates it. That is the
-    selection effect this test was meant to measure. **Pruning's dev gain was mostly specific to dev.**
-- **Repair + grounding (C vs B, not one of the four tests):** +2.5 on test (61.7 → 64.2) against +1.9
+    selection effect this test was meant to measure. **Pruning's gain is much smaller on test than on
+    dev.** The dev-vs-test difference itself was not tested, and there is one run per configuration.
+- **Repair + grounding (C vs B, not one of the four tests):** +2.6 on test (61.7 → 64.2) against +1.9
   on dev. Descriptive only.
 - **Pruning by hardness** (official EX, D → E): easy 83.2 → 84.3, medium 74.1 → 75.1, hard 49.9 → 51.0,
   extra 43.1 → 41.5. Mixed, and within noise.
@@ -66,8 +67,11 @@ T4 324 / 91. The labels follow the pre-registered official metric.
 ## Notes and corrections
 
 - **H1 said 2 gold queries fail to execute. That was wrong.** The two aan_1 queries (test 1021 and 1022)
-  take ~6 s when read over `/mnt/c` and 0.2 s on the WSL filesystem. They only exceeded the check
-  script's 5 s default timeout. The evaluation allows 30 s, and both run and score normally.
+  took 6.0 s and 5.8 s when re-timed over `/mnt/c` and 0.2 s on the WSL filesystem (commit b57ae81).
+  They only exceeded the check script's 5 s default timeout. The evaluation allows 30 s, and our
+  comparator scores the gold query against itself as a match. The official evaluator reads them from
+  the WSL copy. All five configurations score these two rows wrong, because the predictions differ
+  from the gold, not because of a timeout.
   `results/test_split_check.json` is left as committed; this note corrects it.
 - The overlap check in `scripts/test_split_check.py` covered train_spider.json and dev. The reviewer
   also checked train_others.json (1,659 questions): no shared databases or questions.
