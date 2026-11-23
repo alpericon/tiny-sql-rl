@@ -44,14 +44,17 @@ Source: `results/bird_{A-base,B-v2-900,E-v2-900-full}.{json,records.jsonl}`.
   - formula_1 has the same schema as a Spider training database.
   - Without its 174 questions the effects are almost unchanged (+3.2 / +5.9 / +9.1).
   - formula_1 is below average for every configuration (A 9.8%, B 11.5%, E 24.1%).
-- **What GRPO fixes on BIRD is mostly format.** Answers without a usable ```sql block drop from 98
-  to 17. `no such column` errors do not change (412 → 427).
-- **What the stack fixes is mostly schema errors.**
-  - `no such column` drops from 427 to 280. Example rows and pruning matter more on BIRD's wide,
-    cryptically named schemas than on Spider.
-  - Repair rescued 50 of 521 retries; grounding fired on 32 queries.
-  - In return, wrong-but-running answers rise (586 → 694): queries that used to fail now run but
-    still answer wrongly.
+- **GRPO removes most format failures.** Answers without a usable ```sql block drop from 98 to 17.
+  That accounts for about a third of its wins: 21 of its 68 wins are questions where zero-shot had a
+  format failure. The rest is better SQL. `no such column` errors do not change (412 → 427).
+- **The stack mainly removes execution errors.**
+  - `no such column` drops from 427 to 280.
+  - Of its 168 wins over B, 71 are questions where B had a `no such column` error, and 36 were
+    rescued by a repair turn. Repair rescued 50 of 521 retries in total; grounding fired on 32 queries.
+  - The plan did not isolate rows, pruning and repair on BIRD. This says what the stack fixes, not
+    which step does it.
+  - In return, answers that run but are wrong rise from 585 to 692. Queries that used to fail now run
+    but still answer wrongly. Gold timeouts are counted as execution errors here.
 - **The absolute level is low**, as expected for a 1.7B model on BIRD. About 70% of answers are still
   wrong, mostly with SQL that runs.
   - The weakest databases are california_schools (10%) and thrombosis_prediction (12%). They have
@@ -62,8 +65,9 @@ Source: `results/bird_{A-base,B-v2-900,E-v2-900-full}.{json,records.jsonl}`.
 
 ## Notes
 
-- **Gold queries:** 2 (question_id 518 and 701) do not finish within 30 s. They count as wrong for
-  every configuration, so their effect on the comparisons is the same everywhere.
+- **Gold queries:** 2 (question_id 518 and 701) do not finish within 30 s. No configuration gets them
+  right, so their effect on the comparisons is the same everywhere. For B, question 518 shows as the
+  prediction's own `no such column` error, which hides the gold timeout.
 - **Run times:**
   - A 54 min, B 79 min, E 110 min (`results/w12_bird_runs.log`).
   - Batch 4 was needed because the 4.8k-token prompts do not fit at batch 8 in 8 GiB.
