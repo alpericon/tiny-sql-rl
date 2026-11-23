@@ -96,6 +96,10 @@ def main():
                                 ground=args.ground, sample_rows=args.sample_rows, prune=args.prune, scorer=bird_ex)
     for r, m in zip(records, meta):
         r.update(m)
+    if not args.repair:  # as eval_baseline.py: with repair, retries interleave, so only the overall rate is kept
+        assert len(generate.hit_limit) == len(records)
+        for r, cut in zip(records, generate.hit_limit):
+            r["hit_max_new_tokens"] = cut
     by = defaultdict(list)
     for r in records:
         by[r["difficulty"]].append(r["match"])
@@ -106,6 +110,7 @@ def main():
         max_new_tokens=args.max_new_tokens, limit=args.limit, batch_size=args.batch_size,
         prompt_guard_tokens=args.max_prompt_tokens,
         by_difficulty={k: {"n": len(v), "ex": sum(v) / len(v)} for k, v in sorted(by.items())},
+        hit_max_new_tokens_rate=sum(generate.hit_limit) / len(generate.hit_limit),  # PLAN-week13
         max_prompt_tokens=max(generate.prompt_tokens), wall_seconds=round(time.perf_counter() - t0, 1),
         peak_vram_gib=round(torch.cuda.max_memory_allocated() / 2**30, 2),
     )
