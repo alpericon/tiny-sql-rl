@@ -17,6 +17,14 @@ from tinysql.data import Example
 FORMAT_FAILURE_SQL = "SELECT tinysql_format_failure"
 
 _BREAKS = re.compile(r"\s*[\r\n\t]+\s*")
+QWEN3 = "Qwen/Qwen3-1.7B"
+
+
+def record_stem(entry: str | tuple[str, str]) -> str:
+    """The record-file stem after the split prefix. A bare suffix means Qwen3-1.7B (every model up to
+    week 12); a (model, suffix) pair names another model, as eval_baseline.py tags it (PLAN-week13)."""
+    model, suffix = (QWEN3, entry) if isinstance(entry, str) else entry
+    return model.replace("/", "__") + suffix
 
 
 def one_line(sql: str) -> str:

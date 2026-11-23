@@ -38,6 +38,18 @@ def load_bird(path: str | Path) -> tuple[list[Example], list[dict]]:
     return examples, meta
 
 
+def bird_pairs(base: list[dict], cand: list[dict], exclude_db: str = "formula_1") -> dict:
+    """Paired comparison (cand over base) on all questions and without one database (PLAN-week12/13).
+    Refuses records whose question_id order differs."""
+    from tinysql.stats import paired_summary
+
+    if [r["question_id"] for r in base] != [r["question_id"] for r in cand]:
+        raise ValueError("records are not in the same question order")
+    keep = [i for i, r in enumerate(base) if r["db_id"] != exclude_db]
+    return {"all": paired_summary(base, cand),
+            f"without_{exclude_db}": paired_summary([base[i] for i in keep], [cand[i] for i in keep])}
+
+
 def bird_ex(db_path: str | Path, gold_sql: str, pred_sql: str, timeout_s: float = TIMEOUT_S) -> dict:
     """BIRD EX of one prediction: {exec_ok, match, error}, the same shape as ``evaluate.score_sql``."""
     gold = execute_readonly(db_path, gold_sql, timeout_s=timeout_s, max_rows=MAX_ROWS)

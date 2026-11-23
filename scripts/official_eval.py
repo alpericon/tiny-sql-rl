@@ -34,7 +34,7 @@ from pathlib import Path
 
 from tinysql.data import load_spider_split
 from tinysql.executor import execute_readonly
-from tinysql.official import FORMAT_FAILURE_SQL, eval_lines
+from tinysql.official import FORMAT_FAILURE_SQL, eval_lines, record_stem
 from tinysql.stats import mcnemar_exact
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,6 +46,7 @@ OUT = ROOT / "results" / "official"
 QUESTIONS = ROOT / "data" / "spider" / "dev.json"
 RECORD_PREFIX = "baseline"
 SUMMARY = ROOT / "results" / "official_ex.json"
+CODER = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 # PLAN-week11: the held-out test split, scored with `official_eval.py --split test [name ...]`.
 # Its own databases (copied to the WSL filesystem like the dev ones), records, outputs and summary.
 TEST_MODELS = {
@@ -54,10 +55,16 @@ TEST_MODELS = {
     "C-v2-900-repair-ground": "_v2-checkpoint-900_repair_ground",
     "D-v2-900-repair-ground-rows3": "_v2-checkpoint-900_repair_ground_rows3",
     "E-v2-900-repair-ground-rows3-prune": "_v2-checkpoint-900_repair_ground_rows3_prune",
+    # PLAN-week13: Qwen2.5-Coder-1.5B-Instruct, bare and with the same inference stack
+    "CA-coder": (CODER, ""),
+    "CE-coder-repair-ground-rows3-prune": (CODER, "_repair_ground_rows3_prune"),
 }
 TEST_PAIRS = [("B-v2-900", "A-base"), ("D-v2-900-repair-ground-rows3", "C-v2-900-repair-ground"),
               ("E-v2-900-repair-ground-rows3-prune", "D-v2-900-repair-ground-rows3"),
-              ("E-v2-900-repair-ground-rows3-prune", "A-base")]
+              ("E-v2-900-repair-ground-rows3-prune", "A-base"),
+              # PLAN-week13 K1, K2 (tested), then CA vs A and CE vs CA (descriptive)
+              ("B-v2-900", "CA-coder"), ("E-v2-900-repair-ground-rows3-prune", "CE-coder-repair-ground-rows3-prune"),
+              ("CA-coder", "A-base"), ("CE-coder-repair-ground-rows3-prune", "CA-coder")]
 
 
 def use_test_split():
@@ -124,7 +131,7 @@ def per_row(gold_lines: list[str], pred_lines: list[str]) -> list[dict]:
 
 
 def score_model(name: str, dev) -> dict:
-    recs = [json.loads(l) for l in open(ROOT / "results" / f"{RECORD_PREFIX}_Qwen__Qwen3-1.7B{MODELS[name]}.records.jsonl", encoding="utf-8")]
+    recs = [json.loads(l) for l in open(ROOT / "results" / f"{RECORD_PREFIX}_{record_stem(MODELS[name])}.records.jsonl", encoding="utf-8")]
     gold_lines, pred_lines = eval_lines(recs, dev)
     capped = []
     for i, (g, p) in enumerate(zip(gold_lines, pred_lines)):

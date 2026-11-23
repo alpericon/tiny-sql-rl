@@ -49,6 +49,16 @@ def paired_summary(base: list[dict], cand: list[dict]) -> dict:
     }
 
 
+def ex_where_both_formatted(fmt_a: list[bool], match_a: list[bool], fmt_b: list[bool], match_b: list[bool]) -> dict:
+    """EX of both models on the questions where both produced a SQL block (PLAN-week13): separates a
+    format gap from an SQL gap."""
+    if not len(fmt_a) == len(match_a) == len(fmt_b) == len(match_b):
+        raise ValueError("inputs not aligned")
+    rows = [(ma, mb) for fa, ma, fb, mb in zip(fmt_a, match_a, fmt_b, match_b) if fa and fb]
+    n = len(rows)
+    return {"n": n, "a_ex": sum(a for a, _ in rows) / n if n else 0.0, "b_ex": sum(b for _, b in rows) / n if n else 0.0}
+
+
 def latency_summary(seconds: list[float]) -> dict:
     """Median, nearest-rank p95, mean and max of per-query latencies (PLAN-week3 X7)."""
     import statistics
