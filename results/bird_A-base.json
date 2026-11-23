@@ -1,0 +1,39 @@
+{
+ "n": 1534,
+ "execution_accuracy": 0.20534550195567144,
+ "format_failure_rate": 0.06388526727509779,
+ "execution_error_rate": 0.35658409387222945,
+ "max_prompt_chars": 8012,
+ "median_prompt_chars": 4223.5,
+ "generation_seconds_total": 2711.29,
+ "benchmark": "BIRD dev",
+ "metric": "BIRD EX (set of result rows)",
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": null,
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "decoding": "greedy, nf4, thinking off",
+ "max_new_tokens": 256,
+ "limit": null,
+ "batch_size": 4,
+ "prompt_guard_tokens": 5500,
+ "by_difficulty": {
+  "challenging": {
+   "n": 145,
+   "ex": 0.1103448275862069
+  },
+  "moderate": {
+   "n": 464,
+   "ex": 0.10129310344827586
+  },
+  "simple": {
+   "n": 925,
+   "ex": 0.2724324324324324
+  }
+ },
+ "max_prompt_tokens": 2199,
+ "wall_seconds": 3261.8,
+ "peak_vram_gib": 2.73
+}

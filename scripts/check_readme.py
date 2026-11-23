@@ -144,6 +144,12 @@ def main():
     checks.append(f"p={t2['p']:.3f}")
     checks.append(f"p={t3['p']:.2f}")
 
+    # Week 12 BIRD
+    bd = {t: j(f"bird_{t}.json")["execution_accuracy"] for t in ("A-base", "B-v2-900", "E-v2-900-full")}
+    checks.append(f"| Qwen3-1.7B zero-shot | {pct(bd['A-base'])} |")
+    checks.append(f"| GRPO (released model) | {pct(bd['B-v2-900'])} |")
+    checks.append(f"| **{pct(bd['E-v2-900-full'])}** |")
+
     missing = [c for c in checks if c not in README]
     for c in checks:
         print(("OK   " if c not in missing else "MISS ") + c)

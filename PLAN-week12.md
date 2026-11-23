@@ -1,6 +1,6 @@
 # Week 12 plan: does it transfer? One-shot evaluation on BIRD dev
 
-**Status: APPROVED 2026-11-22, including the dev.zip download.**
+**Status: APPROVED 2026-11-22, including the dev.zip download. Done 2026-11-23: GRPO (+3.1) and the inference stack (+6.6) both confirmed on BIRD dev, with and without formula_1.**
 
 ## Why
 

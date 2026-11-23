@@ -37,6 +37,25 @@ Nothing was tuned on it ([results/week11_results.md](results/week11_results.md))
 - **Same direction but smaller, not significant:** example rows (+1.5, p=0.073) and schema pruning (+0.6,
   p=0.28). Both were chosen because they were significant on dev, and both gain less on test.
 
+### Beyond Spider: BIRD dev (week 12)
+
+The same three systems, run once on BIRD dev (1,534 questions on 11 large, messy databases, with
+BIRD's expert evidence in the prompt), scored with BIRD's set-based EX
+([results/week12_results.md](results/week12_results.md)):
+
+| Configuration | BIRD EX |
+|---|---|
+| Qwen3-1.7B zero-shot | 20.5% |
+| GRPO (released model) | 23.6% |
+| **+ repair, grounding, example rows, pruning (demo)** | **30.2%** |
+
+- **Both gains transfer:**
+  - GRPO: +3.1, 68 / 21;
+  - the inference stack: +6.6, 168 / 67.
+  - Both have p<0.0001, and both hold without formula_1, the one BIRD database that shares a schema
+    with Spider train.
+- The absolute level is low, as expected for 1.7B on BIRD. This is not a leaderboard number.
+
 ### RQ1: does GRPO help?
 
 | Model | EX (ours) | EX (official) | vs zero-shot (wins / losses) |
