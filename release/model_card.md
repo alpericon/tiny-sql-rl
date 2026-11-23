@@ -5,6 +5,7 @@ library_name: transformers
 tags:
 - text-to-sql
 - spider
+- bird
 - grpo
 - reinforcement-learning
 - gguf
@@ -55,6 +56,33 @@ tuned on it.
   - example rows: +1.5, p=0.073;
   - schema pruning: +0.6, p=0.28.
   - Both were adopted because they were significant on dev, and both gain less on test.
+
+### Beyond Spider: BIRD dev (1,534 questions, 11 databases)
+
+BIRD has large, messy databases with cryptic column names, and gives each question an expert
+"evidence" hint, which is added to the prompt on its own line. Each configuration ran **once**, with
+nothing tuned on BIRD. The metric is BIRD EX (the set of result rows equals the gold set), using the
+project's own implementation of it, not BIRD's script.
+
+| Configuration | BIRD EX | simple | moderate | challenging |
+|---|---|---|---|---|
+| Qwen3-1.7B zero-shot | 20.5% | 27.2% | 10.1% | 11.0% |
+| **this model** (GRPO) | 23.6% | 31.7% | 11.0% | 12.4% |
+| **recommended configuration** | **30.2%** | 39.6% | 16.2% | 15.2% |
+
+- **All three comparisons are confirmed** (p<0.0001 each, Bonferroni over three):
+  - GRPO over zero-shot: +3.1 points, 68 / 21;
+  - the inference steps over this model: +6.6, 168 / 67;
+  - the whole configuration over zero-shot: +9.7, 204 / 56.
+- **The Spider overlap does not drive this.** BIRD's `formula_1` database has the same schema as a
+  Spider training database. Without its 174 questions the gains are +3.2 / +5.9 / +9.1, all still
+  significant.
+- **What changes:**
+  - GRPO removes most format failures (98 → 17); that is about a third of its wins.
+  - The inference steps mainly remove `no such column` errors (427 → 280). They were not measured
+    one by one on BIRD.
+- **The absolute level is low**, as expected for a 1.7B model: about 70% of answers are still wrong.
+  This is not a leaderboard number.
 
 ### Training ablations (Spider dev, 1,034 questions)
 
@@ -135,13 +163,14 @@ speech to 10 dB, and level at 0 dB.
 ## Limitations
 
 - **Single seed per training run.** The McNemar tests cover question sampling, not training variance.
-- **English only, SQLite only, Spider-style schemas.**
+- **English only, SQLite only; trained on Spider-style schemas.**
   - About a third of Spider test questions are still answered wrongly, mostly with valid SQL that
     returns the wrong result.
   - An error analysis of 100 such failures on dev found that 45% pick the wrong table, column or
     join path.
-  - The pruner relies on question words matching schema names, so it may help less on schemas with
-    cryptic names.
+  - The pruner relies on question words matching schema names. On BIRD's cryptic schemas it keeps
+    every needed table for 95.5% of questions, against 98.5–98.9% on Spider.
+  - On BIRD, about 70% of answers are still wrong.
 - **Spider's gold queries have errors.** On dev, about 15% of the remaining wrong-result failures
   came from a wrong gold query or an ambiguous question.
 - **Spoken input:** ASR word errors ("ID" heard as "it") and number formats ("1,000") are not handled.
@@ -152,5 +181,6 @@ speech to 10 dB, and level at 0 dB.
 
 - Base model: Qwen3-1.7B (Apache-2.0).
 - Training/evaluation data: Spider (Yu et al., 2018; CC BY-SA 4.0).
+- Evaluation only: BIRD dev (Li et al., 2023; CC BY-SA 4.0).
 - SpokenSpider transcripts and SQLCoder outputs come from the author's earlier voice-to-SQL project.
 - This adapter and the merged weights are released under Apache-2.0.
