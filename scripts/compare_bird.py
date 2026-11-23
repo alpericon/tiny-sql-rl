@@ -34,8 +34,9 @@ def main():
     for name, (cand, base) in PAIRS.items():
         c, b = load(cand), load(base)
         res = bird_pairs(b, c)
-        res["both_formatted"] = ex_where_both_formatted([r["format_ok"] for r in c], [r["match"] for r in c],
-                                                        [r["format_ok"] for r in b], [r["match"] for r in b])
+        both = ex_where_both_formatted([r["format_ok"] for r in c], [r["match"] for r in c],
+                                       [r["format_ok"] for r in b], [r["match"] for r in b])
+        res["both_formatted"] = {"n": both["n"], "cand_ex": both["a_ex"], "base_ex": both["b_ex"]}
         res["candidate"], res["base"] = cand, base
         out[name] = res
     (ROOT / "results" / "bird_compare_week13.json").write_text(json.dumps(out, indent=1), encoding="utf-8")

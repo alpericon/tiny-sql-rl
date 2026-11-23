@@ -30,6 +30,13 @@ def test_bird_pairs_overall_and_without_a_database():
     assert (out["without_formula_1"]["n"], out["without_formula_1"]["wins"], out["without_formula_1"]["losses"]) == (3, 1, 1)
 
 
+def test_bird_pairs_direction_is_candidate_over_base():
+    base = [r(0, "x", False), r(1, "x", False), r(2, "x", True)]
+    cand = [r(0, "x", True), r(1, "x", True), r(2, "x", False)]
+    out = bird_pairs(base, cand)["all"]
+    assert (out["wins"], out["losses"], out["cand_ex"], out["base_ex"]) == (2, 1, 2 / 3, 1 / 3)
+
+
 def test_bird_pairs_refuses_a_different_question_order():
     with pytest.raises(ValueError):
         bird_pairs(A, list(reversed(B)), exclude_db="formula_1")
