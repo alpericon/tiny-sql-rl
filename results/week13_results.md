@@ -97,6 +97,8 @@ developed on:
 
 ## Notes
 
+- **Descriptive numbers** (format failures, 256-token hits, EX where both have a block, formula_1):
+  `scripts/week13_extras.py` and `scripts/week13_hits.py`.
 - **Run times (RTX 3070 Ti Laptop):**
   - Spider test: CA 71 min, CE 86 min.
   - BIRD dev: CA 47 min, CE 131 min.
