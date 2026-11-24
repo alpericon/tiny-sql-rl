@@ -70,12 +70,14 @@ Coder's CA run the estimate agrees with the recorded flag on 1,529 of 1,534 ques
 ² Includes repair turns, which interleave with first attempts, so no per-question flag is kept.
 
 - Coder often writes a step-by-step explanation before the SQL and runs out of the 256 tokens.
-- The example rows in CE make this worse: its format failures rise from CA to CE on both benchmarks.
+- With the full stack it is worse: format failures rise from CA to CE on both benchmarks. Longer
+  prompts and repair turns that also hit 256 tokens are possible causes; no Coder run isolates a step.
 - **On questions where both models produced a SQL block:**
   - Spider test: ours 63.5% vs 61.5% (bare) and 68.6% vs 67.7% (stack);
   - BIRD dev: 25.3% vs 26.0% (bare) and 32.6% vs 32.2% (stack).
-  - These subsets are selected by each model's own behaviour: Coder tends to answer briefly on easier
-    questions. So these are indicative, not tested.
+  - These subsets are selected by each model's own behaviour. On Spider test, Coder's format failures
+    are mostly on hard and extra questions (3.6% easy, 18.8% hard); on BIRD they are about flat by
+    difficulty. So these are indicative, not tested.
   - Read that way, on Spider part of the lead is better SQL. On BIRD the lead is almost all format.
 - **This is a property of the setting, not only of the model.** Our model was trained on exactly this
   prompt and answer format, and Coder was not. A longer token budget or a prompt tuned for Coder might
@@ -84,16 +86,18 @@ Coder's CA run the estimate agrees with the recorded flag on 1,529 of 1,534 ques
 **The inference stack also helps Coder.** This is descriptive, the stack applied to a model it was not
 developed on:
 - Spider test: +2.3, 213 / 163, p=0.011;
-- BIRD dev: +3.9, 150 / 91, p=0.0002.
-- It helps Coder less than it helps our model (+4.6 Spider, +6.6 BIRD). Part of the reason is the
+- BIRD dev: +3.8, 150 / 91, p=0.0002.
+- It helps Coder less than it helps our model (+4.7 Spider, +6.6 BIRD). Part of the reason is the
   format failures above.
 
 **formula_1 favours Coder.**
 - On this BIRD database, the one that shares its schema with Spider train, Coder zero-shot scores
   27.0%. Our GRPO model scores 11.5% and our demo configuration 24.1%.
-- Without formula_1, K3 becomes significant (p=0.004).
-- Why Coder is strong there is not known. Possible reasons include its pre-training data; we cannot
-  check this (see the plan's contamination risk).
+- Without formula_1, K3 has p=0.004. This is the secondary analysis, not a pre-registered test.
+- Why Coder is strong there is not known.
+
+**Possible contamination in Coder's favour (plan risk).** Coder may have seen Spider (including dev)
+or BIRD dev in pre-training. That would favour Coder. We cannot check it.
 
 ## Notes
 

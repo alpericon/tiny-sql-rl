@@ -102,6 +102,7 @@ with the same inference steps.
 - **The two base models are about equal**, so the lead comes from GRPO and the inference steps.
 - **Much of the lead is format.** Coder often explains step by step and runs out of 256 tokens without
   a SQL block (10–19% of answers). This model was trained on this exact prompt; Coder was not.
+- Coder may have seen Spider or BIRD dev in pre-training, which would favour it. This cannot be checked.
 
 ### Training ablations (Spider dev, 1,034 questions)
 

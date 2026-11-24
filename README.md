@@ -74,8 +74,9 @@ Qwen2.5-Coder-1.5B-Instruct was run once on both benchmarks, in the same setting
   - Spider test, with the stack: +8.8, 386 / 196;
   - BIRD, with the stack: +4.4, 223 / 155.
   - All three have p≤0.0006.
-- **Bare on BIRD:** +1.7, not significant (p=0.19). It is significant without formula_1, where Coder
-  is unusually strong.
+- **Bare on BIRD:** +1.7, not significant (p=0.19). Without formula_1, where Coder is unusually
+  strong, it is +3.9 (p=0.004; secondary, not a pre-registered test).
+- Coder may have seen Spider or BIRD dev in pre-training, which would favour it. This cannot be checked.
 - **The two base models are about equal.** The lead comes from GRPO and the stack.
 - **Much of the lead is format.** Coder often explains step by step and runs out of the 256 tokens
   without a SQL block: 10–19% format failures, against under 1.5% for our model. Our model was trained
