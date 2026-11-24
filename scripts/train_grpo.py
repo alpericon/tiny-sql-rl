@@ -5,6 +5,8 @@ Runs inside WSL with the GPU venv. Pre-flight (VRAM worst case: longest prompts 
 Main run:
     ~/venvs/tinysql/bin/python scripts/train_grpo.py --run-name main
 Resume after an interruption: add --resume.
+PLAN-week14 seed runs (refuse to start if anything but run_name and seed differs from v2):
+    ~/venvs/tinysql/bin/python scripts/train_grpo.py --run-name v2-s1 --seed 1         --pass-rate data/train_pass_rate.jsonl --same-recipe-as checkpoints/v2/run_args.json
 
 Prompts are rendered to text with the same chat template call as the evaluation
 (enable_thinking=False), so training and evaluation see identical inputs. Prompts are never
@@ -107,7 +109,16 @@ def main():
     ap.add_argument("--repair-frac", type=float, default=0.5, help="share of repair-turn records in the mix")
     ap.add_argument("--sample-rows", type=int, default=0,
                     help="example rows per table in first-turn prompts, as at inference (PLAN-week8)")
+    ap.add_argument("--same-recipe-as", type=Path, default=None,
+                    help="a run_args.json: refuse to start unless only run_name and seed differ (PLAN-week14)")
     args = ap.parse_args()
+    if args.same_recipe_as is not None:
+        from tinysql.seeds import check_same_recipe
+
+        ref = json.loads(args.same_recipe_as.read_text(encoding="utf-8"))
+        mine = json.loads(json.dumps({k: v for k, v in vars(args).items() if k != "same_recipe_as"}, default=str))
+        check_same_recipe(ref, mine)
+        print(f"same recipe as {args.same_recipe_as} (only run_name and seed differ)", flush=True)
 
     assert torch.cuda.is_available(), "CUDA not available: is the CPU torch wheel installed?"
     out_dir = ROOT / "checkpoints" / args.run_name

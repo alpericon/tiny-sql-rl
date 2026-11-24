@@ -19,6 +19,7 @@ import torch
 from tinysql.data import load_spider_split, spider_split
 from tinysql.evaluate import evaluate
 from tinysql.hf import HFGenerator
+from tinysql.seeds import adapter_suffix
 from tinysql.subset import load_subset
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -86,7 +87,7 @@ def main():
         ("test" if args.split == "test" else "dev200" if args.subset else "baseline")
         + "_"
         + args.model.replace("/", "__")
-        + (f"_{args.adapter.parent.name}-{args.adapter.name}" if args.adapter else "")
+        + (adapter_suffix(args.adapter) if args.adapter else "")
         + ("_repair" if args.repair else "")
         + ("_ground" if args.ground else "")
         + (f"_rows{args.sample_rows}" if args.sample_rows else "")

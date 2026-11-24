@@ -35,6 +35,7 @@ from pathlib import Path
 from tinysql.data import load_spider_split
 from tinysql.executor import execute_readonly
 from tinysql.official import FORMAT_FAILURE_SQL, eval_lines, record_stem
+from tinysql.seeds import seed_entries
 from tinysql.stats import mcnemar_exact
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -66,6 +67,8 @@ TEST_PAIRS = [("B-v2-900", "A-base"), ("D-v2-900-repair-ground-rows3", "C-v2-900
               ("B-v2-900", "CA-coder"), ("E-v2-900-repair-ground-rows3-prune", "CE-coder-repair-ground-rows3-prune"),
               ("CA-coder", "A-base"), ("CE-coder-repair-ground-rows3-prune", "CA-coder")]
 
+SEED_RUNS = ("v2-s1", "v2-s2")
+
 
 def use_test_split():
     global DB_DIR, OUT, QUESTIONS, RECORD_PREFIX, SUMMARY, MODELS, PAIRS
@@ -74,7 +77,14 @@ def use_test_split():
     QUESTIONS = ROOT / "data" / "spider" / "test.json"
     RECORD_PREFIX = "test"
     SUMMARY = ROOT / "results" / "official_ex_test.json"
-    MODELS, PAIRS = TEST_MODELS, TEST_PAIRS
+    # PLAN-week14: the seed runs, once compare_checkpoints.py --write-selection has picked their checkpoint
+    selected = {}
+    for run in SEED_RUNS:
+        sel = ROOT / "results" / f"selection_{run}.json"
+        if sel.exists():
+            selected[run] = json.loads(sel.read_text(encoding="utf-8"))["selected"]
+    seed_models, seed_pairs = seed_entries(selected)
+    MODELS, PAIRS = {**TEST_MODELS, **seed_models}, TEST_PAIRS + seed_pairs
 MODELS = {
     "base": "",
     "main-1000": "_main-checkpoint-1000",
