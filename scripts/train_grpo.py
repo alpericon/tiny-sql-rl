@@ -6,7 +6,8 @@ Main run:
     ~/venvs/tinysql/bin/python scripts/train_grpo.py --run-name main
 Resume after an interruption: add --resume.
 PLAN-week14 seed runs (refuse to start if anything but run_name and seed differs from v2):
-    ~/venvs/tinysql/bin/python scripts/train_grpo.py --run-name v2-s1 --seed 1         --pass-rate data/train_pass_rate.jsonl --same-recipe-as checkpoints/v2/run_args.json
+    ~/venvs/tinysql/bin/python scripts/train_grpo.py --run-name v2-s1 --seed 1 \
+        --pass-rate data/train_pass_rate.jsonl --same-recipe-as checkpoints/v2/run_args.json
 
 Prompts are rendered to text with the same chat template call as the evaluation
 (enable_thinking=False), so training and evaluation see identical inputs. Prompts are never

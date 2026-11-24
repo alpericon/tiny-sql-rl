@@ -9,7 +9,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-ALLOWED = ("run_name", "seed")
+# run_name and seed are what a seed run changes; resume and the guard itself are not part of the recipe.
+ALLOWED = ("run_name", "seed", "resume", "same_recipe_as")
 # train_grpo.py arguments added after the v2 run, with the values that leave the v2 recipe unchanged.
 LATER_ARGS = {"init_adapter": None, "repair_data": None, "repair_frac": 0.5, "sample_rows": 0}
 _MISSING = object()
@@ -34,6 +35,13 @@ def check_same_recipe(ref: dict, new: dict) -> None:
 def select_checkpoint(ex_by_step: dict[int, float]) -> int:
     best = max(ex_by_step.values())
     return max(step for step, ex in ex_by_step.items() if ex == best)
+
+
+def check_selected_adapter(adapter: str, run: str, step: int) -> None:
+    """A BIRD summary tagged B-<run> must come from the checkpoint the release rule selected."""
+    got = Path(adapter).as_posix().rstrip("/").split("/")[-2:]
+    if got != [run, f"checkpoint-{step}"]:
+        raise ValueError(f"B-{run} was scored with {adapter}, not the selected {run}/checkpoint-{step}")
 
 
 def adapter_suffix(adapter: Path) -> str:

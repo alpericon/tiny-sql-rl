@@ -43,6 +43,14 @@ def main():
     ap.add_argument("--week", type=int, choices=sorted(PAIRS_BY_WEEK), default=13)
     week = ap.parse_args().week
     out = {}
+    if week == 14:  # the B-<run> tags are free text: check they hold the selected checkpoint
+        from tinysql.seeds import check_selected_adapter
+
+        for run in ("v2-s1", "v2-s2"):
+            step = json.loads((ROOT / "results" / f"selection_{run}.json").read_text(encoding="utf-8"))["selected"]
+            summary = json.loads((ROOT / "results" / f"bird_B-{run}.json").read_text(encoding="utf-8"))
+            check_selected_adapter(summary["adapter"], run, step)
+            out[f"selected {run}"] = step
     for name, (cand, base) in PAIRS_BY_WEEK[week].items():
         c, b = load(cand), load(base)
         res = bird_pairs(b, c)
@@ -53,6 +61,8 @@ def main():
         out[name] = res
     (ROOT / "results" / f"bird_compare_week{week}.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
     for name, res in out.items():
+        if name.startswith("selected "):
+            continue
         a = res["all"]
         print(f"{name}: {a['cand_ex']:.3f} vs {a['base_ex']:.3f}, {a['wins']} / {a['losses']}, p={a['p']:.2g}")
 
