@@ -1,0 +1,40 @@
+{
+ "n": 1534,
+ "execution_accuracy": 0.21903520208604954,
+ "format_failure_rate": 0.15189048239895697,
+ "execution_error_rate": 0.4041720990873533,
+ "max_prompt_chars": 8012,
+ "median_prompt_chars": 4223.5,
+ "generation_seconds_total": 2661.45,
+ "benchmark": "BIRD dev",
+ "metric": "BIRD EX (set of result rows)",
+ "model": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+ "adapter": null,
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "decoding": "greedy, nf4, thinking off",
+ "max_new_tokens": 256,
+ "limit": null,
+ "batch_size": 4,
+ "prompt_guard_tokens": 5500,
+ "by_difficulty": {
+  "challenging": {
+   "n": 145,
+   "ex": 0.09655172413793103
+  },
+  "moderate": {
+   "n": 464,
+   "ex": 0.11422413793103449
+  },
+  "simple": {
+   "n": 925,
+   "ex": 0.29081081081081084
+  }
+ },
+ "hit_max_new_tokens_rate": 0.1623207301173403,
+ "max_prompt_tokens": 2195,
+ "wall_seconds": 2800.6,
+ "peak_vram_gib": 1.94
+}

@@ -1,6 +1,6 @@
 # Week 13 plan: where does it stand? Our model vs Qwen2.5-Coder-1.5B on Spider test and BIRD dev
 
-**Status: APPROVED 2026-11-23, as written (Qwen2.5-Coder-7B not added).**
+**Status: APPROVED 2026-11-23, as written (Qwen2.5-Coder-7B not added). Done 2026-11-24: ours ahead in K1, K2, K4; K3 (bare, BIRD) no detectable difference. Much of the lead is answer format.**
 
 ## Why
 

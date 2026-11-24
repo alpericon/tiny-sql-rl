@@ -56,6 +56,31 @@ BIRD's expert evidence in the prompt), scored with BIRD's set-based EX
     with Spider train.
 - The absolute level is low, as expected for 1.7B on BIRD. This is not a leaderboard number.
 
+### Against a same-size SQL model: Qwen2.5-Coder-1.5B (week 13)
+
+Qwen2.5-Coder-1.5B-Instruct was run once on both benchmarks, in the same setting: the same prompt,
+256 tokens and 4-bit. It was run bare and with the same inference stack
+([results/week13_results.md](results/week13_results.md)).
+
+| | Spider test (official) | BIRD dev |
+|---|---|---|
+| Qwen2.5-Coder-1.5B zero-shot | 55.1% | 21.9% |
+| GRPO (released model) | 61.7% | 23.6% |
+| Coder + our inference stack | 57.5% | 25.7% |
+| **our model + the stack (demo)** | **66.3%** | **30.2%** |
+
+- **Ours is ahead:**
+  - Spider test, bare: +6.5, 372 / 232;
+  - Spider test, with the stack: +8.8, 386 / 196;
+  - BIRD, with the stack: +4.4, 223 / 155.
+  - All three have p≤0.0006.
+- **Bare on BIRD:** +1.7, not significant (p=0.19). It is significant without formula_1, where Coder
+  is unusually strong.
+- **The two base models are about equal.** The lead comes from GRPO and the stack.
+- **Much of the lead is format.** Coder often explains step by step and runs out of the 256 tokens
+  without a SQL block: 10–19% format failures, against under 1.5% for our model. Our model was trained
+  on this exact prompt and format, and Coder was not.
+
 ### RQ1: does GRPO help?
 
 | Model | EX (ours) | EX (official) | vs zero-shot (wins / losses) |
@@ -178,7 +203,8 @@ and every number in `results/` comes from a committed script and its output file
 - **One seed per run.** Differences under ~2 points between trained models are not distinguishable
   from training noise. Greedy decoding flips ~15% of answers under small numeric changes, even when
   the averages agree.
-- **Spider only, SQLite only, English only.** The voice test covers just 100 questions on 3 databases.
+- **Trained on Spider only; SQLite only, English only.** Evaluated on Spider and BIRD dev. The voice
+  test covers just 100 questions on 3 databases.
 - **Two EX definitions.** The official default removes DISTINCT, which makes it slightly more lenient
   than ours. Both are reported. Our executor cannot read one wta_1 question with broken UTF-8.
 - **The demo's speech latency** was measured on short synthetic clips, on a fast laptop CPU.
@@ -220,7 +246,9 @@ These are ordered by how directly the results above point to them.
      model with rows (29 / 24, p=0.58). Voice is higher in all five conditions (+3 to +9, none
      significant after correction), and it keeps the schema-only skill (62.0% vs 60.9%). The release
      stays v2-900. The pass-rate filter was computed without rows, so v4 had less learning signal.
-5. **Another benchmark** (e.g. BIRD), to see whether the gains hold beyond Spider.
+5. **Another benchmark: done** (week 12, BIRD dev). Both gains transfer (see above).
+6. **A same-size comparison: done** (week 13, Qwen2.5-Coder-1.5B). Ours is ahead in the recommended
+   configuration on both benchmarks; much of the gap is answer format.
 
 ## License and attribution
 

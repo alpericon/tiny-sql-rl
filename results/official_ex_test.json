@@ -165,6 +165,72 @@
      "ours_ex": 0.42296918767507
     }
    }
+  },
+  "CA-coder": {
+   "n": 2147,
+   "official_ex": 0.5514671634839311,
+   "official_cli_all": 0.551,
+   "ours_ex": 0.5458779692594318,
+   "agree_both": 1156,
+   "ours_only": 16,
+   "official_only": 28,
+   "capped_over_s": 120,
+   "capped_rows": [],
+   "by_hardness": {
+    "easy": {
+     "n": 470,
+     "official_ex": 0.7808510638297872,
+     "ours_ex": 0.776595744680851
+    },
+    "medium": {
+     "n": 857,
+     "official_ex": 0.5985997666277713,
+     "ours_ex": 0.5962660443407235
+    },
+    "hard": {
+     "n": 463,
+     "official_ex": 0.3952483801295896,
+     "ours_ex": 0.3779697624190065
+    },
+    "extra": {
+     "n": 357,
+     "official_ex": 0.3389355742296919,
+     "ours_ex": 0.3389355742296919
+    }
+   }
+  },
+  "CE-coder-repair-ground-rows3-prune": {
+   "n": 2147,
+   "official_ex": 0.5747554727526781,
+   "official_cli_all": 0.575,
+   "ours_ex": 0.5705635770843037,
+   "agree_both": 1208,
+   "ours_only": 17,
+   "official_only": 26,
+   "capped_over_s": 120,
+   "capped_rows": [],
+   "by_hardness": {
+    "easy": {
+     "n": 470,
+     "official_ex": 0.8042553191489362,
+     "ours_ex": 0.8042553191489362
+    },
+    "medium": {
+     "n": 857,
+     "official_ex": 0.6452742123687282,
+     "ours_ex": 0.6406067677946324
+    },
+    "hard": {
+     "n": 463,
+     "official_ex": 0.39956803455723544,
+     "ours_ex": 0.38660907127429806
+    },
+    "extra": {
+     "n": 357,
+     "official_ex": 0.33053221288515405,
+     "ours_ex": 0.3333333333333333
+    }
+   }
   }
  },
  "pairs_official": {
@@ -187,6 +253,26 @@
    "wins": 308,
    "losses": 92,
    "p": 2.504385450996332e-28
+  },
+  "B-v2-900 vs CA-coder": {
+   "wins": 372,
+   "losses": 232,
+   "p": 1.3431240470314053e-08
+  },
+  "E-v2-900-repair-ground-rows3-prune vs CE-coder-repair-ground-rows3-prune": {
+   "wins": 386,
+   "losses": 196,
+   "p": 2.6847241556602722e-15
+  },
+  "CA-coder vs A-base": {
+   "wins": 307,
+   "losses": 331,
+   "p": 0.36252823275650436
+  },
+  "CE-coder-repair-ground-rows3-prune vs CA-coder": {
+   "wins": 213,
+   "losses": 163,
+   "p": 0.011405736382451744
   }
  }
 }

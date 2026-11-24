@@ -84,6 +84,25 @@ project's own implementation of it, not BIRD's script.
 - **The absolute level is low**, as expected for a 1.7B model: about 70% of answers are still wrong.
   This is not a leaderboard number.
 
+### Against a same-size SQL model: Qwen2.5-Coder-1.5B-Instruct
+
+Coder was run once on both benchmarks in the same setting (same prompt, 256 tokens, nf4), bare and
+with the same inference steps.
+
+| | Spider test (official) | BIRD dev |
+|---|---|---|
+| Qwen2.5-Coder-1.5B zero-shot | 55.1% | 21.9% |
+| **this model** | 61.7% | 23.6% |
+| Coder + the recommended inference steps | 57.5% | 25.7% |
+| **this model, recommended configuration** | **66.3%** | **30.2%** |
+
+- **This model is ahead** on Spider test, bare (+6.5) and with the inference steps (+8.8), and on BIRD
+  with the inference steps (+4.4). All have p≤0.0006, Bonferroni over four.
+- **Bare on BIRD:** +1.7, not significant (p=0.19).
+- **The two base models are about equal**, so the lead comes from GRPO and the inference steps.
+- **Much of the lead is format.** Coder often explains step by step and runs out of 256 tokens without
+  a SQL block (10–19% of answers). This model was trained on this exact prompt; Coder was not.
+
 ### Training ablations (Spider dev, 1,034 questions)
 
 | Model | Ours | Official |

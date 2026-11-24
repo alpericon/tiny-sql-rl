@@ -150,6 +150,21 @@ def main():
     checks.append(f"| GRPO (released model) | {pct(bd['B-v2-900'])} |")
     checks.append(f"| **{pct(bd['E-v2-900-full'])}** |")
 
+    # Week 13: Qwen2.5-Coder-1.5B
+    ca, ce = ot["models"]["CA-coder"]["official_ex"], ot["models"]["CE-coder-repair-ground-rows3-prune"]["official_ex"]
+    bc = {t: j(f"bird_{t}.json")["execution_accuracy"] for t in ("CA-coder", "CE-coder-full")}
+    checks.append(f"| Qwen2.5-Coder-1.5B zero-shot | {pct(ca)} | {pct(bc['CA-coder'])} |")
+    checks.append(f"| GRPO (released model) | {pct(ot["models"]['B-v2-900']['official_ex'])} | {pct(bd['B-v2-900'])} |")
+    checks.append(f"| Coder + our inference stack | {pct(ce)} | {pct(bc['CE-coder-full'])} |")
+    checks.append(f"| **{pct(ot["models"]['E-v2-900-repair-ground-rows3-prune']['official_ex'])}** | **{pct(bd['E-v2-900-full'])}** |")
+    k1, k2 = tp["B-v2-900 vs CA-coder"], tp["E-v2-900-repair-ground-rows3-prune vs CE-coder-repair-ground-rows3-prune"]
+    cmp13 = j("bird_compare_week13.json")
+    k3, k4 = cmp13["K3: B vs CA"]["all"], cmp13["K4: E vs CE"]["all"]
+    checks.append(f"+{100 * (ot["models"]['B-v2-900']['official_ex'] - ca):.1f}, {k1['wins']} / {k1['losses']}")
+    checks.append(f"+{100 * (ot["models"]['E-v2-900-repair-ground-rows3-prune']['official_ex'] - ce):.1f}, {k2['wins']} / {k2['losses']}")
+    checks.append(f"+{100 * (k4['cand_ex'] - k4['base_ex']):.1f}, {k4['wins']} / {k4['losses']}")
+    checks.append(f"+{100 * (k3['cand_ex'] - k3['base_ex']):.1f}, not significant (p={k3['p']:.2f})")
+
     missing = [c for c in checks if c not in README]
     for c in checks:
         print(("OK   " if c not in missing else "MISS ") + c)

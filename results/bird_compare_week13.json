@@ -1,0 +1,222 @@
+{
+ "K3: B vs CA": {
+  "all": {
+   "n": 1534,
+   "base_ex": 0.21903520208604954,
+   "cand_ex": 0.23598435462842243,
+   "wins": 199,
+   "losses": 173,
+   "p": 0.19484237244434952,
+   "wins_by_base_outcome": {
+    "format_fail": 36,
+    "exec_error": 109,
+    "wrong_result": 54
+   },
+   "base_breakdown": {
+    "format_fail": 233,
+    "exec_error": 620,
+    "wrong_result": 345
+   },
+   "cand_breakdown": {
+    "format_fail": 17,
+    "exec_error": 569,
+    "wrong_result": 586
+   }
+  },
+  "without_formula_1": {
+   "n": 1360,
+   "base_ex": 0.2125,
+   "cand_ex": 0.2514705882352941,
+   "wins": 191,
+   "losses": 138,
+   "p": 0.004077005031510841,
+   "wins_by_base_outcome": {
+    "format_fail": 35,
+    "exec_error": 106,
+    "wrong_result": 50
+   },
+   "base_breakdown": {
+    "format_fail": 211,
+    "exec_error": 574,
+    "wrong_result": 286
+   },
+   "cand_breakdown": {
+    "format_fail": 13,
+    "exec_error": 514,
+    "wrong_result": 491
+   }
+  },
+  "both_formatted": {
+   "n": 1287,
+   "cand_ex": 0.2533022533022533,
+   "base_ex": 0.2595182595182595
+  },
+  "candidate": "B-v2-900",
+  "base": "CA-coder"
+ },
+ "K4: E vs CE": {
+  "all": {
+   "n": 1534,
+   "base_ex": 0.25749674054758803,
+   "cand_ex": 0.30182529335071706,
+   "wins": 223,
+   "losses": 155,
+   "p": 0.0005513852114239874,
+   "wins_by_base_outcome": {
+    "format_fail": 63,
+    "exec_error": 95,
+    "wrong_result": 65
+   },
+   "base_breakdown": {
+    "format_fail": 297,
+    "exec_error": 482,
+    "wrong_result": 360
+   },
+   "cand_breakdown": {
+    "format_fail": 15,
+    "exec_error": 362,
+    "wrong_result": 694
+   }
+  },
+  "without_formula_1": {
+   "n": 1360,
+   "base_ex": 0.26323529411764707,
+   "cand_ex": 0.3095588235294118,
+   "wins": 201,
+   "losses": 138,
+   "p": 0.0007353706492766605,
+   "wins_by_base_outcome": {
+    "format_fail": 55,
+    "exec_error": 89,
+    "wrong_result": 57
+   },
+   "base_breakdown": {
+    "format_fail": 245,
+    "exec_error": 441,
+    "wrong_result": 316
+   },
+   "cand_breakdown": {
+    "format_fail": 14,
+    "exec_error": 333,
+    "wrong_result": 592
+   }
+  },
+  "both_formatted": {
+   "n": 1228,
+   "cand_ex": 0.3257328990228013,
+   "base_ex": 0.32166123778501626
+  },
+  "candidate": "E-v2-900-full",
+  "base": "CE-coder-full"
+ },
+ "CA vs A (descriptive)": {
+  "all": {
+   "n": 1534,
+   "base_ex": 0.20534550195567144,
+   "cand_ex": 0.21903520208604954,
+   "wins": 193,
+   "losses": 172,
+   "p": 0.2951595661682709,
+   "wins_by_base_outcome": {
+    "format_fail": 26,
+    "exec_error": 65,
+    "wrong_result": 102
+   },
+   "base_breakdown": {
+    "format_fail": 98,
+    "exec_error": 547,
+    "wrong_result": 574
+   },
+   "cand_breakdown": {
+    "format_fail": 233,
+    "exec_error": 620,
+    "wrong_result": 345
+   }
+  },
+  "without_formula_1": {
+   "n": 1360,
+   "base_ex": 0.21911764705882353,
+   "cand_ex": 0.2125,
+   "wins": 155,
+   "losses": 164,
+   "p": 0.6542831514362367,
+   "wins_by_base_outcome": {
+    "format_fail": 17,
+    "exec_error": 54,
+    "wrong_result": 84
+   },
+   "base_breakdown": {
+    "format_fail": 80,
+    "exec_error": 496,
+    "wrong_result": 486
+   },
+   "cand_breakdown": {
+    "format_fail": 211,
+    "exec_error": 574,
+    "wrong_result": 286
+   }
+  },
+  "both_formatted": {
+   "n": 1218,
+   "cand_ex": 0.2545155993431856,
+   "base_ex": 0.2315270935960591
+  },
+  "candidate": "CA-coder",
+  "base": "A-base"
+ },
+ "CE vs CA (descriptive)": {
+  "all": {
+   "n": 1534,
+   "base_ex": 0.21903520208604954,
+   "cand_ex": 0.25749674054758803,
+   "wins": 150,
+   "losses": 91,
+   "p": 0.00017458520761388666,
+   "wins_by_base_outcome": {
+    "format_fail": 14,
+    "exec_error": 99,
+    "wrong_result": 37
+   },
+   "base_breakdown": {
+    "format_fail": 233,
+    "exec_error": 620,
+    "wrong_result": 345
+   },
+   "cand_breakdown": {
+    "format_fail": 297,
+    "exec_error": 482,
+    "wrong_result": 360
+   }
+  },
+  "without_formula_1": {
+   "n": 1360,
+   "base_ex": 0.2125,
+   "cand_ex": 0.26323529411764707,
+   "wins": 140,
+   "losses": 71,
+   "p": 2.340952527288055e-06,
+   "wins_by_base_outcome": {
+    "format_fail": 14,
+    "exec_error": 95,
+    "wrong_result": 31
+   },
+   "base_breakdown": {
+    "format_fail": 211,
+    "exec_error": 574,
+    "wrong_result": 286
+   },
+   "cand_breakdown": {
+    "format_fail": 245,
+    "exec_error": 441,
+    "wrong_result": 316
+   }
+  },
+  "both_formatted": {
+   "n": 1149,
+   "cand_ex": 0.33159268929503916,
+   "base_ex": 0.2619669277632724
+  },
+  "candidate": "CE-coder-full",
+  "base": "CA-coder"
+ }
+}
