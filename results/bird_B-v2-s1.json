@@ -1,0 +1,40 @@
+{
+ "n": 1534,
+ "execution_accuracy": 0.2333767926988266,
+ "format_failure_rate": 0.010430247718383311,
+ "execution_error_rate": 0.3741851368970013,
+ "max_prompt_chars": 8012,
+ "median_prompt_chars": 4223.5,
+ "generation_seconds_total": 2518.34,
+ "benchmark": "BIRD dev",
+ "metric": "BIRD EX (set of result rows)",
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s1/checkpoint-800",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "decoding": "greedy, nf4, thinking off",
+ "max_new_tokens": 256,
+ "limit": null,
+ "batch_size": 4,
+ "prompt_guard_tokens": 5500,
+ "by_difficulty": {
+  "challenging": {
+   "n": 145,
+   "ex": 0.10344827586206896
+  },
+  "moderate": {
+   "n": 464,
+   "ex": 0.10991379310344827
+  },
+  "simple": {
+   "n": 925,
+   "ex": 0.31567567567567567
+  }
+ },
+ "hit_max_new_tokens_rate": 0.009778357235984355,
+ "max_prompt_tokens": 2199,
+ "wall_seconds": 2900.4,
+ "peak_vram_gib": 3.16
+}
