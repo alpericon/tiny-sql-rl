@@ -104,6 +104,24 @@ with the same inference steps.
   a SQL block (10–19% of answers). This model was trained on this exact prompt; Coder was not.
 - Coder may have seen Spider or BIRD dev in pre-training, which would favour it. This cannot be checked.
 
+### Three training seeds
+
+The training recipe was repeated with seeds 1 and 2, identical otherwise, and each run was selected by
+the same dev-200 rule and scored once, bare.
+
+| Seed | Spider test (official) | BIRD dev |
+|---|---|---|
+| Qwen3-1.7B zero-shot | 56.3% | 20.5% |
+| **3407 (this model)** | 61.7% | 23.6% |
+| 1 | 61.9% | 23.3% |
+| 2 | 61.7% | 23.9% |
+
+- **The GRPO gain replicated with both seeds on both benchmarks** (p<0.0001 each, Bonferroni over four).
+  Mean gain over zero-shot: +5.5 points on Spider test (range 5.4–5.6) and +3.1 on BIRD dev (2.8–3.3).
+- This model's seed is the lowest of the three on Spider test (tied) and the middle one on BIRD. The
+  release was not re-picked by test score.
+- The recommended configuration's numbers were measured with this seed only.
+
 ### Training ablations (Spider dev, 1,034 questions)
 
 | Model | Ours | Official |
@@ -182,7 +200,9 @@ speech to 10 dB, and level at 0 dB.
 
 ## Limitations
 
-- **Single seed per training run.** The McNemar tests cover question sampling, not training variance.
+- **Seeds.** The training recipe was run with three seeds (see above). The ablations and the
+  recommended configuration are single runs; their McNemar tests cover question sampling, not
+  training variance.
 - **English only, SQLite only; trained on Spider-style schemas.**
   - About a third of Spider test questions are still answered wrongly, mostly with valid SQL that
     returns the wrong result.

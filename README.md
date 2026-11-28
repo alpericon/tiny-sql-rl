@@ -10,14 +10,15 @@ right rows?) and measures it against that baseline on accuracy, robustness to AS
 - **Model:** [Alpericon/tiny-sql-rl](https://huggingface.co/Alpericon/tiny-sql-rl) (LoRA adapter, merged bf16, Q8_0 GGUF)
 - **Demo:** text or voice, runs locally on CPU: [docs/demo.md](docs/demo.md). A hosted Space was
   not possible: free Gradio Spaces now need a paid plan.
-- **Full results with every caveat:** [results/week3_results.md](results/week3_results.md), [results/week4_results.md](results/week4_results.md)
+- **Full results with every caveat:** [results/week3_results.md](results/week3_results.md), [results/week4_results.md](results/week4_results.md), [results/week14_results.md](results/week14_results.md) (seeds)
 
 ## Results
 
 All accuracy numbers are execution accuracy (EX): greedy decoding, 4-bit, Spider dev (1,034 questions)
 unless stated. "Official" is Spider's official evaluation script; "ours" is this project's
 column-order-tolerant comparator. Comparisons are paired (exact McNemar on the same questions).
-Every training run uses **one seed**, so the tests cover question sampling, not training variance.
+The release recipe was trained with **three seeds** (week 14). Every other training run uses one seed,
+so its tests cover question sampling, not training variance.
 
 ### Held-out confirmation: Spider test (week 11)
 
@@ -81,6 +82,28 @@ Qwen2.5-Coder-1.5B-Instruct was run once on both benchmarks, in the same setting
 - **Much of the lead is format.** Coder often explains step by step and runs out of the 256 tokens
   without a SQL block: 10–19% format failures, against under 1.5% for our model. Our model was trained
   on this exact prompt and format, and Coder was not.
+
+### Three training seeds (week 14)
+
+The release recipe was trained twice more, identical except the seed, and each run was selected by the
+same dev-200 rule and scored once on both held-out sets
+([results/week14_results.md](results/week14_results.md)):
+
+| Seed | Spider test (official) | gain | BIRD dev | gain |
+|---|---|---|---|---|
+| 3407 (released model) | 61.7% | +5.4 | 23.6% | +3.1 |
+| 1 | 61.9% | +5.6 | 23.3% | +2.8 |
+| 2 | 61.7% | +5.4 | 23.9% | +3.3 |
+| **mean (range)** | | **+5.5 (5.4–5.6)** | | **+3.1 (2.8–3.3)** |
+
+- **The GRPO gain replicated with both new seeds on both benchmarks.** All four pre-registered tests vs
+  zero-shot have p<0.0001: Spider test 164 / 43 and 158 / 42, BIRD dev 70 / 27 and 71 / 20.
+- **The released seed is not the lucky one:** it is the lowest of the three on Spider test (tied) and
+  in the middle on BIRD.
+- No detectable difference between the seed runs and the release, or between the seed runs
+  (descriptive; e.g. 36 / 36 on Spider test).
+  The release stays seed 3407; choosing a seed by its test score would be selecting on test.
+- Only the bare model was retrained. The inference stack's numbers (66.3% demo) are still one seed.
 
 ### RQ1: does GRPO help?
 
@@ -201,8 +224,9 @@ and every number in `results/` comes from a committed script and its output file
 
 ## Limitations
 
-- **One seed per run.** Differences under ~2 points between trained models are not distinguishable
-  from training noise. Greedy decoding flips ~15% of answers under small numeric changes, even when
+- **One seed for most runs.** The release recipe was trained with three seeds (Spider test spread
+  0.2 points). Every other comparison between trained models is one run each, so small differences
+  between them are not established. Greedy decoding flips ~15% of answers under small numeric changes, even when
   the averages agree.
 - **Trained on Spider only; SQLite only, English only.** Evaluated on Spider and BIRD dev. The voice
   test covers just 100 questions on 3 databases.
@@ -227,8 +251,9 @@ These are ordered by how directly the results above point to them.
      prompts filtered to questions where retries sometimes succeed.
 2. **Normalise ASR literals: done** (week 6, grounding, see RQ2/RQ4 above). It covers case and whitespace
    only. ASR word errors ("ID" heard as "it") and number formats ("1,000") remain.
-3. **More seeds.** Filtered vs unfiltered training is +1.5 points but not significant. Only 2–3 seeds
-   per arm can separate a real effect from run-to-run variance.
+3. **More seeds: done for the release recipe** (week 14). The GRPO gain replicated with seeds 1 and 2
+   on both benchmarks (mean +5.5 on Spider test, +3.1 on BIRD dev). Filtered vs unfiltered training
+   (+1.5 points, not significant) is still one run per arm.
 4. **Schema grounding: first step done** (week 7, [results/week7_results.md](results/week7_results.md)).
    - Showing 3 example rows per table in the prompt, at inference only, raised official EX from 60.9% to 63.4%
      (72 / 46, p=0.021; our metric +1.8, p=0.11).

@@ -165,6 +165,32 @@ def main():
     checks.append(f"+{100 * (k4['cand_ex'] - k4['base_ex']):.1f}, {k4['wins']} / {k4['losses']}")
     checks.append(f"+{100 * (k3['cand_ex'] - k3['base_ex']):.1f}, not significant (p={k3['p']:.2f})")
 
+    # Week 14: the release recipe with seeds 1 and 2
+    cmp14 = j("bird_compare_week14.json")
+    a_t, a_b = ot["models"]["A-base"]["official_ex"], bd["A-base"]
+    gain = {"t": [], "b": []}
+    for label, tm, bt in [("3407 (released model)", "B-v2-900", "B-v2-900"), ("1", "B-v2-s1", "B-v2-s1"), ("2", "B-v2-s2", "B-v2-s2")]:
+        t, b = ot["models"][tm]["official_ex"], j(f"bird_{bt}.json")["execution_accuracy"]
+        gain["t"].append(100 * (t - a_t)); gain["b"].append(100 * (b - a_b))
+        checks.append(f"| {label} | {pct(t)} | +{100 * (t - a_t):.1f} | {pct(b)} | +{100 * (b - a_b):.1f} |")
+    for k in "tb":
+        g = gain[k]
+        checks.append(f"**+{sum(g) / 3:.1f} ({min(g):.1f}–{max(g):.1f})**")
+    s1, s2 = tp["B-v2-s1 vs A-base"], tp["B-v2-s2 vs A-base"]
+    s3, s4 = cmp14["S3: v2-s1 vs A"]["all"], cmp14["S4: v2-s2 vs A"]["all"]
+    assert max(s1["p"], s2["p"], s3["p"], s4["p"]) < 1e-4 and min(x["wins"] - x["losses"] for x in (s1, s2, s3, s4)) > 0
+    checks.append("All four pre-registered tests vs\n  zero-shot have p<0.0001")
+    off3 = [ot["models"][m]["official_ex"] for m in ("B-v2-900", "B-v2-s1", "B-v2-s2")]
+    checks.append(f"(Spider test spread\n  {100 * (max(off3) - min(off3)):.1f} points)")
+    rank = lambda g: ("lowest", "middle", "highest")[sorted(g).index(g[0])]
+    tied = " (tied)" if gain["t"].count(gain["t"][0]) > 1 else ""
+    checks.append(f"it is the {rank(gain['t'])} of the three on Spider test{tied}")
+    checks.append(f"in the {rank(gain['b'])} on BIRD")
+    checks.append(f"Spider test {s1['wins']} / {s1['losses']} and {s2['wins']} / {s2['losses']}, BIRD dev {s3['wins']} / {s3['losses']} and {s4['wins']} / {s4['losses']}")
+    sb = tp["B-v2-s2 vs B-v2-900"]
+    checks.append(f"descriptive; e.g. {sb['wins']} / {sb['losses']} on Spider test)")
+    checks.append(f"(mean +{sum(gain['t']) / 3:.1f} on Spider test, +{sum(gain['b']) / 3:.1f} on BIRD dev)")
+
     missing = [c for c in checks if c not in README]
     for c in checks:
         print(("OK   " if c not in missing else "MISS ") + c)
