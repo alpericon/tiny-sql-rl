@@ -3,7 +3,10 @@
 Ask a Spider database a question by text or voice. The model writes SQL, the SQL runs read-only, and
 the app shows the result table with a one-sentence answer. Everything runs on CPU.
 
-**Video of the local voice demo:** _to be added_ (see "Recording" below).
+**Video (20 s):** [video/tiny-sql-rl.mp4](video/tiny-sql-rl.mp4). It shows a real run of this demo on CPU
+(world_1, "Which continent has the most countries?": the generated SQL, the result and the 11.2 s timing),
+redrawn at 1080p, followed by the held-out Spider test results. It has music and no voice-over; how it
+was made is in `docs/video/` (`plan.md`, `build.py`).
 
 ## Run it locally
 
@@ -34,9 +37,9 @@ The Space tooling is kept and works if hosting becomes available:
 - `scripts/build_space.sh` assembles the app;
 - `scripts/upload_space.py` deploys it.
 
-## Recording
+## Recording a longer voice demo
 
-To record the video:
+The video above has no live voice input. To record one with the microphone:
 1. Start the demo locally with `bash scripts/setup_demo.sh run`.
 2. Ask two or three of the example questions by voice (microphone), and one by text.
 3. Ask one question the model gets wrong, to show how errors are displayed.

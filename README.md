@@ -3,11 +3,14 @@
 **Can a 1.7B model, trained with reinforcement learning on one 8 GB laptop GPU, replace a 7B text-to-SQL
 model in a voice pipeline?**
 
+[![20-second video: the demo answering a question, and the held-out results](docs/video/poster.jpg)](docs/video/tiny-sql-rl.mp4)
+
 In an earlier voice-to-SQL project, SQLCoder-7B looked like the bottleneck: about 14 s of a ~14 s
 query. This project trains Qwen3-1.7B with GRPO on an **execution reward** (does the query return the
 right rows?) and measures it against that baseline on accuracy, robustness to ASR noise and latency.
 
 - **Model:** [Alpericon/tiny-sql-rl](https://huggingface.co/Alpericon/tiny-sql-rl) (LoRA adapter, merged bf16, Q8_0 GGUF)
+- **Video (20 s):** [docs/video/tiny-sql-rl.mp4](docs/video/tiny-sql-rl.mp4)
 - **Demo:** text or voice, runs locally on CPU: [docs/demo.md](docs/demo.md). A hosted Space was
   not possible: free Gradio Spaces now need a paid plan.
 - **Full results with every caveat:** [results/week3_results.md](results/week3_results.md), [results/week4_results.md](results/week4_results.md), [results/week14_results.md](results/week14_results.md) (seeds)

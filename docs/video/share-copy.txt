@@ -1,0 +1,1 @@
+I trained Qwen3-1.7B with reinforcement learning on one 8 GB laptop GPU to turn plain-English questions into SQL: 56.3% → 61.7% execution accuracy on the held-out Spider test set, with the same gain across 3 training seeds, and 66.3% with the full inference stack. It runs locally on a CPU. Model: huggingface.co/Alpericon/tiny-sql-rl · Code: github.com/alpericon/tiny-sql-rl

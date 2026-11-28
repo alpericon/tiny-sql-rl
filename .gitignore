@@ -17,3 +17,4 @@ vllm_gen_lora/
 !demo/databases/*.sqlite
 third_party/
 build/
+docs/video/work/
