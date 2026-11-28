@@ -1,0 +1,8 @@
+2026-11-27T22:32:26+03:00 start train v2-s2 seed 2
+2026-11-28T04:51:41+03:00 done train
+2026-11-28T05:30:52+03:00 done dev-200
+2026-11-28T05:30:52+03:00 selected checkpoint-700
+2026-11-28T05:30:52+03:00 start test checkpoint-700
+2026-11-28T05:58:20+03:00 start test checkpoint-900
+2026-11-28T06:25:46+03:00 start BIRD checkpoint-700
+2026-11-28T07:15:31+03:00 done all

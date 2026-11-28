@@ -1,0 +1,279 @@
+{
+ "selected v2-s1": 800,
+ "selected v2-s2": 700,
+ "S3: v2-s1 vs A": {
+  "all": {
+   "n": 1534,
+   "base_ex": 0.20534550195567144,
+   "cand_ex": 0.2333767926988266,
+   "wins": 70,
+   "losses": 27,
+   "p": 1.476695145759083e-05,
+   "wins_by_base_outcome": {
+    "format_fail": 20,
+    "exec_error": 22,
+    "wrong_result": 28
+   },
+   "base_breakdown": {
+    "format_fail": 98,
+    "exec_error": 547,
+    "wrong_result": 574
+   },
+   "cand_breakdown": {
+    "format_fail": 16,
+    "exec_error": 574,
+    "wrong_result": 586
+   }
+  },
+  "without_formula_1": {
+   "n": 1360,
+   "base_ex": 0.21911764705882353,
+   "cand_ex": 0.2485294117647059,
+   "wins": 65,
+   "losses": 25,
+   "p": 2.966452922520188e-05,
+   "wins_by_base_outcome": {
+    "format_fail": 18,
+    "exec_error": 20,
+    "wrong_result": 27
+   },
+   "base_breakdown": {
+    "format_fail": 80,
+    "exec_error": 496,
+    "wrong_result": 486
+   },
+   "cand_breakdown": {
+    "format_fail": 12,
+    "exec_error": 520,
+    "wrong_result": 490
+   }
+  },
+  "both_formatted": {
+   "n": 1427,
+   "cand_ex": 0.23686054660126138,
+   "base_ex": 0.2207428170988087
+  },
+  "candidate": "B-v2-s1",
+  "base": "A-base"
+ },
+ "S4: v2-s2 vs A": {
+  "all": {
+   "n": 1534,
+   "base_ex": 0.20534550195567144,
+   "cand_ex": 0.23859191655801826,
+   "wins": 71,
+   "losses": 20,
+   "p": 7.245373680789234e-08,
+   "wins_by_base_outcome": {
+    "format_fail": 22,
+    "exec_error": 25,
+    "wrong_result": 24
+   },
+   "base_breakdown": {
+    "format_fail": 98,
+    "exec_error": 547,
+    "wrong_result": 574
+   },
+   "cand_breakdown": {
+    "format_fail": 17,
+    "exec_error": 581,
+    "wrong_result": 570
+   }
+  },
+  "without_formula_1": {
+   "n": 1360,
+   "base_ex": 0.21911764705882353,
+   "cand_ex": 0.25441176470588234,
+   "wins": 67,
+   "losses": 19,
+   "p": 1.9409574271727468e-07,
+   "wins_by_base_outcome": {
+    "format_fail": 20,
+    "exec_error": 23,
+    "wrong_result": 24
+   },
+   "base_breakdown": {
+    "format_fail": 80,
+    "exec_error": 496,
+    "wrong_result": 486
+   },
+   "cand_breakdown": {
+    "format_fail": 13,
+    "exec_error": 523,
+    "wrong_result": 478
+   }
+  },
+  "both_formatted": {
+   "n": 1428,
+   "cand_ex": 0.24089635854341737,
+   "base_ex": 0.22058823529411764
+  },
+  "candidate": "B-v2-s2",
+  "base": "A-base"
+ },
+ "v2-s1 vs B (descriptive)": {
+  "all": {
+   "n": 1534,
+   "base_ex": 0.23598435462842243,
+   "cand_ex": 0.2333767926988266,
+   "wins": 16,
+   "losses": 20,
+   "p": 0.617719317029696,
+   "wins_by_base_outcome": {
+    "format_fail": 0,
+    "exec_error": 5,
+    "wrong_result": 11
+   },
+   "base_breakdown": {
+    "format_fail": 17,
+    "exec_error": 569,
+    "wrong_result": 586
+   },
+   "cand_breakdown": {
+    "format_fail": 16,
+    "exec_error": 574,
+    "wrong_result": 586
+   }
+  },
+  "without_formula_1": {
+   "n": 1360,
+   "base_ex": 0.2514705882352941,
+   "cand_ex": 0.2485294117647059,
+   "wins": 15,
+   "losses": 19,
+   "p": 0.6075913612730801,
+   "wins_by_base_outcome": {
+    "format_fail": 0,
+    "exec_error": 5,
+    "wrong_result": 10
+   },
+   "base_breakdown": {
+    "format_fail": 13,
+    "exec_error": 514,
+    "wrong_result": 491
+   },
+   "cand_breakdown": {
+    "format_fail": 12,
+    "exec_error": 520,
+    "wrong_result": 490
+   }
+  },
+  "both_formatted": {
+   "n": 1511,
+   "cand_ex": 0.2369291859695566,
+   "base_ex": 0.23957643944407678
+  },
+  "candidate": "B-v2-s1",
+  "base": "B-v2-900"
+ },
+ "v2-s2 vs B (descriptive)": {
+  "all": {
+   "n": 1534,
+   "base_ex": 0.23598435462842243,
+   "cand_ex": 0.23859191655801826,
+   "wins": 20,
+   "losses": 16,
+   "p": 0.617719317029696,
+   "wins_by_base_outcome": {
+    "format_fail": 0,
+    "exec_error": 8,
+    "wrong_result": 12
+   },
+   "base_breakdown": {
+    "format_fail": 17,
+    "exec_error": 569,
+    "wrong_result": 586
+   },
+   "cand_breakdown": {
+    "format_fail": 17,
+    "exec_error": 581,
+    "wrong_result": 570
+   }
+  },
+  "without_formula_1": {
+   "n": 1360,
+   "base_ex": 0.2514705882352941,
+   "cand_ex": 0.25441176470588234,
+   "wins": 18,
+   "losses": 14,
+   "p": 0.5966148958541453,
+   "wins_by_base_outcome": {
+    "format_fail": 0,
+    "exec_error": 8,
+    "wrong_result": 10
+   },
+   "base_breakdown": {
+    "format_fail": 13,
+    "exec_error": 514,
+    "wrong_result": 491
+   },
+   "cand_breakdown": {
+    "format_fail": 13,
+    "exec_error": 523,
+    "wrong_result": 478
+   }
+  },
+  "both_formatted": {
+   "n": 1509,
+   "cand_ex": 0.24254473161033796,
+   "base_ex": 0.23989396951623593
+  },
+  "candidate": "B-v2-s2",
+  "base": "B-v2-900"
+ },
+ "v2-s2 vs v2-s1 (descriptive)": {
+  "all": {
+   "n": 1534,
+   "base_ex": 0.2333767926988266,
+   "cand_ex": 0.23859191655801826,
+   "wins": 24,
+   "losses": 16,
+   "p": 0.26818725105476915,
+   "wins_by_base_outcome": {
+    "format_fail": 0,
+    "exec_error": 11,
+    "wrong_result": 13
+   },
+   "base_breakdown": {
+    "format_fail": 16,
+    "exec_error": 574,
+    "wrong_result": 586
+   },
+   "cand_breakdown": {
+    "format_fail": 17,
+    "exec_error": 581,
+    "wrong_result": 570
+   }
+  },
+  "without_formula_1": {
+   "n": 1360,
+   "base_ex": 0.2485294117647059,
+   "cand_ex": 0.25441176470588234,
+   "wins": 23,
+   "losses": 15,
+   "p": 0.2558750795433298,
+   "wins_by_base_outcome": {
+    "format_fail": 0,
+    "exec_error": 11,
+    "wrong_result": 12
+   },
+   "base_breakdown": {
+    "format_fail": 12,
+    "exec_error": 520,
+    "wrong_result": 490
+   },
+   "cand_breakdown": {
+    "format_fail": 13,
+    "exec_error": 523,
+    "wrong_result": 478
+   }
+  },
+  "both_formatted": {
+   "n": 1511,
+   "cand_ex": 0.24222369291859697,
+   "base_ex": 0.2369291859695566
+  },
+  "candidate": "B-v2-s2",
+  "base": "B-v2-s1"
+ }
+}

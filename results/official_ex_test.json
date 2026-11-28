@@ -297,6 +297,72 @@
      "ours_ex": 0.36694677871148457
     }
    }
+  },
+  "B-v2-s2": {
+   "n": 2147,
+   "official_ex": 0.6166744294364229,
+   "official_cli_all": 0.617,
+   "ours_ex": 0.6092221704704238,
+   "agree_both": 1289,
+   "ours_only": 19,
+   "official_only": 35,
+   "capped_over_s": 120,
+   "capped_rows": [],
+   "by_hardness": {
+    "easy": {
+     "n": 470,
+     "official_ex": 0.8042553191489362,
+     "ours_ex": 0.7936170212765957
+    },
+    "medium": {
+     "n": 857,
+     "official_ex": 0.6814469078179697,
+     "ours_ex": 0.676779463243874
+    },
+    "hard": {
+     "n": 463,
+     "official_ex": 0.4924406047516199,
+     "ours_ex": 0.4794816414686825
+    },
+    "extra": {
+     "n": 357,
+     "official_ex": 0.3753501400560224,
+     "ours_ex": 0.37254901960784315
+    }
+   }
+  },
+  "B-v2-s2-900": {
+   "n": 2147,
+   "official_ex": 0.6208663251047974,
+   "official_cli_all": 0.621,
+   "ours_ex": 0.6106194690265486,
+   "agree_both": 1295,
+   "ours_only": 16,
+   "official_only": 38,
+   "capped_over_s": 120,
+   "capped_rows": [],
+   "by_hardness": {
+    "easy": {
+     "n": 470,
+     "official_ex": 0.8021276595744681,
+     "ours_ex": 0.7893617021276595
+    },
+    "medium": {
+     "n": 857,
+     "official_ex": 0.6872812135355892,
+     "ours_ex": 0.6791131855309218
+    },
+    "hard": {
+     "n": 463,
+     "official_ex": 0.4946004319654428,
+     "ours_ex": 0.4816414686825054
+    },
+    "extra": {
+     "n": 357,
+     "official_ex": 0.3865546218487395,
+     "ours_ex": 0.37815126050420167
+    }
+   }
   }
  },
  "pairs_official": {
@@ -354,6 +420,26 @@
    "wins": 171,
    "losses": 50,
    "p": 1.1142185190956234e-16
+  },
+  "B-v2-s2 vs A-base": {
+   "wins": 158,
+   "losses": 42,
+   "p": 5.1038205427106886e-17
+  },
+  "B-v2-s2 vs B-v2-900": {
+   "wins": 36,
+   "losses": 36,
+   "p": 1.0
+  },
+  "B-v2-s2-900 vs A-base": {
+   "wins": 165,
+   "losses": 40,
+   "p": 3.138101300574725e-19
+  },
+  "B-v2-s2 vs B-v2-s1": {
+   "wins": 37,
+   "losses": 42,
+   "p": 0.6529643755164596
   }
  }
 }

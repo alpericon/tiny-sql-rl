@@ -1,0 +1,379 @@
+W1128 04:51:50.852000 4199 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 04:51:50.901000 4199 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<03:01,  1.71it/s]Loading weights:   1%|          | 2/311 [00:01<03:01,  1.71it/s]Loading weights:   1%|▏         | 4/311 [00:01<01:22,  3.71it/s]Loading weights:   5%|▌         | 17/311 [00:01<00:13, 21.40it/s]Loading weights:   9%|▉         | 28/311 [00:01<00:08, 34.62it/s]Loading weights:  13%|█▎        | 39/311 [00:01<00:05, 47.29it/s]Loading weights:  17%|█▋        | 54/311 [00:01<00:03, 68.20it/s]Loading weights:  22%|██▏       | 67/311 [00:01<00:02, 81.98it/s]Loading weights:  26%|██▌       | 81/311 [00:02<00:02, 92.59it/s]Loading weights:  30%|██▉       | 93/311 [00:02<00:02, 96.79it/s]Loading weights:  34%|███▍      | 105/311 [00:02<00:02, 97.41it/s]Loading weights:  39%|███▉      | 122/311 [00:02<00:01, 115.20it/s]Loading weights:  44%|████▎     | 136/311 [00:02<00:01, 114.24it/s]Loading weights:  48%|████▊     | 149/311 [00:02<00:01, 100.72it/s]Loading weights:  53%|█████▎    | 166/311 [00:02<00:01, 113.74it/s]Loading weights:  58%|█████▊    | 179/311 [00:02<00:01, 117.63it/s]Loading weights:  62%|██████▏   | 192/311 [00:03<00:01, 95.00it/s] Loading weights:  65%|██████▌   | 203/311 [00:03<00:01, 79.67it/s]Loading weights:  68%|██████▊   | 212/311 [00:03<00:01, 78.50it/s]Loading weights:  71%|███████   | 221/311 [00:03<00:01, 73.22it/s]Loading weights:  74%|███████▎  | 229/311 [00:03<00:01, 64.70it/s]Loading weights:  78%|███████▊  | 243/311 [00:03<00:00, 79.38it/s]Loading weights:  82%|████████▏ | 254/311 [00:03<00:00, 84.75it/s]Loading weights:  86%|████████▋ | 269/311 [00:04<00:00, 97.97it/s]Loading weights:  91%|█████████▏| 284/311 [00:04<00:00, 111.03it/s]Loading weights:  97%|█████████▋| 301/311 [00:04<00:00, 122.62it/s]Loading weights: 100%|██████████| 311/311 [00:04<00:00, 72.79it/s] 
+{
+ "n": 200,
+ "execution_accuracy": 0.59,
+ "format_failure_rate": 0.015,
+ "execution_error_rate": 0.12,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 207.86,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.01,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-100",
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 227.2,
+ "max_prompt_tokens": 922,
+ "peak_vram_gib": 2.87,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "dev"
+}
+W1128 04:55:53.025000 4251 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 04:55:53.062000 4251 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<01:15,  4.12it/s]Loading weights:   1%|          | 2/311 [00:00<00:52,  5.92it/s]Loading weights:   5%|▍         | 15/311 [00:00<00:06, 45.99it/s]Loading weights:  20%|█▉        | 61/311 [00:00<00:01, 175.47it/s]Loading weights:  37%|███▋      | 115/311 [00:00<00:00, 285.48it/s]Loading weights:  55%|█████▍    | 171/311 [00:00<00:00, 366.12it/s]Loading weights:  72%|███████▏  | 225/311 [00:00<00:00, 414.08it/s]Loading weights:  90%|█████████ | 280/311 [00:00<00:00, 449.44it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 284.91it/s]
+{
+ "n": 200,
+ "execution_accuracy": 0.59,
+ "format_failure_rate": 0.02,
+ "execution_error_rate": 0.12,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 215.11,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.015,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-200",
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 227.9,
+ "max_prompt_tokens": 922,
+ "peak_vram_gib": 2.87,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "dev"
+}
+W1128 04:59:51.840000 4283 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 04:59:51.869000 4283 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   1%|          | 2/311 [00:00<00:19, 16.21it/s]Loading weights:  11%|█▏        | 35/311 [00:00<00:01, 183.78it/s]Loading weights:  33%|███▎      | 103/311 [00:00<00:00, 396.39it/s]Loading weights:  55%|█████▍    | 170/311 [00:00<00:00, 498.41it/s]Loading weights:  76%|███████▌  | 237/311 [00:00<00:00, 557.72it/s]Loading weights:  99%|█████████▉| 308/311 [00:00<00:00, 608.43it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 492.97it/s]
+{
+ "n": 200,
+ "execution_accuracy": 0.58,
+ "format_failure_rate": 0.025,
+ "execution_error_rate": 0.105,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 215.54,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.02,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-300",
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 229.3,
+ "max_prompt_tokens": 922,
+ "peak_vram_gib": 2.87,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "dev"
+}
+W1128 05:03:51.614000 4314 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 05:03:51.671000 4314 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<02:00,  2.56it/s]Loading weights:   1%|          | 2/311 [00:00<01:44,  2.95it/s]Loading weights:   3%|▎         | 9/311 [00:00<00:18, 16.24it/s]Loading weights:   9%|▊         | 27/311 [00:00<00:05, 51.20it/s]Loading weights:  14%|█▍        | 45/311 [00:01<00:03, 80.83it/s]Loading weights:  18%|█▊        | 57/311 [00:01<00:02, 88.73it/s]Loading weights:  22%|██▏       | 69/311 [00:01<00:02, 91.10it/s]Loading weights:  26%|██▌       | 80/311 [00:01<00:02, 84.03it/s]Loading weights:  30%|███       | 94/311 [00:01<00:02, 95.95it/s]Loading weights:  37%|███▋      | 114/311 [00:01<00:01, 122.25it/s]Loading weights:  41%|████      | 128/311 [00:01<00:01, 107.55it/s]Loading weights:  45%|████▌     | 140/311 [00:01<00:01, 108.63it/s]Loading weights:  51%|█████     | 159/311 [00:01<00:01, 126.07it/s]Loading weights:  57%|█████▋    | 177/311 [00:02<00:00, 140.15it/s]Loading weights:  62%|██████▏   | 192/311 [00:02<00:00, 124.81it/s]Loading weights:  66%|██████▌   | 206/311 [00:02<00:00, 126.41it/s]Loading weights:  71%|███████   | 220/311 [00:02<00:00, 118.93it/s]Loading weights:  75%|███████▍  | 233/311 [00:02<00:00, 116.57it/s]Loading weights:  79%|███████▉  | 247/311 [00:02<00:00, 121.79it/s]Loading weights:  85%|████████▌ | 265/311 [00:02<00:00, 137.24it/s]Loading weights:  90%|█████████ | 281/311 [00:02<00:00, 142.15it/s]Loading weights:  97%|█████████▋| 303/311 [00:03<00:00, 161.39it/s]Loading weights: 100%|██████████| 311/311 [00:03<00:00, 102.52it/s]
+{
+ "n": 200,
+ "execution_accuracy": 0.605,
+ "format_failure_rate": 0.025,
+ "execution_error_rate": 0.095,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 224.32,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.025,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-400",
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 237.3,
+ "max_prompt_tokens": 922,
+ "peak_vram_gib": 2.87,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "dev"
+}
+W1128 05:08:01.528000 4349 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 05:08:01.558000 4349 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   1%|          | 2/311 [00:00<00:18, 16.41it/s]Loading weights:  11%|█         | 34/311 [00:00<00:01, 179.32it/s]Loading weights:  30%|██▉       | 92/311 [00:00<00:00, 342.35it/s]Loading weights:  51%|█████     | 158/311 [00:00<00:00, 460.34it/s]Loading weights:  72%|███████▏  | 223/311 [00:00<00:00, 526.28it/s]Loading weights:  94%|█████████▎| 291/311 [00:00<00:00, 571.16it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 471.00it/s]
+{
+ "n": 200,
+ "execution_accuracy": 0.595,
+ "format_failure_rate": 0.015,
+ "execution_error_rate": 0.11,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 213.84,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.015,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-500",
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 244.9,
+ "max_prompt_tokens": 922,
+ "peak_vram_gib": 2.87,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "dev"
+}
+W1128 05:12:15.839000 4381 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 05:12:15.868000 4381 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   1%|          | 2/311 [00:00<00:19, 15.82it/s]Loading weights:   9%|▉         | 28/311 [00:00<00:01, 144.70it/s]Loading weights:  32%|███▏      | 101/311 [00:00<00:00, 395.12it/s]Loading weights:  54%|█████▍    | 169/311 [00:00<00:00, 500.63it/s]Loading weights:  76%|███████▌  | 236/311 [00:00<00:00, 555.95it/s]Loading weights:  97%|█████████▋| 302/311 [00:00<00:00, 589.96it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 484.38it/s]
+{
+ "n": 200,
+ "execution_accuracy": 0.605,
+ "format_failure_rate": 0.015,
+ "execution_error_rate": 0.1,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 201.05,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.015,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-600",
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 214.5,
+ "max_prompt_tokens": 922,
+ "peak_vram_gib": 2.87,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "dev"
+}
+W1128 05:15:59.763000 4412 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 05:15:59.795000 4412 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   1%|          | 2/311 [00:00<00:19, 15.46it/s]Loading weights:  10%|▉         | 31/311 [00:00<00:01, 159.48it/s]Loading weights:  32%|███▏      | 101/311 [00:00<00:00, 390.81it/s]Loading weights:  53%|█████▎    | 166/311 [00:00<00:00, 486.82it/s]Loading weights:  75%|███████▍  | 233/311 [00:00<00:00, 550.04it/s]Loading weights:  95%|█████████▌| 296/311 [00:00<00:00, 575.00it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 477.01it/s]
+{
+ "n": 200,
+ "execution_accuracy": 0.615,
+ "format_failure_rate": 0.01,
+ "execution_error_rate": 0.1,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 186.97,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.01,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-700",
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 202.6,
+ "max_prompt_tokens": 922,
+ "peak_vram_gib": 2.87,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "dev"
+}
+W1128 05:19:31.909000 4447 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 05:19:31.936000 4447 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   1%|          | 2/311 [00:00<00:20, 15.13it/s]Loading weights:  12%|█▏        | 38/311 [00:00<00:01, 191.49it/s]Loading weights:  33%|███▎      | 103/311 [00:00<00:00, 380.09it/s]Loading weights:  55%|█████▍    | 170/311 [00:00<00:00, 484.10it/s]Loading weights:  76%|███████▌  | 236/311 [00:00<00:00, 544.36it/s]Loading weights:  97%|█████████▋| 302/311 [00:00<00:00, 577.27it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 475.32it/s]
+{
+ "n": 200,
+ "execution_accuracy": 0.6,
+ "format_failure_rate": 0.02,
+ "execution_error_rate": 0.08,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 206.37,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.02,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-800",
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 220.2,
+ "max_prompt_tokens": 922,
+ "peak_vram_gib": 2.87,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "dev"
+}
+W1128 05:23:21.849000 4478 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 05:23:21.884000 4478 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   1%|          | 2/311 [00:00<00:18, 16.33it/s]Loading weights:   5%|▌         | 17/311 [00:00<00:03, 88.00it/s]Loading weights:  28%|██▊       | 87/311 [00:00<00:00, 351.62it/s]Loading weights:  51%|█████     | 158/311 [00:00<00:00, 482.11it/s]Loading weights:  72%|███████▏  | 224/311 [00:00<00:00, 542.65it/s]Loading weights:  94%|█████████▎| 291/311 [00:00<00:00, 580.11it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 472.24it/s]
+{
+ "n": 200,
+ "execution_accuracy": 0.6,
+ "format_failure_rate": 0.02,
+ "execution_error_rate": 0.09,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 209.12,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.02,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-900",
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 223.4,
+ "max_prompt_tokens": 922,
+ "peak_vram_gib": 2.87,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "dev"
+}
+W1128 05:27:14.818000 4530 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 05:27:14.844000 4530 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   1%|          | 2/311 [00:00<00:20, 15.36it/s]Loading weights:   7%|▋         | 23/311 [00:00<00:02, 116.43it/s]Loading weights:  30%|██▉       | 92/311 [00:00<00:00, 355.48it/s]Loading weights:  51%|█████     | 159/311 [00:00<00:00, 470.93it/s]Loading weights:  69%|██████▉   | 215/311 [00:00<00:00, 497.57it/s]Loading weights:  93%|█████████▎| 288/311 [00:00<00:00, 572.68it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 457.98it/s]
+{
+ "n": 200,
+ "execution_accuracy": 0.595,
+ "format_failure_rate": 0.015,
+ "execution_error_rate": 0.11,
+ "max_prompt_chars": 3365,
+ "median_prompt_chars": 1128.5,
+ "generation_seconds_total": 199.43,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.015,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-1000",
+ "subset": "data/dev200_ids.json",
+ "quantization": "nf4-4bit",
+ "wall_seconds": 213.3,
+ "max_prompt_tokens": 922,
+ "peak_vram_gib": 2.87,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "dev"
+}
+W1128 05:30:57.526000 4577 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 05:30:57.554000 4577 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   1%|          | 2/311 [00:00<00:18, 16.75it/s]Loading weights:  11%|█         | 34/311 [00:00<00:01, 181.40it/s]Loading weights:  32%|███▏      | 100/311 [00:00<00:00, 389.85it/s]Loading weights:  53%|█████▎    | 166/311 [00:00<00:00, 492.92it/s]Loading weights:  76%|███████▌  | 235/311 [00:00<00:00, 556.21it/s]Loading weights:  97%|█████████▋| 303/311 [00:00<00:00, 590.15it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 490.64it/s]
+{
+ "n": 2147,
+ "execution_accuracy": 0.6092221704704238,
+ "format_failure_rate": 0.0013972985561248254,
+ "execution_error_rate": 0.08709827666511412,
+ "max_prompt_chars": 4223,
+ "median_prompt_chars": 1028,
+ "generation_seconds_total": 1466.55,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.0009315323707498836,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-700",
+ "subset": null,
+ "quantization": "nf4-4bit",
+ "wall_seconds": 1639.1,
+ "max_prompt_tokens": 1084,
+ "peak_vram_gib": 3.13,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "test"
+}
+W1128 05:58:26.116000 4636 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 05:58:26.145000 4636 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   1%|          | 2/311 [00:00<00:19, 16.18it/s]Loading weights:  12%|█▏        | 38/311 [00:00<00:01, 196.83it/s]Loading weights:  35%|███▌      | 109/311 [00:00<00:00, 414.97it/s]Loading weights:  57%|█████▋    | 177/311 [00:00<00:00, 513.92it/s]Loading weights:  76%|███████▌  | 236/311 [00:00<00:00, 539.91it/s]Loading weights:  97%|█████████▋| 301/311 [00:00<00:00, 573.54it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 482.29it/s]
+{
+ "n": 2147,
+ "execution_accuracy": 0.6106194690265486,
+ "format_failure_rate": 0.0013972985561248254,
+ "execution_error_rate": 0.08383791336748952,
+ "max_prompt_chars": 4223,
+ "median_prompt_chars": 1028,
+ "generation_seconds_total": 1473.08,
+ "decoding": "greedy, repetition_penalty=1.0",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "hit_max_new_tokens_rate": 0.0009315323707498836,
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-900",
+ "subset": null,
+ "quantization": "nf4-4bit",
+ "wall_seconds": 1636.1,
+ "max_prompt_tokens": 1084,
+ "peak_vram_gib": 3.13,
+ "max_new_tokens": 256,
+ "limit": null,
+ "split": "test"
+}
+W1128 06:25:51.990000 5211 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1128 06:25:52.018000 5211 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<00:38,  7.98it/s]Loading weights:   1%|▏         | 4/311 [00:00<00:20, 15.17it/s]Loading weights:  16%|█▌        | 50/311 [00:00<00:01, 175.04it/s]Loading weights:  29%|██▊       | 89/311 [00:00<00:00, 247.88it/s]Loading weights:  41%|████      | 126/311 [00:00<00:00, 286.94it/s]Loading weights:  55%|█████▍    | 170/311 [00:00<00:00, 332.33it/s]Loading weights:  68%|██████▊   | 213/311 [00:00<00:00, 353.82it/s]Loading weights:  80%|████████  | 250/311 [00:00<00:00, 353.67it/s]Loading weights:  95%|█████████▌| 296/311 [00:01<00:00, 383.50it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 300.58it/s]
+{
+ "n": 1534,
+ "execution_accuracy": 0.23859191655801826,
+ "format_failure_rate": 0.01108213820078227,
+ "execution_error_rate": 0.378748370273794,
+ "max_prompt_chars": 8012,
+ "median_prompt_chars": 4223.5,
+ "generation_seconds_total": 2536.7,
+ "benchmark": "BIRD dev",
+ "metric": "BIRD EX (set of result rows)",
+ "model": "Qwen/Qwen3-1.7B",
+ "adapter": "checkpoints/v2-s2/checkpoint-700",
+ "repair": false,
+ "ground": false,
+ "sample_rows": 0,
+ "prune": false,
+ "decoding": "greedy, nf4, thinking off",
+ "max_new_tokens": 256,
+ "limit": null,
+ "batch_size": 4,
+ "prompt_guard_tokens": 5500,
+ "by_difficulty": {
+  "challenging": {
+   "n": 145,
+   "ex": 0.10344827586206896
+  },
+  "moderate": {
+   "n": 464,
+   "ex": 0.10991379310344827
+  },
+  "simple": {
+   "n": 925,
+   "ex": 0.32432432432432434
+  }
+ },
+ "hit_max_new_tokens_rate": 0.01108213820078227,
+ "max_prompt_tokens": 2199,
+ "wall_seconds": 2975.0,
+ "peak_vram_gib": 3.16
+}
